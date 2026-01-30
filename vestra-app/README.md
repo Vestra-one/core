@@ -8,6 +8,9 @@ React + TypeScript (TSX) app for Vestra — global crypto payroll. Built with Vi
 - **Vite 7** — dev server and build
 - **Tailwind CSS v4** — design tokens and utilities
 - **React Router 7** — client-side routing
+- **TanStack Query (React Query)** — server state and caching
+- **React Hook Form** + **Zod** — forms and validation (see `src/lib/schemas.ts`, `src/hooks/useFormWithZod.ts`)
+- **MSW** — mock API in dev when `VITE_USE_MSW=true`
 
 ## Design tokens
 
@@ -16,13 +19,24 @@ Defined in `src/index.css` via `@theme` and CSS variables:
 - `--color-primary`: `#5b2bee`
 - `--color-background-dark`, `--color-surface-dark`, `--color-border-dark`, etc.
 
+## Environment
+
+Copy `.env.example` to `.env` and set:
+
+- **`VITE_API_URL`** — API base URL (no trailing slash), e.g. `http://localhost:3000/api`
+- **`VITE_USE_MSW`** (optional) — set to `true` to use MSW mock API in development instead of a real backend
+
 ## Scripts
 
 ```bash
 npm install
-npm run dev    # http://localhost:5173
+npm run dev        # http://localhost:5173
 npm run build
-npm run preview # preview production build
+npm run preview    # preview production build
+npm run lint       # ESLint
+npm run test       # unit tests (Vitest)
+npm run test:ui    # Vitest UI
+npm run test:e2e   # E2E tests (Playwright; run `npx playwright install` once)
 ```
 
 ## Routes
@@ -48,14 +62,23 @@ src/
     DashboardLayout.tsx   # Sidebar + header + outlet
   pages/        # One page per route
   lib/
-    constants.ts # ROUTES, APP_NAME, PRIMARY_COLOR
-  index.css     # Tailwind + theme + custom scrollbar
-  App.tsx       # Router config
+    constants.ts  # ROUTES, APP_NAME, PRIMARY_COLOR
+    api.ts        # API client (base URL from VITE_API_URL)
+    schemas.ts    # Zod schemas for forms
+  hooks/
+    useFormWithZod.ts  # useForm + zodResolver wrapper
+  mocks/
+    handlers.ts   # MSW handlers
+    browser.ts    # MSW worker for dev
+  test/
+    setup.ts      # Vitest + Testing Library setup
+  index.css       # Tailwind + theme + custom scrollbar
+  App.tsx         # Router config
   main.tsx
 ```
 
-## Adding features
+## API and state
 
-- **State**: Add React Query or Zustand for server/global state.
-- **Forms**: Use React Hook Form + Zod for validation.
-- **API**: Call your backend from page components or custom hooks.
+- **API client**: `src/lib/api.ts` — `api.get()`, `api.post()`, etc. Base URL from `VITE_API_URL`. Use in components or custom hooks; pair with React Query for server state.
+- **Server state**: Use `@tanstack/react-query` (e.g. `useQuery`, `useMutation`) in pages or hooks; wrap fetches with the `api` client.
+- **Forms**: Use `useFormWithZod(schema, options)` from `src/hooks/useFormWithZod.ts` with schemas from `src/lib/schemas.ts`.
