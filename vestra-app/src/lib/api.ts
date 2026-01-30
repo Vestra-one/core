@@ -18,13 +18,13 @@ const getBaseUrl = (): string => {
 export const apiBaseUrl = getBaseUrl()
 
 export class ApiError extends Error {
-  constructor(
-    message: string,
-    public readonly status: number,
-    public readonly body?: unknown,
-  ) {
+  readonly status: number
+  readonly body: unknown | undefined
+  constructor(message: string, status: number, body?: unknown) {
     super(message)
     this.name = 'ApiError'
+    this.status = status
+    this.body = body
   }
 }
 

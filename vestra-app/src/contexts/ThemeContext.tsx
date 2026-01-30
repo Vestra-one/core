@@ -45,6 +45,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   )
 }
 
+// Context and hook in same file is intentional; fast refresh still works for ThemeProvider.
+// eslint-disable-next-line react-refresh/only-export-components
 export function useTheme() {
   const ctx = useContext(ThemeContext)
   if (!ctx) throw new Error('useTheme must be used within ThemeProvider')
