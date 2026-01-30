@@ -1,14 +1,14 @@
-import { Icon } from '../ui/Icon'
-import { ThemeToggle } from '../ui/ThemeToggle'
+import { Icon } from "../ui/Icon";
+import { ThemeToggle } from "../ui/ThemeToggle";
 
 type AppHeaderProps = {
-  searchPlaceholder?: string
-  showSearch?: boolean
-  right?: React.ReactNode
-}
+  searchPlaceholder?: string;
+  showSearch?: boolean;
+  right?: React.ReactNode;
+};
 
 export function AppHeader({
-  searchPlaceholder = 'Search transactions, recipients...',
+  searchPlaceholder = "Search transactions, recipients...",
   showSearch = true,
   right,
 }: AppHeaderProps) {
@@ -44,5 +44,5 @@ export function AppHeader({
         )}
       </div>
     </header>
-  )
+  );
 }

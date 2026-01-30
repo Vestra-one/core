@@ -1,12 +1,16 @@
-import { useRouteError, isRouteErrorResponse, Link } from 'react-router-dom'
-import { Icon } from './ui/Icon'
-import { ROUTES } from '../lib/constants'
+import { useRouteError, isRouteErrorResponse, Link } from "react-router-dom";
+import { Icon } from "./ui/Icon";
+import { ROUTES } from "../lib/constants";
 
 export function RouteErrorFallback() {
-  const error = useRouteError()
-  const isRouteError = isRouteErrorResponse(error)
-  const status = isRouteError ? error.status : null
-  const message = isRouteError ? error.statusText : error instanceof Error ? error.message : 'Something went wrong'
+  const error = useRouteError();
+  const isRouteError = isRouteErrorResponse(error);
+  const status = isRouteError ? error.status : null;
+  const message = isRouteError
+    ? error.statusText
+    : error instanceof Error
+      ? error.message
+      : "Something went wrong";
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--color-background-darker)] text-slate-900 dark:text-slate-100 px-4">
@@ -16,12 +20,16 @@ export function RouteErrorFallback() {
         </div>
         <div>
           {status != null && (
-            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Error {status}</p>
+            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Error {status}
+            </p>
           )}
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-            {isRouteError && error.data && typeof (error.data as { message?: string }).message === 'string'
-          ? (error.data as { message: string }).message
-          : message}
+            {isRouteError &&
+            error.data &&
+            typeof (error.data as { message?: string }).message === "string"
+              ? (error.data as { message: string }).message
+              : message}
           </h1>
         </div>
         <p className="text-sm text-slate-500">
@@ -46,5 +54,5 @@ export function RouteErrorFallback() {
         </div>
       </div>
     </div>
-  )
+  );
 }

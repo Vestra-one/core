@@ -41,15 +41,15 @@ npm run test:e2e   # E2E tests (Playwright; run `npx playwright install` once)
 
 ## Routes
 
-| Path | Screen |
-|------|--------|
-| `/` | Landing page (hero, Transaction Hub, features, CTA, footer) |
-| `/dashboard` | Dashboard (treasury, quick actions, recent activities, activity details panel) |
-| `/onboarding` | Company onboarding — Notification Setup (Step 3 of 4) |
-| `/payments/bulk` | Payments — Bulk CSV Upload (upload zone, parsed rows, batch summary, processing toast) |
-| `/payments/manual` | Payments — New Manual Entry (batch table, payment summary) |
-| `/payments/manual-invoice` | Payments — Manual Entry after invoice upload (toast + parsed row badge) |
-| `/payments/scheduled` | Payments — Scheduled tab (stats, table, Create New Schedule modal) |
+| Path                       | Screen                                                                                 |
+| -------------------------- | -------------------------------------------------------------------------------------- |
+| `/`                        | Landing page (hero, Transaction Hub, features, CTA, footer)                            |
+| `/dashboard`               | Dashboard (treasury, quick actions, recent activities, activity details panel)         |
+| `/onboarding`              | Company onboarding — Notification Setup (Step 3 of 4)                                  |
+| `/payments/bulk`           | Payments — Bulk CSV Upload (upload zone, parsed rows, batch summary, processing toast) |
+| `/payments/manual`         | Payments — New Manual Entry (batch table, payment summary)                             |
+| `/payments/manual-invoice` | Payments — Manual Entry after invoice upload (toast + parsed row badge)                |
+| `/payments/scheduled`      | Payments — Scheduled tab (stats, table, Create New Schedule modal)                     |
 
 ## Structure
 

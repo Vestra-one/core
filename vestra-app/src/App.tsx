@@ -1,17 +1,17 @@
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
-import { RouteErrorFallback } from './components/RouteErrorFallback'
-import { DashboardLayout } from './layouts/DashboardLayout'
-import { LandingPage } from './pages/LandingPage'
-import { DashboardPage } from './pages/DashboardPage'
-import { OnboardingPage } from './pages/OnboardingPage'
-import { PaymentsBulkPage } from './pages/PaymentsBulkPage'
-import { PaymentsManualPage } from './pages/PaymentsManualPage'
-import { PaymentsManualInvoicePage } from './pages/PaymentsManualInvoicePage'
-import { PaymentsScheduledPage } from './pages/PaymentsScheduledPage'
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { RouteErrorFallback } from "./components/RouteErrorFallback";
+import { DashboardLayout } from "./layouts/DashboardLayout";
+import { LandingPage } from "./pages/LandingPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { OnboardingPage } from "./pages/OnboardingPage";
+import { PaymentsBulkPage } from "./pages/PaymentsBulkPage";
+import { PaymentsManualPage } from "./pages/PaymentsManualPage";
+import { PaymentsManualInvoicePage } from "./pages/PaymentsManualInvoicePage";
+import { PaymentsScheduledPage } from "./pages/PaymentsScheduledPage";
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <Outlet />,
     errorElement: <RouteErrorFallback />,
     children: [
@@ -20,41 +20,39 @@ const router = createBrowserRouter([
         element: <LandingPage />,
       },
       {
-        path: 'dashboard',
+        path: "dashboard",
         element: <DashboardLayout />,
-        children: [
-          { index: true, element: <DashboardPage /> },
-        ],
+        children: [{ index: true, element: <DashboardPage /> }],
       },
       {
-        path: 'onboarding',
+        path: "onboarding",
         element: <DashboardLayout />,
         children: [{ index: true, element: <OnboardingPage /> }],
       },
       {
-        path: 'payments/bulk',
+        path: "payments/bulk",
         element: <DashboardLayout />,
         children: [{ index: true, element: <PaymentsBulkPage /> }],
       },
       {
-        path: 'payments/manual',
+        path: "payments/manual",
         element: <DashboardLayout />,
         children: [{ index: true, element: <PaymentsManualPage /> }],
       },
       {
-        path: 'payments/manual-invoice',
+        path: "payments/manual-invoice",
         element: <DashboardLayout />,
         children: [{ index: true, element: <PaymentsManualInvoicePage /> }],
       },
       {
-        path: 'payments/scheduled',
+        path: "payments/scheduled",
         element: <DashboardLayout />,
         children: [{ index: true, element: <PaymentsScheduledPage /> }],
       },
     ],
   },
-])
+]);
 
 export default function App() {
-  return <RouterProvider router={router} />
+  return <RouterProvider router={router} />;
 }
