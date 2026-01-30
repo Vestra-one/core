@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Icon } from '../components/ui/Icon'
 import { Logo } from '../components/layout/Logo'
+import { ThemeToggle } from '../components/ui/ThemeToggle'
 import { ROUTES } from '../lib/constants'
 
 const chains = [
@@ -10,8 +11,8 @@ const chains = [
 
 export function PaymentsManualPage() {
   return (
-    <div className="min-h-screen bg-[#101022] text-white flex flex-col">
-      <header className="flex items-center justify-between border-b border-[#282839] px-6 lg:px-10 py-3 bg-[#101022] sticky top-0 z-50">
+    <div className="min-h-screen bg-[var(--color-background-darker)] text-slate-900 dark:text-white flex flex-col">
+      <header className="flex items-center justify-between border-b border-[var(--color-border-darker)] px-6 lg:px-10 py-3 bg-[var(--color-background-darker)] sticky top-0 z-50">
         <div className="flex items-center gap-8">
           <Logo showLink />
           <nav className="hidden md:flex items-center gap-9">
@@ -22,15 +23,16 @@ export function PaymentsManualPage() {
           </nav>
         </div>
         <div className="flex flex-1 justify-end gap-4 lg:gap-8 items-center">
-          <div className="hidden sm:flex items-stretch rounded-lg h-10 max-w-64 bg-[#282839]">
+          <ThemeToggle />
+          <div className="hidden sm:flex items-stretch rounded-lg h-10 max-w-64 bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)]">
             <span className="flex items-center justify-center pl-4 text-slate-400"><Icon name="search" size={20} /></span>
             <input type="text" placeholder="Search transactions..." className="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-slate-400 px-4 outline-none rounded-r-lg" />
           </div>
           <div className="flex gap-2">
-            <button type="button" className="size-10 flex items-center justify-center rounded-lg bg-[#282839] text-white hover:bg-[#34344a] transition-colors">
+            <button type="button" className="size-10 flex items-center justify-center rounded-lg bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white hover:bg-[var(--color-border-darker)] transition-colors">
               <Icon name="notifications" size={24} />
             </button>
-            <button type="button" className="size-10 flex items-center justify-center rounded-lg bg-[#282839] text-white hover:bg-[#34344a] transition-colors">
+            <button type="button" className="size-10 flex items-center justify-center rounded-lg bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white hover:bg-[var(--color-border-darker)] transition-colors">
               <Icon name="settings" size={24} />
             </button>
           </div>
@@ -41,7 +43,7 @@ export function PaymentsManualPage() {
       <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 lg:px-10 py-8">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-black leading-tight tracking-tight">Payments</h1>
+            <h1 className="text-3xl font-black leading-tight tracking-tight text-slate-900 dark:text-white">Payments</h1>
             <p className="text-slate-500 text-sm mt-1 font-medium">Create and manage your outgoing transfers</p>
           </div>
           <Link to={ROUTES.paymentsManualInvoice} className="flex min-w-[120px] items-center justify-center gap-2 rounded-lg h-11 px-5 bg-[var(--color-primary)] text-white text-sm font-bold shadow-lg hover:opacity-90 transition-all">
@@ -53,7 +55,7 @@ export function PaymentsManualPage() {
           <span className="flex flex-col items-center justify-center border-b-[3px] border-[var(--color-primary)] text-[var(--color-primary)] pb-3">
             <p className="text-sm font-bold tracking-tight">New Payment</p>
           </span>
-          <Link to={ROUTES.paymentsScheduled} className="flex flex-col items-center justify-center border-b-[3px] border-transparent text-slate-500 pb-3 hover:text-white transition-all">
+          <Link to={ROUTES.paymentsScheduled} className="flex flex-col items-center justify-center border-b-[3px] border-transparent text-slate-500 pb-3 hover:text-slate-900 dark:hover:text-white transition-all">
             <p className="text-sm font-bold tracking-tight">Scheduled Payments</p>
           </Link>
         </div>
@@ -62,7 +64,7 @@ export function PaymentsManualPage() {
           <div className="flex-1 w-full min-w-0">
             <div className="bg-[#16162a] rounded-xl border border-[#282839] overflow-hidden shadow-sm">
               <div className="p-4 border-b border-[#282839] bg-[#1c1c2e]">
-                <h3 className="font-semibold text-sm">Batch Manual Entry</h3>
+                <h3 className="font-semibold text-sm text-slate-900 dark:text-white">Batch Manual Entry</h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -77,10 +79,10 @@ export function PaymentsManualPage() {
                     {chains.map((row) => (
                       <tr key={row.address} className="hover:bg-white/5 transition-colors">
                         <td className="px-6 py-4">
-                          <input type="text" defaultValue={row.address} className="w-full bg-transparent border-none focus:ring-0 text-sm font-medium placeholder:text-slate-700" placeholder="Paste 0x address or ENS..." />
+                          <input type="text" defaultValue={row.address} className="w-full bg-transparent border-none focus:ring-0 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-700" placeholder="Paste 0x address or ENS..." />
                         </td>
                         <td className="px-6 py-4">
-                          <button type="button" className="flex items-center justify-between gap-2 px-3 h-9 rounded-lg bg-[#282839] text-white text-xs font-semibold w-full">
+                          <button type="button" className="flex items-center justify-between gap-2 px-3 h-9 rounded-lg bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white text-xs font-semibold w-full">
                             <span className="flex items-center gap-2">
                               <span className={`w-2 h-2 rounded-full ${row.chainColor}`} />
                               {row.chain}
@@ -90,7 +92,7 @@ export function PaymentsManualPage() {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <input type="text" defaultValue={row.amount} className="bg-transparent border-none focus:ring-0 text-right text-sm font-bold w-24 text-white" />
+                            <input type="text" defaultValue={row.amount} className="bg-transparent border-none focus:ring-0 text-right text-sm font-bold w-24 text-slate-900 dark:text-white" />
                             <span className="text-xs font-bold text-slate-400">{row.unit}</span>
                           </div>
                         </td>
@@ -98,7 +100,7 @@ export function PaymentsManualPage() {
                     ))}
                     <tr className="bg-white/[0.02]">
                       <td className="px-6 py-4">
-                        <input type="text" placeholder="Add another recipient address..." className="w-full bg-transparent border-none focus:ring-0 text-sm placeholder:text-slate-600 text-white" />
+                        <input type="text" placeholder="Add another recipient address..." className="w-full bg-transparent border-none focus:ring-0 text-sm text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-600" />
                       </td>
                       <td className="px-6 py-4">
                         <button type="button" className="flex items-center justify-between gap-2 px-3 h-9 rounded-lg border border-dashed border-slate-700 text-slate-500 text-xs font-medium w-full">
@@ -113,7 +115,7 @@ export function PaymentsManualPage() {
               </div>
               <div className="flex justify-between items-center p-4 bg-[#1c1c2e]">
                 <div className="flex gap-3">
-                  <button type="button" className="flex items-center gap-2 px-4 h-10 rounded-lg bg-[#282839] text-white text-sm font-bold hover:bg-[#34344a] transition-all">
+                  <button type="button" className="flex items-center gap-2 px-4 h-10 rounded-lg bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white text-sm font-bold hover:bg-[var(--color-border-darker)] transition-all">
                     <Icon name="add" size={18} />
                     Add row
                   </button>
@@ -131,23 +133,23 @@ export function PaymentsManualPage() {
 
           <aside className="w-full lg:w-80 sticky top-24 shrink-0">
             <div className="bg-[#16162a] rounded-xl border border-[#282839] p-6 shadow-sm">
-              <h2 className="text-lg font-bold mb-6">Payment Summary</h2>
+              <h2 className="text-lg font-bold mb-6 text-slate-900 dark:text-white">Payment Summary</h2>
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-slate-500">Total recipients</span>
-                  <span className="font-bold">2</span>
+                  <span className="font-bold text-slate-900 dark:text-white">2</span>
                 </div>
                 <div className="flex justify-between items-start text-sm">
                   <span className="text-slate-500">Total amount</span>
                   <div className="text-right">
-                    <p className="font-bold">1.5 ETH</p>
-                    <p className="font-bold">500.0 MATIC</p>
+                    <p className="font-bold text-slate-900 dark:text-white">1.5 ETH</p>
+                    <p className="font-bold text-slate-900 dark:text-white">500.0 MATIC</p>
                     <p className="text-slate-500 text-xs mt-1">≈ $4,250.60 USD</p>
                   </div>
                 </div>
                 <div className="flex justify-between items-center text-sm pt-4 border-t border-[#282839]">
                   <span className="text-slate-500">Estimated Fees</span>
-                  <span className="font-bold text-green-500">$12.45</span>
+                  <span className="font-bold text-green-600 dark:text-green-500">$12.45</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-slate-500">Network ETA</span>
@@ -158,7 +160,7 @@ export function PaymentsManualPage() {
                 <button type="button" className="w-full flex items-center justify-center h-12 rounded-lg bg-[var(--color-primary)] text-white text-sm font-bold shadow-lg hover:brightness-110 transition-all">
                   Send Now
                 </button>
-                <button type="button" className="w-full flex items-center justify-center h-12 rounded-lg bg-transparent border border-[#3b3b54] text-white text-sm font-bold hover:bg-white/5 transition-all gap-2">
+                <button type="button" className="w-full flex items-center justify-center h-12 rounded-lg bg-transparent border border-[var(--color-border-darker)] text-slate-900 dark:text-white text-sm font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-all gap-2">
                   <Icon name="calendar_today" size={20} />
                   Schedule Payment
                 </button>

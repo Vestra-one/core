@@ -2,13 +2,27 @@
 
 @theme {
   --color-primary: #5b2bee;
+  --font-display: "Inter", sans-serif;
+}
+
+/* Light theme (default when .dark is not on html) */
+:root {
+  --color-background-dark: #ffffff;
+  --color-background-darker: #f6f6f8;
+  --color-card-dark: #ffffff;
+  --color-surface-dark: #ffffff;
+  --color-border-dark: #e2e8f0;
+  --color-border-darker: #cbd5e1;
+}
+
+/* Dark theme */
+.dark {
   --color-background-dark: #0a0812;
   --color-background-darker: #0a0a0f;
   --color-card-dark: #161321;
   --color-surface-dark: #161621;
   --color-border-dark: #2c2839;
   --color-border-darker: #282839;
-  --font-display: "Inter", sans-serif;
 }
 
 @layer base {
@@ -16,7 +30,7 @@
     @apply antialiased;
   }
   body {
-    @apply bg-[var(--color-background-darker)] text-slate-100 font-[family-name:var(--font-display)] min-h-screen;
+    @apply bg-[var(--color-background-darker)] text-slate-900 dark:text-slate-100 font-[family-name:var(--font-display)] min-h-screen transition-colors duration-200;
   }
 }
 

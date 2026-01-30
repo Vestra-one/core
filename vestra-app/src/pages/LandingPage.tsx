@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Icon } from '../components/ui/Icon'
 import { Logo } from '../components/layout/Logo'
+import { ThemeToggle } from '../components/ui/ThemeToggle'
 import { ROUTES } from '../lib/constants'
 
 export function LandingPage() {
@@ -9,19 +10,20 @@ export function LandingPage() {
       <header className="sticky top-0 z-50 w-full border-b border-[var(--color-border-dark)] bg-[var(--color-background-dark)]/80 backdrop-blur-md px-6 lg:px-20">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
           <div className="flex items-center gap-2">
-            <Link to={ROUTES.home} className="text-[10px] text-slate-500 hover:text-[var(--color-primary)] mr-2">
+            <Link to={ROUTES.home} className="text-[10px] text-slate-500 hover:text-[var(--color-primary)] mr-2 dark:text-slate-500">
               App
             </Link>
             <Logo variant="wallet" showLink={false} />
           </div>
           <nav className="hidden md:flex items-center gap-8">
-            <a className="text-sm font-medium text-slate-400 hover:text-white transition-colors" href="#product">Product</a>
-            <a className="text-sm font-medium text-slate-400 hover:text-white transition-colors" href="#features">Features</a>
-            <a className="text-sm font-medium text-slate-400 hover:text-white transition-colors" href="#integrations">Integrations</a>
-            <a className="text-sm font-medium text-slate-400 hover:text-white transition-colors" href="#pricing">Pricing</a>
+            <a className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" href="#product">Product</a>
+            <a className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" href="#features">Features</a>
+            <a className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" href="#integrations">Integrations</a>
+            <a className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" href="#pricing">Pricing</a>
           </nav>
           <div className="flex items-center gap-3">
-            <button type="button" className="hidden sm:flex h-10 items-center justify-center rounded-full bg-[var(--color-border-dark)] px-5 text-sm font-bold text-white">
+            <ThemeToggle />
+            <button type="button" className="hidden sm:flex h-10 items-center justify-center rounded-full bg-[var(--color-border-dark)] px-5 text-sm font-bold text-slate-900 dark:text-white">
               View Demo
             </button>
             <Link
@@ -52,13 +54,13 @@ export function LandingPage() {
                   </span>
                   Intent-Based Payroll is here
                 </div>
-                <h1 className="text-5xl font-black leading-tight tracking-tight lg:text-7xl">
+                <h1 className="text-5xl font-black leading-tight tracking-tight lg:text-7xl text-slate-900 dark:text-white">
                   Global Crypto Payroll <br />
                   <span className="bg-gradient-to-r from-[var(--color-primary)] to-purple-400 bg-clip-text text-transparent">
                     In One Click
                   </span>
                 </h1>
-                <p className="max-w-xl text-lg text-slate-400 leading-relaxed">
+                <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
                   The first intent-based payroll engine on NEAR. Automate salaries, contractors, and invoices across any chain with zero friction.
                 </p>
                 <div className="flex flex-wrap gap-4">
@@ -68,17 +70,17 @@ export function LandingPage() {
                   >
                     Get Started Free
                   </Link>
-                  <button type="button" className="h-14 rounded-full border border-[var(--color-border-dark)] bg-[var(--color-card-dark)] px-8 text-base font-bold text-white">
+                  <button type="button" className="h-14 rounded-full border border-[var(--color-border-dark)] bg-[var(--color-card-dark)] px-8 text-base font-bold text-slate-900 dark:text-white">
                     Talk to Sales
                   </button>
                 </div>
                 <div className="flex items-center gap-6 pt-4">
                   <div className="flex -space-x-3">
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="h-10 w-10 rounded-full border-2 border-[var(--color-background-dark)] bg-slate-700" />
+                      <div key={i} className="h-10 w-10 rounded-full border-2 border-[var(--color-background-dark)] bg-slate-300 dark:bg-slate-700" />
                     ))}
                   </div>
-                  <p className="text-sm text-slate-400 font-medium tracking-wide">Trusted by 200+ Web3 Teams</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium tracking-wide">Trusted by 200+ Web3 Teams</p>
                 </div>
               </div>
 
@@ -122,7 +124,7 @@ export function LandingPage() {
                         <button
                           key={label}
                           type="button"
-                          className="flex-1 rounded-lg bg-[var(--color-background-dark)] p-3 text-center border border-[var(--color-border-dark)] text-sm font-medium text-slate-300"
+                          className="flex-1 rounded-lg bg-[var(--color-background-dark)] p-3 text-center border border-[var(--color-border-dark)] text-sm font-medium text-slate-600 dark:text-slate-300"
                         >
                           {label}
                         </button>
@@ -138,8 +140,8 @@ export function LandingPage() {
         <section className="bg-[var(--color-background-dark)] py-24 border-y border-[var(--color-border-dark)]">
           <div className="mx-auto max-w-7xl px-6 lg:px-20">
             <div className="mb-16 text-center">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Streamline Your Operations</h2>
-              <p className="mt-4 text-slate-400">Move from complex manual transfers to a single unified flow.</p>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-slate-900 dark:text-white">Streamline Your Operations</h2>
+              <p className="mt-4 text-slate-600 dark:text-slate-400">Move from complex manual transfers to a single unified flow.</p>
             </div>
             <div className="mx-auto max-w-4xl grid grid-cols-[64px_1fr] gap-x-8">
               {[
@@ -149,14 +151,14 @@ export function LandingPage() {
               ].map((step, i) => (
                 <div key={step.title} className="contents">
                   <div className="flex flex-col items-center">
-                    <div className={`flex h-16 w-16 items-center justify-center rounded-full border ${i === 0 ? 'bg-[var(--color-primary)]/20 text-[var(--color-primary)] border-[var(--color-primary)]/30' : 'bg-slate-800 text-[var(--color-primary)] border-[var(--color-border-dark)]'}`}>
+                    <div className={`flex h-16 w-16 items-center justify-center rounded-full border ${i === 0 ? 'bg-[var(--color-primary)]/20 text-[var(--color-primary)] border-[var(--color-primary)]/30' : 'bg-slate-200 dark:bg-slate-800 text-[var(--color-primary)] border-[var(--color-border-dark)]'}`}>
                       <Icon name={step.icon} size={24} />
                     </div>
-                    {i < 2 && <div className="w-0.5 grow bg-slate-800" />}
+                    {i < 2 && <div className="w-0.5 grow bg-slate-200 dark:bg-slate-800" />}
                   </div>
                   <div className={i < 2 ? 'pb-16 pt-4' : 'pt-4'}>
-                    <h3 className="text-xl font-bold">{step.title}</h3>
-                    <p className="mt-2 text-slate-400 leading-relaxed">{step.desc}</p>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">{step.title}</h3>
+                    <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed">{step.desc}</p>
                   </div>
                 </div>
               ))}
@@ -168,8 +170,8 @@ export function LandingPage() {
           <div className="mx-auto max-w-7xl px-6 lg:px-20">
             <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div className="max-w-2xl">
-                <h2 className="text-4xl font-black leading-tight">Engineered for <br /> Modern Teams</h2>
-                <p className="mt-4 text-slate-400 text-lg leading-relaxed">
+                <h2 className="text-4xl font-black leading-tight text-slate-900 dark:text-white">Engineered for <br /> Modern Teams</h2>
+                <p className="mt-4 text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
                   Experience the efficiency of zero-click payouts and automated compliance built directly into the protocol.
                 </p>
               </div>
@@ -190,8 +192,8 @@ export function LandingPage() {
                   <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
                     <Icon name={card.icon} size={24} />
                   </div>
-                  <h3 className="text-xl font-bold mb-3">{card.title}</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">{card.desc}</p>
+                  <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">{card.title}</h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{card.desc}</p>
                 </div>
               ))}
             </div>
@@ -228,13 +230,13 @@ export function LandingPage() {
                 Simplifying global compensation through decentralized intent-based infrastructure.
               </p>
               <div className="flex gap-4">
-                <a className="text-slate-500 hover:text-white transition-colors" href="#"><Icon name="public" size={20} /></a>
-                <a className="text-slate-500 hover:text-white transition-colors" href="#"><Icon name="chat_bubble" size={20} /></a>
+                <a className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors" href="#"><Icon name="public" size={20} /></a>
+                <a className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors" href="#"><Icon name="chat_bubble" size={20} /></a>
               </div>
             </div>
             {['Product', 'Chains', 'Resources', 'Company'].map((heading) => (
               <div key={heading}>
-                <h4 className="mb-6 text-sm font-bold uppercase tracking-wider text-white">{heading}</h4>
+                <h4 className="mb-6 text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">{heading}</h4>
                 <ul className="space-y-4 text-sm text-slate-500">
                   <li><a className="hover:text-[var(--color-primary)] transition-colors" href="#">Link</a></li>
                   <li><a className="hover:text-[var(--color-primary)] transition-colors" href="#">Link</a></li>
@@ -243,7 +245,7 @@ export function LandingPage() {
             ))}
           </div>
           <div className="mt-16 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-[var(--color-border-dark)] pt-8">
-            <p className="text-sm text-slate-500">© 2024 PayFlowX Protocol. All rights reserved.</p>
+            <p className="text-sm text-slate-500">© 2024 Vestra Protocol. All rights reserved.</p>
             <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
               <Icon name="verified_user" size={18} /> SOC2 Type II Compliant
             </span>

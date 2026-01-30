@@ -1,20 +1,22 @@
 import { Link } from 'react-router-dom'
 import { Icon } from '../components/ui/Icon'
+import { ThemeToggle } from '../components/ui/ThemeToggle'
 import { ROUTES } from '../lib/constants'
 
 export function OnboardingPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#101022] text-white">
-      <header className="flex items-center justify-between border-b border-[#282839] px-6 py-3 bg-[#101022]">
+    <div className="min-h-screen flex flex-col bg-[var(--color-background-darker)] text-slate-900 dark:text-white">
+      <header className="flex items-center justify-between border-b border-[var(--color-border-darker)] px-6 py-3 bg-[var(--color-background-darker)]">
         <div className="flex items-center gap-3">
           <Link to={ROUTES.dashboard} className="size-8 flex items-center justify-center rounded-lg bg-[var(--color-primary)] text-white">
             <Icon name="account_balance_wallet" size={20} />
           </Link>
-          <h2 className="text-lg font-bold leading-tight tracking-tight">PayFlowX</h2>
+          <h2 className="text-lg font-bold leading-tight tracking-tight">Vestra</h2>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm font-medium text-slate-400">onboarding@enterprise.com</span>
-          <div className="size-10 rounded-full bg-slate-600 border border-slate-500" />
+          <ThemeToggle />
+          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">onboarding@enterprise.com</span>
+          <div className="size-10 rounded-full bg-slate-400 dark:bg-slate-600 border border-slate-300 dark:border-slate-500" />
         </div>
       </header>
 

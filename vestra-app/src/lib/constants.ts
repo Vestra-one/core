@@ -1,4 +1,4 @@
-export const APP_NAME = 'PayFlowX'
+export const APP_NAME = 'Vestra'
 export const PRIMARY_COLOR = '#5b2bee'
 
 export const ROUTES = {

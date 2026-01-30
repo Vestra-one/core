@@ -1,6 +1,6 @@
-# PayFlowX App
+# Vestra App
 
-React + TypeScript (TSX) app matching the PayFlowX design system and screens. Built with Vite, Tailwind CSS v4, and React Router.
+React + TypeScript (TSX) app for Vestra — global crypto payroll. Built with Vite, Tailwind CSS v4, and React Router.
 
 ## Stack
 

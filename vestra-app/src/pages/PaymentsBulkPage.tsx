@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Icon } from '../components/ui/Icon'
 import { Logo } from '../components/layout/Logo'
+import { ThemeToggle } from '../components/ui/ThemeToggle'
 import { ROUTES } from '../lib/constants'
 
 const parsedRows = [
@@ -12,8 +13,8 @@ const parsedRows = [
 
 export function PaymentsBulkPage() {
   return (
-    <div className="min-h-screen bg-[#101022] text-slate-100">
-      <header className="border-b border-[#282839] bg-[#101022] sticky top-0 z-50 px-6 lg:px-10 py-3">
+    <div className="min-h-screen bg-[var(--color-background-darker)] text-slate-900 dark:text-slate-100">
+      <header className="border-b border-[var(--color-border-darker)] bg-[var(--color-background-darker)] sticky top-0 z-50 px-6 lg:px-10 py-3">
         <div className="max-w-[1400px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-10">
             <Logo showLink />
@@ -25,6 +26,7 @@ export function PaymentsBulkPage() {
             </nav>
           </div>
           <div className="flex items-center gap-6">
+            <ThemeToggle />
             <div className="relative hidden sm:block">
               <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
               <input type="text" placeholder="Search transactions..." className="bg-[#282839] border-none rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-[var(--color-primary)] outline-none" />
@@ -74,7 +76,7 @@ export function PaymentsBulkPage() {
             <span className="text-slate-400">/</span>
             <span className="font-semibold">New Payment</span>
           </div>
-          <h1 className="text-3xl font-bold">Bulk CSV Upload</h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Bulk CSV Upload</h1>
           <div className="border-b border-[#3b3b54]">
             <div className="flex gap-8">
               <Link to={ROUTES.paymentsManual} className="flex flex-col items-center border-b-2 border-transparent text-slate-500 pb-3 transition-all hover:text-slate-200">
@@ -94,21 +96,21 @@ export function PaymentsBulkPage() {
                 </div>
                 <div className="text-center max-w-[420px]">
                   <p className="text-lg font-bold">Select CSV to upload</p>
-                  <p className="text-sm text-slate-500 mt-1">Drag and drop your file here or click to browse. Ensure your CSV follows the standard PayFlowX template.</p>
+                  <p className="text-sm text-slate-500 mt-1">Drag and drop your file here or click to browse. Ensure your CSV follows the standard Vestra template.</p>
                 </div>
                 <div className="flex gap-3">
                   <button type="button" className="bg-[var(--color-primary)] text-white text-sm font-bold px-6 py-2.5 rounded-lg hover:opacity-90 transition-all flex items-center gap-2">
                     <Icon name="add" size={20} />
                     Browse Files
                   </button>
-                  <button type="button" className="bg-[#282839] text-white text-sm font-bold px-6 py-2.5 rounded-lg hover:opacity-80 transition-all">Download Template</button>
+                  <button type="button" className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white text-sm font-bold px-6 py-2.5 rounded-lg hover:opacity-80 transition-all">Download Template</button>
                 </div>
               </div>
             </div>
             <div className="px-6 py-4 flex items-center justify-between bg-[#1d1d35]">
               <div className="flex items-center gap-3">
                 <Icon name="data_table" className="text-[var(--color-primary)]" size={24} />
-                <h3 className="font-bold">Preview Parsed Rows (152)</h3>
+                <h3 className="font-bold text-slate-900 dark:text-white">Preview Parsed Rows (152)</h3>
               </div>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-900/30 text-red-400">1 Error detected</span>
             </div>
@@ -124,10 +126,10 @@ export function PaymentsBulkPage() {
                 <tbody className="divide-y divide-[#282839]">
                   {parsedRows.map((r) => (
                     <tr key={r.row} className={r.error ? 'bg-red-950/20 border-l-4 border-red-500' : 'hover:bg-white/5 transition-colors'}>
-                      <td className={`px-6 py-4 text-sm ${r.error ? 'text-red-400 font-bold' : 'text-slate-400'}`}>{r.row}</td>
-                      <td className={`px-6 py-4 text-sm font-semibold ${r.error ? 'text-red-400' : ''}`}>{r.name}</td>
-                      <td className={`px-6 py-4 text-sm font-mono ${r.error ? 'text-red-500 underline decoration-dotted' : 'text-slate-500'}`}>{r.address}</td>
-                      <td className={`px-6 py-4 text-sm font-bold ${r.error ? 'text-red-300' : ''}`}>{r.amount}</td>
+                      <td className={`px-6 py-4 text-sm ${r.error ? 'text-red-400 font-bold' : 'text-slate-600 dark:text-slate-400'}`}>{r.row}</td>
+                      <td className={`px-6 py-4 text-sm font-semibold ${r.error ? 'text-red-400' : 'text-slate-900 dark:text-white'}`}>{r.name}</td>
+                      <td className={`px-6 py-4 text-sm font-mono ${r.error ? 'text-red-500 underline decoration-dotted' : 'text-slate-600 dark:text-slate-500'}`}>{r.address}</td>
+                      <td className={`px-6 py-4 text-sm font-bold ${r.error ? 'text-red-300' : 'text-slate-900 dark:text-white'}`}>{r.amount}</td>
                       <td className="px-6 py-4">
                         {r.error ? (
                           <span className="flex items-center gap-1.5 text-xs font-bold text-red-500">
@@ -154,12 +156,12 @@ export function PaymentsBulkPage() {
           <div className="sticky top-[100px] flex flex-col gap-6">
             <div className="bg-[#1a1a2e] rounded-xl border border-[#3b3b54] overflow-hidden">
               <div className="p-5 border-b border-[#3b3b54] bg-[#1d1d35]">
-                <h3 className="font-bold text-sm">Batch Summary</h3>
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white">Batch Summary</h3>
               </div>
               <div className="p-5 flex flex-col gap-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-slate-500">Total Rows</span>
-                  <span className="text-sm font-bold">152</span>
+                  <span className="text-sm font-bold text-slate-900 dark:text-white">152</span>
                 </div>
                 <div className="flex justify-between items-center text-red-500">
                   <span className="text-sm font-medium">Validation Errors</span>
@@ -167,7 +169,7 @@ export function PaymentsBulkPage() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-slate-500">Network Fees (Est.)</span>
-                  <span className="text-sm font-bold">$18.42</span>
+                  <span className="text-sm font-bold text-slate-900 dark:text-white">$18.42</span>
                 </div>
                 <div className="border-t border-[#282839] pt-4 mt-2">
                   <div className="flex justify-between items-center mb-1">
@@ -204,7 +206,7 @@ export function PaymentsBulkPage() {
               <Icon name="sync" className="text-[var(--color-primary)] animate-pulse" size={24} />
             </div>
             <div>
-              <h4 className="text-sm font-bold">Processing Batch #4209</h4>
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white">Processing Batch #4209</h4>
               <p className="text-xs text-slate-500">Initiated 2 minutes ago</p>
             </div>
           </div>

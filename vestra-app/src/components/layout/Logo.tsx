@@ -17,7 +17,7 @@ export function Logo({ variant = 'default', showLink = true }: LogoProps) {
           <Icon name="payments" size={20} />
         )}
       </div>
-      <span className="text-xl font-bold tracking-tight">PayFlowX</span>
+      <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Vestra</span>
     </>
   )
 
