@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Icon } from '../components/ui/Icon'
-import { ThemeToggle } from '../components/ui/ThemeToggle'
 import { ROUTES } from '../lib/constants'
 
 const schedules = [
@@ -14,76 +13,17 @@ export function PaymentsScheduledPage() {
   const [modalOpen, setModalOpen] = useState(true)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[var(--color-background-darker)] text-slate-900 dark:text-white">
-      <aside className="w-64 border-r border-[var(--color-border-darker)] flex flex-col bg-[var(--color-background-darker)] shrink-0">
-        <div className="p-6 flex items-center gap-3">
-          <Link to={ROUTES.dashboard} className="bg-[var(--color-primary)] size-10 rounded-lg flex items-center justify-center text-white">
-            <Icon name="payments" size={24} />
-          </Link>
-          <div>
-            <h1 className="text-base font-bold leading-none">Vestra</h1>
-            <p className="text-xs text-slate-500 mt-1">Admin Dashboard</p>
-          </div>
-        </div>
-        <nav className="flex-1 px-4 space-y-1">
-          <Link to={ROUTES.dashboard} className="flex items-center gap-3 px-3 py-2 text-slate-500 hover:bg-[#282839] rounded-lg transition-colors">
-            <Icon name="dashboard" size={22} />
-            <span className="text-sm font-medium">Dashboard</span>
-          </Link>
-          <span className="flex items-center gap-3 px-3 py-2 bg-[var(--color-primary)]/10 text-[var(--color-primary)] rounded-lg">
-            <Icon name="credit_card" size={22} />
-            <span className="text-sm font-semibold">Payments</span>
-          </span>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 text-slate-500 hover:bg-[#282839] rounded-lg transition-colors">
-            <Icon name="group" size={22} />
-            <span className="text-sm font-medium">Recipients</span>
-          </a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 text-slate-500 hover:bg-[#282839] rounded-lg transition-colors">
-            <Icon name="bar_chart" size={22} />
-            <span className="text-sm font-medium">Reports</span>
-          </a>
-          <div className="pt-4 pb-2 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">System</div>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 text-slate-500 hover:bg-[#282839] rounded-lg transition-colors">
-            <Icon name="settings" size={22} />
-            <span className="text-sm font-medium">Settings</span>
-          </a>
+    <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)] text-slate-900 dark:text-white">
+      <div className="h-14 border-b border-[#282839] bg-[#101022] flex items-center px-8 shrink-0">
+        <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white mr-8">Payments</h2>
+        <nav className="flex items-center gap-6">
+          <Link to={ROUTES.paymentsManual} className="text-sm font-medium text-slate-500 hover:text-[var(--color-primary)] transition-colors">Activity</Link>
+          <span className="text-sm font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] py-5 -mb-[22px]">Scheduled</span>
+          <a href="#" className="text-sm font-medium text-slate-500 hover:text-[var(--color-primary)] transition-colors">Recurring</a>
+          <a href="#" className="text-sm font-medium text-slate-500 hover:text-[var(--color-primary)] transition-colors">Approval Queue</a>
         </nav>
-        <div className="p-4 border-t border-[#282839]">
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-[#1a1a2e]">
-            <div className="size-8 rounded-full bg-slate-600" />
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold truncate">Alex Rivera</p>
-              <p className="text-[10px] text-slate-500 truncate">Finance Lead</p>
-            </div>
-            <Icon name="unfold_more" className="text-slate-400 text-sm" size={18} />
-          </div>
-        </div>
-      </aside>
-
-      <main className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <header className="h-16 border-b border-[#282839] bg-[#101022] flex items-center justify-between px-8 shrink-0">
-          <div className="flex items-center gap-8">
-            <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">Payments</h2>
-            <nav className="flex items-center gap-6">
-              <Link to={ROUTES.paymentsManual} className="text-sm font-medium text-slate-500 hover:text-[var(--color-primary)] transition-colors">Activity</Link>
-              <span className="text-sm font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] py-5">Scheduled</span>
-              <a href="#" className="text-sm font-medium text-slate-500 hover:text-[var(--color-primary)] transition-colors">Recurring</a>
-              <a href="#" className="text-sm font-medium text-slate-500 hover:text-[var(--color-primary)] transition-colors">Approval Queue</a>
-            </nav>
-          </div>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <div className="relative hidden lg:block">
-              <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-              <input type="text" placeholder="Search schedules..." className="bg-[#282839] border-none rounded-lg py-2 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-[var(--color-primary)] outline-none" />
-            </div>
-            <button type="button" className="size-10 rounded-lg flex items-center justify-center bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white">
-              <Icon name="notifications" size={24} />
-            </button>
-          </div>
-        </header>
-
-        <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#101022]">
+      </div>
+      <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#101022] min-h-0">
           <div className="max-w-6xl mx-auto p-8">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xs font-medium text-slate-400">Payments</span>
@@ -205,7 +145,6 @@ export function PaymentsScheduledPage() {
             </div>
           </div>
         </div>
-      </main>
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/85 backdrop-blur-sm" onClick={() => setModalOpen(false)}>

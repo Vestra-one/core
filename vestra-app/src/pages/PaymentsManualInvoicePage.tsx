@@ -1,7 +1,5 @@
 import { Link } from 'react-router-dom'
 import { Icon } from '../components/ui/Icon'
-import { Logo } from '../components/layout/Logo'
-import { ThemeToggle } from '../components/ui/ThemeToggle'
 import { ROUTES } from '../lib/constants'
 
 const rows = [
@@ -12,7 +10,7 @@ const rows = [
 
 export function PaymentsManualInvoicePage() {
   return (
-    <div className="min-h-screen bg-[var(--color-background-darker)] text-slate-900 dark:text-white flex flex-col relative">
+    <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)] text-slate-900 dark:text-white relative">
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] animate-[fadeSlide_0.3s_ease-out]">
         <div className="bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-emerald-400/20">
           <Icon name="check_circle" className="text-white" size={24} />
@@ -23,35 +21,7 @@ export function PaymentsManualInvoicePage() {
         </div>
       </div>
 
-      <header className="flex items-center justify-between border-b border-[var(--color-border-darker)] px-6 lg:px-10 py-3 bg-[var(--color-background-darker)] sticky top-0 z-50 text-slate-900 dark:text-white">
-        <div className="flex items-center gap-8">
-          <Logo showLink />
-          <nav className="hidden md:flex items-center gap-9">
-            <Link to={ROUTES.dashboard} className="text-slate-500 hover:text-[var(--color-primary)] text-sm font-medium transition-colors">Dashboard</Link>
-            <span className="text-[var(--color-primary)] text-sm font-bold">Payments</span>
-            <a href="#" className="text-slate-500 hover:text-[var(--color-primary)] text-sm font-medium transition-colors">Balances</a>
-            <a href="#" className="text-slate-500 hover:text-[var(--color-primary)] text-sm font-medium transition-colors">Activity</a>
-          </nav>
-        </div>
-        <div className="flex flex-1 justify-end gap-4 lg:gap-8 items-center">
-          <ThemeToggle />
-          <div className="hidden sm:flex items-stretch rounded-lg h-10 max-w-64 bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)]">
-            <span className="flex items-center justify-center pl-4 text-slate-400"><Icon name="search" size={20} /></span>
-            <input type="text" placeholder="Search transactions..." className="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-slate-400 px-4 outline-none rounded-r-lg" />
-          </div>
-          <div className="flex gap-2">
-            <button type="button" className="size-10 flex items-center justify-center rounded-lg bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white hover:bg-[var(--color-border-darker)] transition-colors">
-              <Icon name="notifications" size={24} />
-            </button>
-            <button type="button" className="size-10 flex items-center justify-center rounded-lg bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white hover:bg-[var(--color-border-darker)] transition-colors">
-              <Icon name="settings" size={24} />
-            </button>
-          </div>
-          <div className="size-10 rounded-full bg-slate-600 border border-slate-500" />
-        </div>
-      </header>
-
-      <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 lg:px-10 py-8">
+      <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 lg:px-10 py-8 min-h-0 overflow-auto">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div>
             <h1 className="text-3xl font-black leading-tight tracking-tight text-slate-900 dark:text-white">Payments</h1>

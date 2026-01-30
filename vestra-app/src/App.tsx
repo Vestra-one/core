@@ -1,5 +1,5 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { ROUTES } from './lib/constants'
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
+import { RouteErrorFallback } from './components/RouteErrorFallback'
 import { DashboardLayout } from './layouts/DashboardLayout'
 import { LandingPage } from './pages/LandingPage'
 import { DashboardPage } from './pages/DashboardPage'
@@ -11,36 +11,45 @@ import { PaymentsScheduledPage } from './pages/PaymentsScheduledPage'
 
 const router = createBrowserRouter([
   {
-    path: ROUTES.home,
-    element: <LandingPage />,
-  },
-  {
-    path: ROUTES.onboarding,
-    element: <OnboardingPage />,
-  },
-  {
-    path: ROUTES.paymentsBulk,
-    element: <PaymentsBulkPage />,
-  },
-  {
-    path: ROUTES.paymentsManual,
-    element: <PaymentsManualPage />,
-  },
-  {
-    path: ROUTES.paymentsManualInvoice,
-    element: <PaymentsManualInvoicePage />,
-  },
-  {
-    path: ROUTES.paymentsScheduled,
-    element: <PaymentsScheduledPage />,
-  },
-  {
-    path: ROUTES.dashboard,
-    element: <DashboardLayout />,
+    path: '/',
+    element: <Outlet />,
+    errorElement: <RouteErrorFallback />,
     children: [
       {
         index: true,
-        element: <DashboardPage />,
+        element: <LandingPage />,
+      },
+      {
+        path: 'dashboard',
+        element: <DashboardLayout />,
+        children: [
+          { index: true, element: <DashboardPage /> },
+        ],
+      },
+      {
+        path: 'onboarding',
+        element: <DashboardLayout />,
+        children: [{ index: true, element: <OnboardingPage /> }],
+      },
+      {
+        path: 'payments/bulk',
+        element: <DashboardLayout />,
+        children: [{ index: true, element: <PaymentsBulkPage /> }],
+      },
+      {
+        path: 'payments/manual',
+        element: <DashboardLayout />,
+        children: [{ index: true, element: <PaymentsManualPage /> }],
+      },
+      {
+        path: 'payments/manual-invoice',
+        element: <DashboardLayout />,
+        children: [{ index: true, element: <PaymentsManualInvoicePage /> }],
+      },
+      {
+        path: 'payments/scheduled',
+        element: <DashboardLayout />,
+        children: [{ index: true, element: <PaymentsScheduledPage /> }],
       },
     ],
   },

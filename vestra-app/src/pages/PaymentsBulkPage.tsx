@@ -1,7 +1,5 @@
 import { Link } from 'react-router-dom'
 import { Icon } from '../components/ui/Icon'
-import { Logo } from '../components/layout/Logo'
-import { ThemeToggle } from '../components/ui/ThemeToggle'
 import { ROUTES } from '../lib/constants'
 
 const parsedRows = [
@@ -13,36 +11,8 @@ const parsedRows = [
 
 export function PaymentsBulkPage() {
   return (
-    <div className="min-h-screen bg-[var(--color-background-darker)] text-slate-900 dark:text-slate-100">
-      <header className="border-b border-[var(--color-border-darker)] bg-[var(--color-background-darker)] sticky top-0 z-50 px-6 lg:px-10 py-3">
-        <div className="max-w-[1400px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-10">
-            <Logo showLink />
-            <nav className="hidden md:flex items-center gap-8">
-              <Link to={ROUTES.dashboard} className="text-slate-500 hover:text-[var(--color-primary)] text-sm font-medium transition-colors">Dashboard</Link>
-              <span className="text-[var(--color-primary)] text-sm font-semibold border-b-2 border-[var(--color-primary)] py-4 -mb-4">Payments</span>
-              <a href="#" className="text-slate-500 hover:text-[var(--color-primary)] text-sm font-medium transition-colors">Balances</a>
-              <a href="#" className="text-slate-500 hover:text-[var(--color-primary)] text-sm font-medium transition-colors">Settings</a>
-            </nav>
-          </div>
-          <div className="flex items-center gap-6">
-            <ThemeToggle />
-            <div className="relative hidden sm:block">
-              <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-              <input type="text" placeholder="Search transactions..." className="bg-[#282839] border-none rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-[var(--color-primary)] outline-none" />
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
-                <p className="text-xs font-semibold">Alex Rivera</p>
-                <p className="text-[10px] text-slate-500">Admin</p>
-              </div>
-              <div className="size-10 rounded-full bg-slate-700 border-2 border-[var(--color-primary)]/20" />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-[1400px] mx-auto flex gap-8 p-6 lg:p-10">
+    <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)] text-slate-900 dark:text-slate-100">
+      <main className="max-w-[1400px] mx-auto flex gap-8 p-6 lg:p-10 flex-1 min-h-0 w-full">
         <aside className="hidden xl:flex flex-col w-64 shrink-0 gap-6">
           <div className="flex flex-col gap-2">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest px-3">Payments</h3>
