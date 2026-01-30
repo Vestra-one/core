@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #5b2bee;
+  --color-background-dark: #0a0812;
+  --color-background-darker: #0a0a0f;
+  --color-card-dark: #161321;
+  --color-surface-dark: #161621;
+  --color-border-dark: #2c2839;
+  --color-border-darker: #282839;
+  --font-display: "Inter", sans-serif;
+}
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  body {
+    @apply bg-[var(--color-background-darker)] text-slate-100 font-[family-name:var(--font-display)] min-h-screen;
+  }
+}
+
+/* Custom scrollbar for panels */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-border-darker);
+  border-radius: 10px;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
