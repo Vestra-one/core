@@ -8,6 +8,8 @@ import { PaymentsBulkPage } from "./pages/PaymentsBulkPage";
 import { PaymentsManualPage } from "./pages/PaymentsManualPage";
 import { PaymentsManualInvoicePage } from "./pages/PaymentsManualInvoicePage";
 import { PaymentsScheduledPage } from "./pages/PaymentsScheduledPage";
+import { ContactsPage } from "./pages/ContactsPage";
+import { AnalyticsPage } from "./pages/AnalyticsPage";
 
 const router = createBrowserRouter([
   {
@@ -48,6 +50,16 @@ const router = createBrowserRouter([
         path: "payments/scheduled",
         element: <DashboardLayout />,
         children: [{ index: true, element: <PaymentsScheduledPage /> }],
+      },
+      {
+        path: "contacts",
+        element: <DashboardLayout />,
+        children: [{ index: true, element: <ContactsPage /> }],
+      },
+      {
+        path: "analytics",
+        element: <DashboardLayout />,
+        children: [{ index: true, element: <AnalyticsPage /> }],
       },
     ],
   },

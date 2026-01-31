@@ -9,13 +9,7 @@ export function LandingPage() {
     <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-[var(--color-background-dark)]">
       <header className="sticky top-0 z-50 w-full border-b border-[var(--color-border-dark)] bg-[var(--color-background-dark)]/90 backdrop-blur-md px-6 lg:px-20 transition-colors duration-200">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Link
-              to={ROUTES.home}
-              className="text-[10px] text-[var(--color-text-muted)] hover:text-[var(--color-primary)] mr-2 dark:text-slate-400 dark:hover:text-white transition-colors"
-            >
-              App
-            </Link>
+          <div className="flex items-center">
             <Logo variant="wallet" showLink={false} />
           </div>
           <nav className="hidden md:flex items-center gap-8">
