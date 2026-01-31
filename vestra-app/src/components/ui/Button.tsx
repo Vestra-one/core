@@ -15,9 +15,9 @@ const variantClasses: Record<ButtonVariant, string> = {
   primary:
     "bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white shadow-[var(--shadow-card)] transition-colors duration-200",
   secondary:
-    "bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white hover:bg-[var(--color-border-darker)]/80 transition-colors duration-200",
+    "bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-[var(--color-text-primary)] hover:bg-[var(--color-border-darker)]/80 transition-colors duration-200",
   ghost:
-    "bg-transparent text-[var(--color-text-secondary)] hover:text-slate-900 dark:hover:text-white border border-transparent transition-colors duration-200",
+    "bg-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] border border-transparent transition-colors duration-200",
   danger: "bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors duration-200",
 };
 

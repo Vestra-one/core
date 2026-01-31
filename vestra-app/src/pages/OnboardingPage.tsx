@@ -1,8 +1,9 @@
+import { Button } from "../components/ui/Button";
 import { Icon } from "../components/ui/Icon";
 
 export function OnboardingPage() {
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)] text-slate-900 dark:text-white">
+    <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)] text-[var(--color-text-primary)]">
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 min-h-0 overflow-auto">
         <div className="w-full max-w-[640px] flex flex-col gap-8">
           <div className="flex flex-col gap-3">
@@ -47,7 +48,7 @@ export function OnboardingPage() {
                       defaultChecked
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-slate-700 rounded-full peer peer-checked:bg-[var(--color-primary)] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5" />
+                    <div className="w-11 h-6 bg-[var(--color-border-darker)] rounded-full peer peer-checked:bg-[var(--color-primary)] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5" />
                   </label>
                 </div>
                 <input
@@ -75,7 +76,7 @@ export function OnboardingPage() {
                       type="checkbox"
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-slate-700 rounded-full peer peer-checked:bg-[var(--color-primary)] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5" />
+                    <div className="w-11 h-6 bg-[var(--color-border-darker)] rounded-full peer peer-checked:bg-[var(--color-primary)] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5" />
                   </label>
                 </div>
                 <div className="flex gap-2">
@@ -120,19 +121,15 @@ export function OnboardingPage() {
               </div>
             </div>
             <div className="p-8 bg-[var(--color-background-darker)] flex flex-col gap-4">
-              <button
-                type="button"
-                className="w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white font-bold py-4 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2"
+              <Button
+                className="w-full py-4 rounded-xl"
+                rightIcon={<Icon name="arrow_forward" size={24} />}
               >
                 Confirm Setup
-                <Icon name="arrow_forward" size={24} />
-              </button>
-              <button
-                type="button"
-                className="w-full text-center text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
-              >
+              </Button>
+              <Button variant="ghost" className="w-full text-sm">
                 Save & continue later
-              </button>
+              </Button>
             </div>
           </div>
 

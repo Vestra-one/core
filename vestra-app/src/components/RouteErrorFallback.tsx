@@ -13,18 +13,18 @@ export function RouteErrorFallback() {
       : "Something went wrong";
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--color-background-darker)] text-slate-900 dark:text-slate-100 px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--color-background-darker)] text-[var(--color-text-primary)] px-4">
       <div className="max-w-md w-full text-center space-y-6">
         <div className="size-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mx-auto">
           <Icon name="error" size={32} />
         </div>
         <div>
           {status != null && (
-            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">
+            <p className="text-sm font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-1">
               Error {status}
             </p>
           )}
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-xl font-bold text-[var(--color-text-primary)]">
             {isRouteError &&
             error.data &&
             typeof (error.data as { message?: string }).message === "string"
@@ -32,7 +32,7 @@ export function RouteErrorFallback() {
               : message}
           </h1>
         </div>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-[var(--color-text-muted)]">
           We couldn’t load this page. Try going back or refreshing.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
@@ -46,7 +46,7 @@ export function RouteErrorFallback() {
           </button>
           <Link
             to={ROUTES.home}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[var(--radius-button)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white text-sm font-semibold hover:bg-[var(--color-border-darker)]/80 transition-colors duration-200"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[var(--radius-button)] border border-[var(--color-border-darker)] text-[var(--color-text-primary)] text-sm font-semibold hover:bg-[var(--color-border-darker)]/80 transition-colors duration-200"
           >
             <Icon name="home" size={20} />
             Go home

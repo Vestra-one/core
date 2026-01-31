@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Breadcrumb } from "../components/ui/Breadcrumb";
+import { Button } from "../components/ui/Button";
 import { Icon } from "../components/ui/Icon";
 import { ROUTES } from "../lib/constants";
 
@@ -40,9 +42,9 @@ export function PaymentsScheduledPage() {
   const [modalOpen, setModalOpen] = useState(true);
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)] text-slate-900 dark:text-white">
+    <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)] text-[var(--color-text-primary)]">
       <div className="h-14 border-b border-[var(--color-border-darker)] bg-[var(--color-background-darker)] flex items-center px-8 shrink-0">
-        <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white mr-8">
+        <h2 className="text-lg font-bold tracking-tight text-[var(--color-text-primary)] mr-8">
           Payments
         </h2>
         <nav className="flex items-center gap-6">
@@ -71,30 +73,29 @@ export function PaymentsScheduledPage() {
       </div>
       <div className="flex-1 overflow-y-auto custom-scrollbar bg-[var(--color-background-darker)] min-h-0">
         <div className="max-w-6xl mx-auto p-8">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-medium text-[var(--color-text-secondary)]">Payments</span>
-            <span className="text-xs text-[var(--color-text-muted)]">/</span>
-            <span className="text-xs font-medium text-slate-900 dark:text-white">
-              Scheduled Payments
-            </span>
+          <div className="mb-2">
+            <Breadcrumb
+              items={[
+                { label: "Payments", href: ROUTES.dashboard },
+                { label: "Scheduled Payments" },
+              ]}
+            />
           </div>
           <div className="flex flex-wrap justify-between items-end gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+              <h1 className="text-3xl font-black tracking-tight text-[var(--color-text-primary)]">
                 Scheduled Payments
               </h1>
               <p className="text-[var(--color-text-muted)] mt-1">
                 Automate your payroll and recurring vendor disbursements.
               </p>
             </div>
-            <button
-              type="button"
+            <Button
               onClick={() => setModalOpen(true)}
-              className="bg-[var(--color-primary)] text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg hover:bg-[var(--color-primary-hover)] transition-all"
+              leftIcon={<Icon name="add" size={20} />}
             >
-              <Icon name="add" size={20} />
               Create Schedule
-            </button>
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -110,7 +111,7 @@ export function PaymentsScheduledPage() {
                 />
               </div>
               <div className="flex items-baseline gap-2">
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                <p className="text-2xl font-bold text-[var(--color-text-primary)]">
                   12
                 </p>
                 <p className="text-xs font-medium text-green-500 flex items-center">
@@ -130,7 +131,7 @@ export function PaymentsScheduledPage() {
                 />
               </div>
               <div className="flex items-baseline gap-2">
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                <p className="text-2xl font-bold text-[var(--color-text-primary)]">
                   $142,500.00
                 </p>
                 <p className="text-xs font-medium text-green-500">+5.1%</p>
@@ -148,7 +149,7 @@ export function PaymentsScheduledPage() {
                 />
               </div>
               <div className="flex items-baseline gap-2">
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                <p className="text-2xl font-bold text-[var(--color-text-primary)]">
                   $32,400.00
                 </p>
                 <p className="text-xs font-medium text-orange-500">-1.2%</p>
@@ -171,6 +172,7 @@ export function PaymentsScheduledPage() {
                     ].map((h) => (
                       <th
                         key={h}
+                        scope="col"
                         className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
                       >
                         {h}
@@ -189,7 +191,7 @@ export function PaymentsScheduledPage() {
                           <div className="size-8 rounded bg-[var(--color-primary)]/10 flex items-center justify-center text-[var(--color-primary)]">
                             <Icon name={s.icon} size={18} />
                           </div>
-                          <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                          <p className="text-sm font-semibold text-[var(--color-text-primary)]">
                             {s.name}
                           </p>
                         </div>
@@ -200,7 +202,7 @@ export function PaymentsScheduledPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">
+                        <p className="text-sm font-medium text-[var(--color-text-primary)]">
                           {s.nextRun}
                         </p>
                         <p className="text-[11px] text-[var(--color-text-secondary)]">
@@ -208,7 +210,7 @@ export function PaymentsScheduledPage() {
                         </p>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="text-sm font-bold text-slate-900 dark:text-white">
+                        <p className="text-sm font-bold text-[var(--color-text-primary)]">
                           {s.amount}
                         </p>
                         <p className="text-[11px] text-[var(--color-text-secondary)]">
@@ -219,6 +221,8 @@ export function PaymentsScheduledPage() {
                         <button
                           type="button"
                           role="switch"
+                          aria-label={s.active ? "Pause schedule" : "Resume schedule"}
+                          aria-checked={s.active}
                           className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${s.active ? "bg-[var(--color-primary)]" : "bg-[var(--color-border-darker)]"}`}
                         >
                           <span
@@ -230,6 +234,7 @@ export function PaymentsScheduledPage() {
                         <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             type="button"
+                            aria-label={`Edit ${s.name}`}
                             className="p-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 rounded transition-all"
                           >
                             <Icon name="edit" size={18} />
@@ -237,6 +242,7 @@ export function PaymentsScheduledPage() {
                           {s.active ? (
                             <button
                               type="button"
+                              aria-label={`Pause ${s.name}`}
                               className="p-1.5 text-[var(--color-text-secondary)] hover:text-orange-500 hover:bg-orange-500/10 rounded transition-all"
                             >
                               <Icon name="pause_circle" size={18} />
@@ -244,6 +250,7 @@ export function PaymentsScheduledPage() {
                           ) : (
                             <button
                               type="button"
+                              aria-label={`Resume ${s.name}`}
                               className="p-1.5 text-[var(--color-primary)] bg-[var(--color-primary)]/10 rounded transition-all"
                             >
                               <Icon name="play_circle" size={18} />
@@ -251,6 +258,7 @@ export function PaymentsScheduledPage() {
                           )}
                           <button
                             type="button"
+                            aria-label={`Delete ${s.name}`}
                             className="p-1.5 text-[var(--color-text-secondary)] hover:text-red-500 hover:bg-red-500/10 rounded transition-all"
                           >
                             <Icon name="delete" size={18} />
@@ -267,19 +275,12 @@ export function PaymentsScheduledPage() {
                 Showing 3 of 12 schedules
               </p>
               <div className="flex gap-2">
-                <button
-                  type="button"
-                  disabled
-                  className="px-3 py-1 text-xs font-semibold rounded border border-[var(--color-border-dark)] disabled:opacity-50"
-                >
+                <Button variant="secondary" size="sm" disabled className="text-xs h-8 px-3">
                   Previous
-                </button>
-                <button
-                  type="button"
-                  className="px-3 py-1 text-xs font-semibold rounded border border-[var(--color-border-dark)]"
-                >
+                </Button>
+                <Button variant="secondary" size="sm" className="text-xs h-8 px-3">
                   Next
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -297,7 +298,7 @@ export function PaymentsScheduledPage() {
           >
             <div className="p-6 border-b border-[var(--color-border-darker)] flex justify-between items-center bg-[var(--color-background-darker)]/80">
               <div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                <h3 className="text-xl font-bold text-[var(--color-text-primary)]">
                   Create New Schedule
                 </h3>
                 <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
@@ -307,6 +308,7 @@ export function PaymentsScheduledPage() {
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
+                aria-label="Close modal"
                 className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
               >
                 <Icon name="close" size={24} />
@@ -320,7 +322,7 @@ export function PaymentsScheduledPage() {
                 <input
                   type="text"
                   defaultValue="Q4 Contractor Payments"
-                  className="w-full bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] outline-none transition-all text-slate-900 dark:text-white"
+                  className="w-full bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] outline-none transition-all text-[var(--color-text-primary)]"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -328,7 +330,7 @@ export function PaymentsScheduledPage() {
                   <label className="block text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
                     Frequency
                   </label>
-                  <select className="w-full bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-[var(--color-primary)] outline-none appearance-none text-slate-900 dark:text-white">
+                  <select className="w-full bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-[var(--color-primary)] outline-none appearance-none text-[var(--color-text-primary)]">
                     <option>Monthly</option>
                     <option>Weekly</option>
                     <option>Bi-Weekly</option>
@@ -348,7 +350,7 @@ export function PaymentsScheduledPage() {
                     <input
                       type="text"
                       defaultValue="Oct 01, 2023"
-                      className="w-full bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-[var(--color-primary)] outline-none text-slate-900 dark:text-white pr-10"
+                      className="w-full bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-[var(--color-primary)] outline-none text-[var(--color-text-primary)] pr-10"
                     />
                   </div>
                 </div>
@@ -373,7 +375,7 @@ export function PaymentsScheduledPage() {
                   <input
                     type="text"
                     placeholder="Add more..."
-                    className="flex-1 min-w-[120px] bg-transparent border-none p-0 text-sm focus:ring-0 outline-none text-slate-900 dark:text-white placeholder:text-[var(--color-text-muted)]"
+                    className="flex-1 min-w-[120px] bg-transparent border-none p-0 text-sm focus:ring-0 outline-none text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]"
                   />
                 </div>
               </div>
@@ -401,26 +403,19 @@ export function PaymentsScheduledPage() {
                 </div>
                 <p className="mt-3 text-[11px] text-[var(--color-text-muted)] flex justify-between">
                   <span>Estimated total per run:</span>
-                  <span className="font-bold text-slate-900 dark:text-white">
+                  <span className="font-bold text-[var(--color-text-primary)]">
                     $4,800.00
                   </span>
                 </p>
               </div>
             </div>
             <div className="p-6 bg-[var(--color-background-darker)]/80 border-t border-[var(--color-border-darker)] flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                className="px-5 py-2 rounded-lg text-sm font-bold text-[var(--color-text-muted)] hover:bg-[var(--color-border-darker)] transition-all"
-              >
+              <Button variant="ghost" onClick={() => setModalOpen(false)}>
                 Discard
-              </button>
-              <button
-                type="button"
-                className="bg-[var(--color-primary)] text-white px-8 py-2.5 rounded-lg font-bold text-sm shadow-lg hover:bg-[var(--color-primary-hover)] transition-all"
-              >
+              </Button>
+              <Button onClick={() => setModalOpen(false)}>
                 Create Schedule
-              </button>
+              </Button>
             </div>
           </div>
         </div>

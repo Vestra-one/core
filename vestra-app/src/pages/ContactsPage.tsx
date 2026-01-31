@@ -1,4 +1,7 @@
 import { Icon } from "../components/ui/Icon";
+import { Button } from "../components/ui/Button";
+import { PageContainer } from "../components/layout/PageContainer";
+import { ROUTES } from "../lib/constants";
 
 const contacts = [
   { name: "Alice Doe", address: "alice_doe.near", network: "NEAR", lastPaid: "Oct 24, 2023", amount: "4.50 NEAR" },
@@ -10,30 +13,26 @@ const contacts = [
 
 export function ContactsPage() {
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)]">
-      <div className="p-8 max-w-6xl mx-auto w-full space-y-6 flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-[var(--color-text-secondary)]">Treasury</span>
-          <span className="text-xs text-[var(--color-text-muted)]">/</span>
-          <span className="text-xs font-medium text-[var(--color-text-primary)]">Contacts</span>
+    <PageContainer
+      breadcrumb={[
+        { label: "Treasury", href: ROUTES.treasury },
+        { label: "Contacts" },
+      ]}
+      spacing="space-y-6"
+    >
+      <div className="flex flex-wrap justify-between items-end gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
+            Contacts
+          </h1>
+          <p className="text-[var(--color-text-secondary)] mt-1">
+            Manage payees and your address book for quick payments.
+          </p>
         </div>
-        <div className="flex flex-wrap justify-between items-end gap-4">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
-              Contacts
-            </h1>
-            <p className="text-[var(--color-text-secondary)] mt-1">
-              Manage payees and your address book for quick payments.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-2.5 rounded-[var(--radius-button)] font-semibold text-sm flex items-center gap-2 shadow-[var(--shadow-card)] transition-colors duration-200"
-          >
-            <Icon name="add" size={20} />
-            Add Contact
-          </button>
-        </div>
+        <Button variant="primary" leftIcon={<Icon name="add" size={20} />}>
+          Add Contact
+        </Button>
+      </div>
 
         <div className="flex items-center gap-3 bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] rounded-[var(--radius-button)] px-3 py-2 w-full max-w-md shadow-[var(--shadow-card)]">
           <Icon name="search" className="text-[var(--color-text-muted)]" size={20} />
@@ -48,19 +47,19 @@ export function ContactsPage() {
           <table className="w-full text-left border-collapse">
             <thead className="bg-[var(--color-background-darker)]/50">
               <tr>
-                <th className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
                   Contact
                 </th>
-                <th className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
                   Address / Wallet
                 </th>
-                <th className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
                   Network
                 </th>
-                <th className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
                   Last paid
                 </th>
-                <th className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider text-right">
+                <th scope="col" className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider text-right">
                   Actions
                 </th>
               </tr>
@@ -115,7 +114,6 @@ export function ContactsPage() {
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
+    </PageContainer>
   );
 }

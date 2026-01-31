@@ -1,4 +1,6 @@
 import { Icon } from "../components/ui/Icon";
+import { PageContainer } from "../components/layout/PageContainer";
+import { ROUTES } from "../lib/constants";
 
 const stats = [
   {
@@ -39,14 +41,13 @@ const recentActivity = [
 
 export function AnalyticsPage() {
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)]">
-      <div className="p-8 max-w-6xl mx-auto w-full space-y-8 flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-[var(--color-text-secondary)]">Treasury</span>
-          <span className="text-xs text-[var(--color-text-muted)]">/</span>
-          <span className="text-xs font-medium text-[var(--color-text-primary)]">Analytics</span>
-        </div>
-        <div>
+    <PageContainer
+      breadcrumb={[
+        { label: "Treasury", href: ROUTES.treasury },
+        { label: "Analytics" },
+      ]}
+    >
+      <div>
           <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
             Analytics
           </h1>
@@ -116,16 +117,16 @@ export function AnalyticsPage() {
             <table className="w-full text-left border-collapse">
               <thead className="bg-[var(--color-background-darker)]/50">
                 <tr>
-                  <th className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
                     Type
                   </th>
-                  <th className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
                     Description
                   </th>
-                  <th className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider text-right">
+                  <th scope="col" className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider text-right">
                     Amount
                   </th>
-                  <th className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider text-right">
+                  <th scope="col" className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider text-right">
                     Date
                   </th>
                 </tr>
@@ -156,7 +157,6 @@ export function AnalyticsPage() {
             </table>
           </div>
         </section>
-      </div>
-    </div>
+    </PageContainer>
   );
 }

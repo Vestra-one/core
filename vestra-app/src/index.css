@@ -57,6 +57,13 @@
     color: var(--color-text-primary);
     transition: background-color 0.2s ease-out, color 0.2s ease-out;
   }
+  /* Focus ring for keyboard users – visible, not on mouse click */
+  :focus {
+    @apply outline-none;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-[var(--color-primary)];
+  }
 }
 
 /* Custom scrollbar for panels */

@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { Icon } from "../components/ui/Icon";
+import { Button } from "../components/ui/Button";
+import { PageContainer } from "../components/layout/PageContainer";
+import { ROUTES } from "../lib/constants";
 
 const rebalances = [
   {
@@ -62,25 +65,30 @@ export function TreasuryPage() {
   const [autoBalanceOn, setAutoBalanceOn] = useState(true);
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)]">
-      <div className="p-8 max-w-7xl mx-auto w-full space-y-8 flex-1 min-w-0">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-4xl font-bold tracking-tight text-[var(--color-text-primary)]">
-              Treasury Management
-            </h1>
-            <p className="text-[var(--color-text-secondary)] text-lg">
-              Real-time liquidity monitoring and automated capital allocation.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="flex items-center justify-center rounded-[var(--radius-button)] h-11 px-5 bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-[var(--color-text-primary)] text-sm font-semibold hover:bg-[var(--color-border-darker)]/80 transition-colors"
-          >
-            <Icon name="download" size={20} className="mr-2" />
-            Export Report
-          </button>
+    <PageContainer
+      breadcrumb={[
+        { label: "Treasury", href: ROUTES.treasury },
+        { label: "Balance" },
+      ]}
+      maxWidth="max-w-7xl"
+    >
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-4xl font-bold tracking-tight text-[var(--color-text-primary)]">
+            Treasury Management
+          </h1>
+          <p className="text-[var(--color-text-secondary)] text-lg">
+            Real-time liquidity monitoring and automated capital allocation.
+          </p>
         </div>
+        <Button
+          variant="secondary"
+          size="lg"
+          leftIcon={<Icon name="download" size={20} />}
+        >
+          Export Report
+        </Button>
+      </div>
 
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 p-8 rounded-[var(--radius-card)] border border-[var(--color-border-darker)] shadow-[var(--shadow-card)] bg-gradient-to-br from-[var(--color-surface-dark)] to-[var(--color-background-darker)] flex flex-col md:flex-row items-center justify-between gap-6">
@@ -244,12 +252,12 @@ export function TreasuryPage() {
               ))}
             </div>
             <div className="p-5 border-t border-[var(--color-border-darker)]">
-              <button
-                type="button"
-                className="w-full py-2.5 border border-[var(--color-border-darker)] rounded-[var(--radius-button)] text-xs font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-border-darker)]/80 transition-all uppercase tracking-widest"
+              <Button
+                variant="secondary"
+                className="w-full uppercase tracking-widest text-xs"
               >
                 View Full Log
-              </button>
+              </Button>
             </div>
           </div>
         </section>
@@ -280,12 +288,12 @@ export function TreasuryPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="bg-[var(--color-background-darker)]/50 text-[var(--color-text-muted)] text-[11px] font-bold uppercase tracking-wider">
-                  <th className="px-8 py-4">Network</th>
-                  <th className="px-8 py-4">Asset</th>
-                  <th className="px-8 py-4 text-right">Balance</th>
-                  <th className="px-8 py-4">Health Score</th>
-                  <th className="px-8 py-4">Status</th>
-                  <th className="px-8 py-4 text-right">Action</th>
+                  <th scope="col" className="px-8 py-4">Network</th>
+                  <th scope="col" className="px-8 py-4">Asset</th>
+                  <th scope="col" className="px-8 py-4 text-right">Balance</th>
+                  <th scope="col" className="px-8 py-4">Health Score</th>
+                  <th scope="col" className="px-8 py-4">Status</th>
+                  <th scope="col" className="px-8 py-4 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--color-border-darker)]">
@@ -359,7 +367,6 @@ export function TreasuryPage() {
             </table>
           </div>
         </section>
-      </div>
-    </div>
+    </PageContainer>
   );
 }

@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { Breadcrumb } from "../components/ui/Breadcrumb";
+import { Button } from "../components/ui/Button";
 import { Icon } from "../components/ui/Icon";
 import { ROUTES } from "../lib/constants";
 
@@ -36,16 +38,16 @@ const parsedRows = [
 
 export function PaymentsBulkPage() {
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)] text-slate-900 dark:text-slate-100">
+    <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)] text-[var(--color-text-primary)]">
       <main className="max-w-[1400px] mx-auto flex gap-8 p-6 lg:p-10 flex-1 min-h-0 w-full">
         <aside className="hidden xl:flex flex-col w-64 shrink-0 gap-6">
           <div className="flex flex-col gap-2">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest px-3">
+            <h3 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest px-3">
               Payments
             </h3>
             <Link
               to={ROUTES.dashboard}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-[var(--color-border-darker)] transition-all"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-border-darker)] transition-all"
             >
               <Icon name="list_alt" size={20} />
               <span className="text-sm font-medium">All Payments</span>
@@ -56,14 +58,14 @@ export function PaymentsBulkPage() {
             </span>
             <Link
               to={ROUTES.paymentsScheduled}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-[var(--color-border-darker)] transition-all"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-border-darker)] transition-all"
             >
               <Icon name="schedule" size={20} />
               <span className="text-sm font-medium">Scheduled</span>
             </Link>
             <a
               href="#"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-[var(--color-border-darker)] transition-all"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-border-darker)] transition-all"
             >
               <Icon name="history" size={20} />
               <span className="text-sm font-medium">History</span>
@@ -73,37 +75,30 @@ export function PaymentsBulkPage() {
             <p className="text-xs font-bold text-[var(--color-primary)] uppercase mb-2">
               Support
             </p>
-            <p className="text-xs text-slate-500 mb-3">
+            <p className="text-xs text-[var(--color-text-muted)] mb-3">
               Need help with bulk uploads? Check our documentation.
             </p>
-            <button
-              type="button"
-              className="text-xs font-bold text-[var(--color-primary)] hover:underline"
-            >
+            <Button variant="ghost" size="sm" className="text-xs h-auto py-0 px-0">
               View Guide →
-            </button>
+            </Button>
           </div>
         </aside>
 
         <div className="flex-1 flex flex-col gap-6 min-w-0">
-          <div className="flex items-center gap-2 text-sm">
-            <Link
-              to={ROUTES.dashboard}
-              className="text-slate-400 hover:text-[var(--color-primary)] transition-colors"
-            >
-              Payments
-            </Link>
-            <span className="text-slate-400">/</span>
-            <span className="font-semibold">New Payment</span>
-          </div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+          <Breadcrumb
+            items={[
+              { label: "Payments", href: ROUTES.dashboard },
+              { label: "New Payment" },
+            ]}
+          />
+          <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">
             Bulk CSV Upload
           </h1>
           <div className="border-b border-[var(--color-border-dark)]">
             <div className="flex gap-8">
               <Link
                 to={ROUTES.paymentsManual}
-                className="flex flex-col items-center border-b-2 border-transparent text-slate-500 pb-3 transition-all hover:text-slate-200"
+                className="flex flex-col items-center border-b-2 border-transparent text-[var(--color-text-muted)] pb-3 transition-all hover:text-[var(--color-text-secondary)]"
               >
                 <span className="text-sm font-bold tracking-tight">
                   Manual Entry
@@ -125,25 +120,21 @@ export function PaymentsBulkPage() {
                 </div>
                 <div className="text-center max-w-[420px]">
                   <p className="text-lg font-bold">Select CSV to upload</p>
-                  <p className="text-sm text-slate-500 mt-1">
+                  <p className="text-sm text-[var(--color-text-muted)] mt-1">
                     Drag and drop your file here or click to browse. Ensure your
                     CSV follows the standard Vestra template.
                   </p>
                 </div>
                 <div className="flex gap-3">
-                  <button
-                    type="button"
-                    className="bg-[var(--color-primary)] text-white text-sm font-bold px-6 py-2.5 rounded-lg hover:opacity-90 transition-all flex items-center gap-2"
+                  <Button
+                    size="sm"
+                    leftIcon={<Icon name="add" size={20} />}
                   >
-                    <Icon name="add" size={20} />
                     Browse Files
-                  </button>
-                  <button
-                    type="button"
-                    className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white text-sm font-bold px-6 py-2.5 rounded-lg hover:opacity-80 transition-all"
-                  >
+                  </Button>
+                  <Button variant="secondary" size="sm">
                     Download Template
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -154,7 +145,7 @@ export function PaymentsBulkPage() {
                   className="text-[var(--color-primary)]"
                   size={24}
                 />
-                <h3 className="font-bold text-slate-900 dark:text-white">
+                <h3 className="font-bold text-[var(--color-text-primary)]">
                   Preview Parsed Rows (152)
                 </h3>
               </div>
@@ -176,7 +167,8 @@ export function PaymentsBulkPage() {
                     ].map((h) => (
                       <th
                         key={h}
-                        className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider"
+                        scope="col"
+                        className="px-6 py-3 text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider"
                       >
                         {h}
                       </th>
@@ -194,22 +186,22 @@ export function PaymentsBulkPage() {
                       }
                     >
                       <td
-                        className={`px-6 py-4 text-sm ${r.error ? "text-red-400 font-bold" : "text-slate-600 dark:text-slate-400"}`}
+                        className={`px-6 py-4 text-sm ${r.error ? "text-red-400 font-bold" : "text-[var(--color-text-secondary)]"}`}
                       >
                         {r.row}
                       </td>
                       <td
-                        className={`px-6 py-4 text-sm font-semibold ${r.error ? "text-red-400" : "text-slate-900 dark:text-white"}`}
+                        className={`px-6 py-4 text-sm font-semibold ${r.error ? "text-red-400" : "text-[var(--color-text-primary)]"}`}
                       >
                         {r.name}
                       </td>
                       <td
-                        className={`px-6 py-4 text-sm font-mono ${r.error ? "text-red-500 underline decoration-dotted" : "text-slate-600 dark:text-slate-500"}`}
+                        className={`px-6 py-4 text-sm font-mono ${r.error ? "text-red-500 underline decoration-dotted" : "text-[var(--color-text-muted)]"}`}
                       >
                         {r.address}
                       </td>
                       <td
-                        className={`px-6 py-4 text-sm font-bold ${r.error ? "text-red-300" : "text-slate-900 dark:text-white"}`}
+                        className={`px-6 py-4 text-sm font-bold ${r.error ? "text-red-300" : "text-[var(--color-text-primary)]"}`}
                       >
                         {r.amount}
                       </td>
@@ -226,11 +218,13 @@ export function PaymentsBulkPage() {
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <span
-                          className={`material-symbols-outlined cursor-pointer hover:text-[var(--color-primary)] ${r.error ? "text-red-500" : "text-slate-400"}`}
+                        <button
+                          type="button"
+                          aria-label={`Edit row ${r.row}`}
+                          className={`material-symbols-outlined cursor-pointer hover:text-[var(--color-primary)] ${r.error ? "text-red-500" : "text-[var(--color-text-muted)]"}`}
                         >
                           edit
-                        </span>
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -244,14 +238,14 @@ export function PaymentsBulkPage() {
           <div className="sticky top-[100px] flex flex-col gap-6">
             <div className="bg-[var(--color-surface-dark)] rounded-xl border border-[var(--color-border-dark)] overflow-hidden">
               <div className="p-5 border-b border-[var(--color-border-dark)] bg-[var(--color-surface-dark)]">
-                <h3 className="font-bold text-sm text-slate-900 dark:text-white">
+                <h3 className="font-bold text-sm text-[var(--color-text-primary)]">
                   Batch Summary
                 </h3>
               </div>
               <div className="p-5 flex flex-col gap-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-slate-500">Total Rows</span>
-                  <span className="text-sm font-bold text-slate-900 dark:text-white">
+                  <span className="text-sm text-[var(--color-text-muted)]">Total Rows</span>
+                  <span className="text-sm font-bold text-[var(--color-text-primary)]">
                     152
                   </span>
                 </div>
@@ -260,10 +254,10 @@ export function PaymentsBulkPage() {
                   <span className="text-sm font-bold">1</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-slate-500">
+                  <span className="text-sm text-[var(--color-text-muted)]">
                     Network Fees (Est.)
                   </span>
-                  <span className="text-sm font-bold text-slate-900 dark:text-white">
+                  <span className="text-sm font-bold text-[var(--color-text-primary)]">
                     $18.42
                   </span>
                 </div>
@@ -274,25 +268,24 @@ export function PaymentsBulkPage() {
                       $42,500.00
                     </span>
                   </div>
-                  <p className="text-[10px] text-slate-400 text-right italic">
+                  <p className="text-[10px] text-[var(--color-text-muted)] text-right italic">
                     Balance after: $104,231.50
                   </p>
                 </div>
-                <button
-                  type="button"
+                <Button
                   disabled
-                  className="w-full bg-[var(--color-primary)] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg shadow-lg flex items-center justify-center gap-2"
+                  className="w-full py-3"
+                  leftIcon={<Icon name="check_circle" size={20} />}
                 >
-                  <Icon name="check_circle" size={20} />
                   Fix Errors to Continue
-                </button>
+                </Button>
               </div>
             </div>
             <div className="bg-[var(--color-border-darker)]/30 rounded-xl p-5 border border-[var(--color-border-dark)]">
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+              <h4 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest mb-3 flex items-center gap-2">
                 <Icon name="help_outline" size={18} /> Instructions
               </h4>
-              <ul className="text-xs text-slate-500 flex flex-col gap-2 leading-relaxed">
+              <ul className="text-xs text-[var(--color-text-muted)] flex flex-col gap-2 leading-relaxed">
                 <li>• First column must be &quot;Recipient Name&quot;.</li>
                 <li>• Wallet addresses must be EVM compatible.</li>
                 <li>• Maximum 500 rows per batch.</li>
@@ -314,10 +307,10 @@ export function PaymentsBulkPage() {
               />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+              <h4 className="text-sm font-bold text-[var(--color-text-primary)]">
                 Processing Batch #4209
               </h4>
-              <p className="text-xs text-slate-500">Initiated 2 minutes ago</p>
+              <p className="text-xs text-[var(--color-text-muted)]">Initiated 2 minutes ago</p>
             </div>
           </div>
           <div className="flex-1 flex items-center gap-1 min-w-0">
@@ -357,26 +350,20 @@ export function PaymentsBulkPage() {
                   className="text-slate-400"
                   size={18}
                 />
-                <span className="text-[10px] font-bold uppercase text-slate-400">
+                <span className="text-[10px] font-bold uppercase text-[var(--color-text-muted)]">
                   Completed
                 </span>
               </div>
             </div>
           </div>
           <div className="shrink-0 flex items-center gap-3">
-            <button
-              type="button"
-              className="text-xs font-bold text-slate-500 hover:text-red-500 transition-colors"
-            >
+            <Button variant="ghost" size="sm" className="text-xs h-auto py-2 text-[var(--color-text-muted)] hover:text-red-500">
               Cancel Batch
-            </button>
+            </Button>
             <div className="h-6 w-px bg-[var(--color-border-darker)]" />
-            <button
-              type="button"
-              className="bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-bold px-4 py-2 rounded-lg hover:bg-[var(--color-primary)]/20 transition-all"
-            >
+            <Button variant="ghost" size="sm" className="text-xs h-auto py-2 bg-[var(--color-primary)]/10 text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20">
               View Detail
-            </button>
+            </Button>
           </div>
         </div>
       </div>

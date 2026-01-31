@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import App from "./App.tsx";
-import { worker } from "./mocks/browser";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,9 +14,10 @@ const queryClient = new QueryClient({
   },
 });
 
-async function prepare() {
+async function prepare(): Promise<void> {
   if (import.meta.env.VITE_USE_MSW === "true") {
-    return worker.start({ onUnhandledRequest: "bypass", quiet: true });
+    const { worker } = await import("./mocks/browser");
+    await worker.start({ onUnhandledRequest: "bypass", quiet: true });
   }
 }
 

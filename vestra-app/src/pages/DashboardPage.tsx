@@ -1,41 +1,34 @@
 import { Link } from "react-router-dom";
 import { Icon } from "../components/ui/Icon";
+import { Button } from "../components/ui/Button";
+import { PageContainer } from "../components/layout/PageContainer";
 import { ROUTES } from "../lib/constants";
 
 export function DashboardPage() {
   return (
     <div className="flex h-full">
-      <div className="p-8 max-w-6xl mx-auto w-full space-y-8 flex-1 min-w-0">
-        <div className="flex items-end justify-between gap-6 flex-wrap">
-          <div className="space-y-1">
-            <p className="text-[var(--color-text-muted)] text-sm font-medium">
-              Total Treasury Balance
+      <PageContainer>
+      <div className="flex items-end justify-between gap-6 flex-wrap">
+        <div className="space-y-1">
+          <p className="text-[var(--color-text-muted)] text-sm font-medium">
+            Total Treasury Balance
+          </p>
+          <div className="flex items-baseline gap-3 flex-wrap">
+            <h1 className="text-5xl font-bold tracking-tight tabular-nums text-[var(--color-text-primary)]">
+              1,240.50 NEAR
+            </h1>
+            <p className="text-lg text-[var(--color-text-secondary)] font-medium tabular-nums">
+              ≈ $8,642.00 USD
             </p>
-            <div className="flex items-baseline gap-3 flex-wrap">
-              <h2 className="text-5xl font-bold tracking-tight tabular-nums text-slate-900 dark:text-white">
-                1,240.50 NEAR
-              </h2>
-              <p className="text-lg text-[var(--color-text-secondary)] font-medium tabular-nums">
-                ≈ $8,642.00 USD
-              </p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-2.5 rounded-[var(--radius-button)] font-semibold text-sm flex items-center gap-2 shadow-[var(--shadow-card)] transition-colors duration-200"
-            >
-              <Icon name="add_circle" size={20} />
-              Add Funds
-            </button>
-            <button
-              type="button"
-              className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] hover:bg-[var(--color-border-darker)]/80 text-slate-900 dark:text-white px-6 py-2.5 rounded-[var(--radius-button)] font-semibold text-sm transition-colors duration-200"
-            >
-              Withdraw
-            </button>
           </div>
         </div>
+        <div className="flex gap-3">
+          <Button variant="primary" leftIcon={<Icon name="add_circle" size={20} />}>
+            Add Funds
+          </Button>
+          <Button variant="secondary">Withdraw</Button>
+        </div>
+      </div>
 
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link
@@ -45,7 +38,7 @@ export function DashboardPage() {
             <div className="size-12 bg-[var(--color-primary)]/10 rounded-[var(--radius-button)] flex items-center justify-center text-[var(--color-primary)] mb-4">
               <Icon name="send" size={24} />
             </div>
-            <h3 className="font-semibold text-lg mb-1 text-slate-900 dark:text-white">
+            <h3 className="font-semibold text-lg mb-1 text-[var(--color-text-primary)]">
               New Payment
             </h3>
             <p className="text-[var(--color-text-secondary)] text-sm">
@@ -59,7 +52,7 @@ export function DashboardPage() {
             <div className="size-12 bg-[var(--color-primary)]/10 rounded-[var(--radius-button)] flex items-center justify-center text-[var(--color-primary)] mb-4">
               <Icon name="cloud_upload" size={24} />
             </div>
-            <h3 className="font-semibold text-lg mb-1 text-slate-900 dark:text-white">
+            <h3 className="font-semibold text-lg mb-1 text-[var(--color-text-primary)]">
               Bulk Upload
             </h3>
             <p className="text-[var(--color-text-secondary)] text-sm">
@@ -73,7 +66,7 @@ export function DashboardPage() {
             <div className="size-12 bg-[var(--color-primary)]/10 rounded-[var(--radius-button)] flex items-center justify-center text-[var(--color-primary)] mb-4">
               <Icon name="calendar_month" size={24} />
             </div>
-            <h3 className="font-semibold text-lg mb-1 text-slate-900 dark:text-white">
+            <h3 className="font-semibold text-lg mb-1 text-[var(--color-text-primary)]">
               Schedule Payment
             </h3>
             <p className="text-[var(--color-text-secondary)] text-sm">
@@ -84,9 +77,9 @@ export function DashboardPage() {
 
         <section className="space-y-4">
           <div className="flex items-center justify-between px-2">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-xl font-bold text-[var(--color-text-primary)]">
               Recent Activities
-            </h3>
+            </h2>
             <button
               type="button"
               className="text-[var(--color-primary)] text-sm font-semibold hover:underline"
@@ -98,11 +91,11 @@ export function DashboardPage() {
             <table className="w-full text-left border-collapse">
               <thead className="bg-[var(--color-background-darker)]/50 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
                 <tr>
-                  <th className="px-6 py-4">Activity</th>
-                  <th className="px-6 py-4 text-center">Date</th>
-                  <th className="px-6 py-4 text-right">Amount</th>
-                  <th className="px-6 py-4 text-center">Status</th>
-                  <th className="px-6 py-4 w-10" />
+                  <th scope="col" className="px-6 py-4">Activity</th>
+                  <th scope="col" className="px-6 py-4 text-center">Date</th>
+                  <th scope="col" className="px-6 py-4 text-right">Amount</th>
+                  <th scope="col" className="px-6 py-4 text-center">Status</th>
+                  <th scope="col" className="px-6 py-4 w-10" aria-hidden />
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--color-border-darker)]">
@@ -233,7 +226,7 @@ export function DashboardPage() {
             </table>
           </div>
         </section>
-      </div>
+      </PageContainer>
 
       <aside className="hidden lg:flex w-96 border-l border-[var(--color-border-darker)] bg-[var(--color-surface-dark)] flex-col shrink-0 shadow-2xl">
         <div className="p-6 border-b border-[var(--color-border-darker)] flex items-center justify-between">
@@ -243,6 +236,7 @@ export function DashboardPage() {
           <button
             type="button"
             className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+            aria-label="Close activity details"
           >
             <Icon name="close" size={24} />
           </button>
