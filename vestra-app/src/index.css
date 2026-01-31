@@ -1,28 +1,51 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #5b2bee;
+  /* Trustworthy indigo – used widely in fintech for reliability */
+  --color-primary: #4f46e5;
   --font-display: "Inter", sans-serif;
+  /* Smooth, consistent radii */
+  --radius-card: 0.75rem;
+  --radius-button: 0.5rem;
 }
 
 /* Light theme (default when .dark is not on html) */
 :root {
+  --color-primary-hover: #4338ca;
   --color-background-dark: #ffffff;
-  --color-background-darker: #f6f6f8;
+  --color-background-darker: #f8fafc;
   --color-card-dark: #ffffff;
   --color-surface-dark: #ffffff;
   --color-border-dark: #e2e8f0;
   --color-border-darker: #cbd5e1;
+  /* Semantic aliases (P3) – clearer naming; old names kept for compatibility */
+  --color-bg-base: var(--color-background-dark);
+  --color-bg-subtle: var(--color-background-darker);
+  /* Semantic text – use for consistent contrast */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+  /* Subtle depth – reliable, not flashy */
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-elevated: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
 }
 
 /* Dark theme */
 .dark {
-  --color-background-dark: #0a0812;
-  --color-background-darker: #0a0a0f;
-  --color-card-dark: #161321;
-  --color-surface-dark: #161621;
-  --color-border-dark: #2c2839;
-  --color-border-darker: #282839;
+  --color-primary-hover: #6366f1;
+  --color-background-dark: #0f0e17;
+  --color-background-darker: #0a0912;
+  --color-card-dark: #16141f;
+  --color-surface-dark: #16141f;
+  --color-border-dark: #2e2b3d;
+  --color-border-darker: #272533;
+  --color-bg-base: var(--color-background-dark);
+  --color-bg-subtle: var(--color-background-darker);
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.25);
+  --shadow-elevated: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
 }
 
 @layer base {
@@ -30,7 +53,9 @@
     @apply antialiased;
   }
   body {
-    @apply bg-[var(--color-background-darker)] text-slate-900 dark:text-slate-100 font-[family-name:var(--font-display)] min-h-screen transition-colors duration-200;
+    @apply bg-[var(--color-background-darker)] font-[family-name:var(--font-display)] min-h-screen;
+    color: var(--color-text-primary);
+    transition: background-color 0.2s ease-out, color 0.2s ease-out;
   }
 }
 

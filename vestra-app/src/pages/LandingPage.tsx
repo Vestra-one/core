@@ -7,12 +7,12 @@ import { ROUTES } from "../lib/constants";
 export function LandingPage() {
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-[var(--color-background-dark)]">
-      <header className="sticky top-0 z-50 w-full border-b border-[var(--color-border-dark)] bg-[var(--color-background-dark)]/80 backdrop-blur-md px-6 lg:px-20">
+      <header className="sticky top-0 z-50 w-full border-b border-[var(--color-border-dark)] bg-[var(--color-background-dark)]/90 backdrop-blur-md px-6 lg:px-20 transition-colors duration-200">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
           <div className="flex items-center gap-2">
             <Link
               to={ROUTES.home}
-              className="text-[10px] text-slate-500 hover:text-[var(--color-primary)] mr-2 dark:text-slate-500"
+              className="text-[10px] text-[var(--color-text-muted)] hover:text-[var(--color-primary)] mr-2 dark:text-slate-400 dark:hover:text-white transition-colors"
             >
               App
             </Link>
@@ -20,25 +20,25 @@ export function LandingPage() {
           </div>
           <nav className="hidden md:flex items-center gap-8">
             <a
-              className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
               href="#product"
             >
               Product
             </a>
             <a
-              className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
               href="#features"
             >
               Features
             </a>
             <a
-              className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
               href="#integrations"
             >
               Integrations
             </a>
             <a
-              className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
               href="#pricing"
             >
               Pricing
@@ -46,15 +46,9 @@ export function LandingPage() {
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <button
-              type="button"
-              className="hidden sm:flex h-10 items-center justify-center rounded-full bg-[var(--color-border-dark)] px-5 text-sm font-bold text-slate-900 dark:text-white"
-            >
-              View Demo
-            </button>
             <Link
               to={ROUTES.dashboard}
-              className="flex h-10 items-center justify-center rounded-full bg-[var(--color-primary)] px-6 text-sm font-bold text-white shadow-lg"
+              className="flex h-10 items-center justify-center rounded-[var(--radius-button)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] px-6 text-sm font-semibold text-white shadow-[var(--shadow-card)] transition-colors duration-200"
             >
               Connect Wallet
             </Link>
@@ -68,26 +62,23 @@ export function LandingPage() {
             className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10"
             style={{
               background:
-                "radial-gradient(circle at 50% 50%, rgba(91, 43, 238, 0.15) 0%, rgba(10, 8, 18, 0) 70%)",
+                "radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.08) 0%, transparent 65%)",
             }}
           />
           <div className="mx-auto max-w-7xl px-6 lg:px-20">
             <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 items-center">
               <div className="flex flex-col gap-8">
-                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 px-3 py-1 text-xs font-semibold text-[var(--color-primary)]">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-primary)] opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--color-primary)]" />
-                  </span>
+                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5 px-3 py-1.5 text-xs font-medium text-[var(--color-primary)]">
+                  <span className="size-2 rounded-full bg-[var(--color-primary)]" />
                   Intent-Based Payroll is here
                 </div>
-                <h1 className="text-5xl font-black leading-tight tracking-tight lg:text-7xl text-slate-900 dark:text-white">
+                <h1 className="text-5xl font-bold leading-tight tracking-tight lg:text-7xl text-slate-900 dark:text-white">
                   Global Crypto Payroll <br />
-                  <span className="bg-gradient-to-r from-[var(--color-primary)] to-purple-400 bg-clip-text text-transparent">
+                  <span className="text-[var(--color-primary)]">
                     In One Click
                   </span>
                 </h1>
-                <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                <p className="max-w-xl text-lg text-[var(--color-text-secondary)] leading-relaxed">
                   The first intent-based payroll engine on NEAR. Automate
                   salaries, contractors, and invoices across any chain with zero
                   friction.
@@ -95,13 +86,13 @@ export function LandingPage() {
                 <div className="flex flex-wrap gap-4">
                   <Link
                     to={ROUTES.dashboard}
-                    className="h-14 rounded-full bg-[var(--color-primary)] px-8 text-base font-bold text-white shadow-xl inline-flex items-center"
+                    className="h-12 rounded-[var(--radius-button)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] px-8 text-base font-semibold text-white shadow-[var(--shadow-card)] inline-flex items-center transition-colors duration-200"
                   >
                     Get Started Free
                   </Link>
                   <button
                     type="button"
-                    className="h-14 rounded-full border border-[var(--color-border-dark)] bg-[var(--color-card-dark)] px-8 text-base font-bold text-slate-900 dark:text-white"
+                    className="h-12 rounded-[var(--radius-button)] border border-[var(--color-border-dark)] bg-[var(--color-card-dark)] px-8 text-base font-semibold text-slate-900 dark:text-white hover:bg-[var(--color-border-dark)]/30 transition-colors duration-200"
                   >
                     Talk to Sales
                   </button>
@@ -115,17 +106,17 @@ export function LandingPage() {
                       />
                     ))}
                   </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium tracking-wide">
+                  <p className="text-sm text-[var(--color-text-secondary)] font-medium tracking-wide">
                     Trusted by 200+ Web3 Teams
                   </p>
                 </div>
               </div>
 
               <div className="relative">
-                <div className="aspect-square w-full max-w-lg mx-auto rounded-xl border border-[var(--color-border-dark)] bg-[var(--color-card-dark)] p-8 shadow-2xl">
+                <div className="aspect-square w-full max-w-lg mx-auto rounded-[var(--radius-card)] border border-[var(--color-border-dark)] bg-[var(--color-card-dark)] p-8 shadow-[var(--shadow-elevated)]">
                   <div className="flex h-full flex-col justify-between">
                     <div className="flex items-center justify-between border-b border-[var(--color-border-dark)] pb-4">
-                      <span className="text-sm font-bold uppercase tracking-widest text-slate-500">
+                      <span className="text-sm font-bold uppercase tracking-widest text-[var(--color-text-muted)]">
                         Transaction Hub
                       </span>
                       <div className="flex gap-1">
@@ -145,7 +136,7 @@ export function LandingPage() {
                             />
                           </div>
                           <div>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-[var(--color-text-muted)]">
                               Source Account
                             </p>
                             <p className="text-sm font-bold italic">
@@ -165,7 +156,7 @@ export function LandingPage() {
                         />
                       </div>
                       <div className="rounded-lg bg-[var(--color-background-dark)] p-4 border border-[var(--color-border-dark)]">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)] mb-2">
                           Destination Address
                         </p>
                         <div className="flex items-center justify-between">
@@ -183,7 +174,7 @@ export function LandingPage() {
                         <button
                           key={label}
                           type="button"
-                          className="flex-1 rounded-lg bg-[var(--color-background-dark)] p-3 text-center border border-[var(--color-border-dark)] text-sm font-medium text-slate-600 dark:text-slate-300"
+                          className="flex-1 rounded-lg bg-[var(--color-background-dark)] p-3 text-center border border-[var(--color-border-dark)] text-sm font-medium text-[var(--color-text-secondary)]"
                         >
                           {label}
                         </button>
@@ -202,7 +193,7 @@ export function LandingPage() {
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-slate-900 dark:text-white">
                 Streamline Your Operations
               </h2>
-              <p className="mt-4 text-slate-600 dark:text-slate-400">
+              <p className="mt-4 text-[var(--color-text-secondary)]">
                 Move from complex manual transfers to a single unified flow.
               </p>
             </div>
@@ -239,7 +230,7 @@ export function LandingPage() {
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                       {step.title}
                     </h3>
-                    <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <p className="mt-2 text-[var(--color-text-secondary)] leading-relaxed">
                       {step.desc}
                     </p>
                   </div>
@@ -256,7 +247,7 @@ export function LandingPage() {
                 <h2 className="text-4xl font-black leading-tight text-slate-900 dark:text-white">
                   Engineered for <br /> Modern Teams
                 </h2>
-                <p className="mt-4 text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
+                <p className="mt-4 text-[var(--color-text-secondary)] text-lg leading-relaxed">
                   Experience the efficiency of zero-click payouts and automated
                   compliance built directly into the protocol.
                 </p>
@@ -301,7 +292,7 @@ export function LandingPage() {
                   <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">
                     {card.title}
                   </h3>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                  <p className="text-[var(--color-text-secondary)] text-sm leading-relaxed">
                     {card.desc}
                   </p>
                 </div>
@@ -311,26 +302,26 @@ export function LandingPage() {
         </section>
 
         <section className="py-24 px-6">
-          <div className="mx-auto max-w-7xl rounded-3xl bg-[var(--color-primary)] px-6 py-16 text-center lg:px-20 lg:py-24 relative overflow-hidden">
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_2px_2px,white_1px,transparent_0)] bg-[length:40px_40px]" />
+          <div className="mx-auto max-w-7xl rounded-2xl bg-[var(--color-primary)] px-6 py-16 text-center lg:px-20 lg:py-24 relative overflow-hidden shadow-[var(--shadow-elevated)]">
+            <div className="absolute inset-0 opacity-[0.06] bg-[radial-gradient(circle_at_2px_2px,white_1px,transparent_0)] bg-[length:40px_40px]" />
             <div className="relative z-10">
-              <h2 className="text-3xl font-black text-white sm:text-5xl">
+              <h2 className="text-3xl font-bold text-white sm:text-5xl">
                 Ready to automate your payroll?
               </h2>
-              <p className="mx-auto mt-6 max-w-xl text-lg text-white/80">
+              <p className="mx-auto mt-6 max-w-xl text-lg text-white/90">
                 Join the next generation of global organizations using
                 intent-based infrastructure to scale their teams.
               </p>
               <div className="mt-10 flex flex-wrap justify-center gap-4">
                 <Link
                   to={ROUTES.dashboard}
-                  className="h-14 rounded-full bg-white px-8 text-base font-bold text-[var(--color-primary)] inline-flex items-center"
+                  className="h-12 rounded-[var(--radius-button)] bg-white px-8 text-base font-semibold text-[var(--color-primary)] inline-flex items-center hover:bg-white/95 transition-colors duration-200"
                 >
                   Connect Wallet
                 </Link>
                 <button
                   type="button"
-                  className="h-14 rounded-full border border-white/30 bg-white/10 px-8 text-base font-bold text-white"
+                  className="h-12 rounded-[var(--radius-button)] border border-white/25 bg-white/10 px-8 text-base font-semibold text-white hover:bg-white/15 transition-colors duration-200"
                 >
                   View Documentation
                 </button>
@@ -345,19 +336,19 @@ export function LandingPage() {
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-6">
             <div className="col-span-2">
               <Logo variant="wallet" showLink={false} />
-              <p className="max-w-xs text-sm text-slate-500 leading-relaxed mt-4 mb-6">
+              <p className="max-w-xs text-sm text-[var(--color-text-muted)] leading-relaxed mt-4 mb-6">
                 Simplifying global compensation through decentralized
                 intent-based infrastructure.
               </p>
               <div className="flex gap-4">
                 <a
-                  className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+                  className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
                   href="#"
                 >
                   <Icon name="public" size={20} />
                 </a>
                 <a
-                  className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+                  className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
                   href="#"
                 >
                   <Icon name="chat_bubble" size={20} />
@@ -369,7 +360,7 @@ export function LandingPage() {
                 <h4 className="mb-6 text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
                   {heading}
                 </h4>
-                <ul className="space-y-4 text-sm text-slate-500">
+                <ul className="space-y-4 text-sm text-[var(--color-text-muted)]">
                   <li>
                     <a
                       className="hover:text-[var(--color-primary)] transition-colors"
@@ -391,10 +382,10 @@ export function LandingPage() {
             ))}
           </div>
           <div className="mt-16 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-[var(--color-border-dark)] pt-8">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-[var(--color-text-muted)]">
               © 2024 Vestra Protocol. All rights reserved.
             </p>
-            <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
+            <span className="text-xs font-bold text-[var(--color-text-muted)] flex items-center gap-1">
               <Icon name="verified_user" size={18} /> SOC2 Type II Compliant
             </span>
           </div>

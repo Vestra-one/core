@@ -8,14 +8,14 @@ export function DashboardPage() {
       <div className="p-8 max-w-6xl mx-auto w-full space-y-8 flex-1 min-w-0">
         <div className="flex items-end justify-between gap-6 flex-wrap">
           <div className="space-y-1">
-            <p className="text-slate-500 text-sm font-medium">
+            <p className="text-[var(--color-text-muted)] text-sm font-medium">
               Total Treasury Balance
             </p>
             <div className="flex items-baseline gap-3 flex-wrap">
-              <h2 className="text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+              <h2 className="text-5xl font-bold tracking-tight tabular-nums text-slate-900 dark:text-white">
                 1,240.50 NEAR
               </h2>
-              <p className="text-lg text-slate-400 font-medium">
+              <p className="text-lg text-[var(--color-text-secondary)] font-medium tabular-nums">
                 ≈ $8,642.00 USD
               </p>
             </div>
@@ -23,14 +23,14 @@ export function DashboardPage() {
           <div className="flex gap-3">
             <button
               type="button"
-              className="bg-[var(--color-primary)] hover:opacity-90 text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 transition-all"
+              className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-2.5 rounded-[var(--radius-button)] font-semibold text-sm flex items-center gap-2 shadow-[var(--shadow-card)] transition-colors duration-200"
             >
               <Icon name="add_circle" size={20} />
               Add Funds
             </button>
             <button
               type="button"
-              className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] hover:bg-[var(--color-border-darker)] text-slate-900 dark:text-white px-6 py-2.5 rounded-lg font-bold text-sm transition-all"
+              className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] hover:bg-[var(--color-border-darker)]/80 text-slate-900 dark:text-white px-6 py-2.5 rounded-[var(--radius-button)] font-semibold text-sm transition-colors duration-200"
             >
               Withdraw
             </button>
@@ -40,43 +40,43 @@ export function DashboardPage() {
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link
             to={ROUTES.paymentsManual}
-            className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] p-6 rounded-xl hover:border-[var(--color-primary)]/50 transition-colors group block"
+            className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] p-6 rounded-[var(--radius-card)] shadow-[var(--shadow-card)] hover:border-[var(--color-primary)]/40 hover:shadow-[var(--shadow-elevated)] transition-all duration-200 block"
           >
-            <div className="size-12 bg-[var(--color-primary)]/10 rounded-lg flex items-center justify-center text-[var(--color-primary)] mb-4 group-hover:scale-110 transition-transform">
+            <div className="size-12 bg-[var(--color-primary)]/10 rounded-[var(--radius-button)] flex items-center justify-center text-[var(--color-primary)] mb-4">
               <Icon name="send" size={24} />
             </div>
-            <h3 className="font-bold text-lg mb-1 text-slate-900 dark:text-white">
+            <h3 className="font-semibold text-lg mb-1 text-slate-900 dark:text-white">
               New Payment
             </h3>
-            <p className="text-slate-500 text-sm">
+            <p className="text-[var(--color-text-secondary)] text-sm">
               Send NEAR or USDC to any address instantly.
             </p>
           </Link>
           <Link
             to={ROUTES.paymentsBulk}
-            className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] p-6 rounded-xl hover:border-[var(--color-primary)]/50 transition-colors group block"
+            className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] p-6 rounded-[var(--radius-card)] shadow-[var(--shadow-card)] hover:border-[var(--color-primary)]/40 hover:shadow-[var(--shadow-elevated)] transition-all duration-200 block"
           >
-            <div className="size-12 bg-[var(--color-primary)]/10 rounded-lg flex items-center justify-center text-[var(--color-primary)] mb-4 group-hover:scale-110 transition-transform">
+            <div className="size-12 bg-[var(--color-primary)]/10 rounded-[var(--radius-button)] flex items-center justify-center text-[var(--color-primary)] mb-4">
               <Icon name="cloud_upload" size={24} />
             </div>
-            <h3 className="font-bold text-lg mb-1 text-slate-900 dark:text-white">
+            <h3 className="font-semibold text-lg mb-1 text-slate-900 dark:text-white">
               Bulk Upload
             </h3>
-            <p className="text-slate-500 text-sm">
+            <p className="text-[var(--color-text-secondary)] text-sm">
               Upload CSV or JSON for mass distribution.
             </p>
           </Link>
           <Link
             to={ROUTES.paymentsScheduled}
-            className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] p-6 rounded-xl hover:border-[var(--color-primary)]/50 transition-colors group block"
+            className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] p-6 rounded-[var(--radius-card)] shadow-[var(--shadow-card)] hover:border-[var(--color-primary)]/40 hover:shadow-[var(--shadow-elevated)] transition-all duration-200 block"
           >
-            <div className="size-12 bg-[var(--color-primary)]/10 rounded-lg flex items-center justify-center text-[var(--color-primary)] mb-4 group-hover:scale-110 transition-transform">
+            <div className="size-12 bg-[var(--color-primary)]/10 rounded-[var(--radius-button)] flex items-center justify-center text-[var(--color-primary)] mb-4">
               <Icon name="calendar_month" size={24} />
             </div>
-            <h3 className="font-bold text-lg mb-1 text-slate-900 dark:text-white">
+            <h3 className="font-semibold text-lg mb-1 text-slate-900 dark:text-white">
               Schedule Payment
             </h3>
-            <p className="text-slate-500 text-sm">
+            <p className="text-[var(--color-text-secondary)] text-sm">
               Set up recurring or future-dated transfers.
             </p>
           </Link>
@@ -94,9 +94,9 @@ export function DashboardPage() {
               View All
             </button>
           </div>
-          <div className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] rounded-xl overflow-hidden">
+          <div className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] rounded-[var(--radius-card)] shadow-[var(--shadow-card)] overflow-hidden">
             <table className="w-full text-left border-collapse">
-              <thead className="bg-[var(--color-background-darker)]/50 text-slate-500 text-xs font-bold uppercase tracking-wider">
+              <thead className="bg-[var(--color-background-darker)]/50 text-[var(--color-text-muted)] text-xs font-semibold uppercase tracking-wider">
                 <tr>
                   <th className="px-6 py-4">Activity</th>
                   <th className="px-6 py-4 text-center">Date</th>
@@ -123,11 +123,11 @@ export function DashboardPage() {
                   <td className="px-6 py-4 text-center text-sm">
                     Oct 24, 14:20
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <p className="font-bold text-slate-900 dark:text-white">
+                  <td className="px-6 py-4 text-right tabular-nums">
+                    <p className="font-semibold text-slate-900 dark:text-white">
                       450.00 NEAR
                     </p>
-                    <p className="text-xs text-slate-500">≈ $3,150.00</p>
+                    <p className="text-xs text-[var(--color-text-muted)]">≈ $3,150.00</p>
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-yellow-500/10 text-yellow-500 uppercase">
@@ -210,11 +210,11 @@ export function DashboardPage() {
                   <td className="px-6 py-4 text-center text-sm text-slate-400">
                     Oct 23, 09:15
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <p className="font-bold text-slate-900 dark:text-white">
+                  <td className="px-6 py-4 text-right tabular-nums">
+                    <p className="font-semibold text-slate-900 dark:text-white">
                       25.00 NEAR
                     </p>
-                    <p className="text-xs text-slate-500">≈ $175.00</p>
+                    <p className="text-xs text-[var(--color-text-muted)]">≈ $175.00</p>
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-500/10 text-green-500 uppercase">

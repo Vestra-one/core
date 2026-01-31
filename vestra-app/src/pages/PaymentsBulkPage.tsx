@@ -45,7 +45,7 @@ export function PaymentsBulkPage() {
             </h3>
             <Link
               to={ROUTES.dashboard}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-[#282839] transition-all"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-[var(--color-border-darker)] transition-all"
             >
               <Icon name="list_alt" size={20} />
               <span className="text-sm font-medium">All Payments</span>
@@ -56,14 +56,14 @@ export function PaymentsBulkPage() {
             </span>
             <Link
               to={ROUTES.paymentsScheduled}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-[#282839] transition-all"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-[var(--color-border-darker)] transition-all"
             >
               <Icon name="schedule" size={20} />
               <span className="text-sm font-medium">Scheduled</span>
             </Link>
             <a
               href="#"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-[#282839] transition-all"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-[var(--color-border-darker)] transition-all"
             >
               <Icon name="history" size={20} />
               <span className="text-sm font-medium">History</span>
@@ -99,7 +99,7 @@ export function PaymentsBulkPage() {
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
             Bulk CSV Upload
           </h1>
-          <div className="border-b border-[#3b3b54]">
+          <div className="border-b border-[var(--color-border-dark)]">
             <div className="flex gap-8">
               <Link
                 to={ROUTES.paymentsManual}
@@ -117,8 +117,8 @@ export function PaymentsBulkPage() {
             </div>
           </div>
 
-          <div className="flex flex-col bg-[#1a1a2e] rounded-xl border border-[#3b3b54] overflow-hidden">
-            <div className="p-8 border-b border-[#3b3b54]">
+          <div className="flex flex-col bg-[var(--color-surface-dark)] rounded-xl border border-[var(--color-border-dark)] overflow-hidden">
+            <div className="p-8 border-b border-[var(--color-border-dark)]">
               <div className="flex flex-col items-center gap-4 rounded-xl border-2 border-dashed border-[var(--color-primary)]/30 bg-[var(--color-primary)]/5 px-6 py-12 cursor-pointer hover:border-[var(--color-primary)]/50 group">
                 <div className="size-16 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center text-[var(--color-primary)] group-hover:scale-110 transition-transform">
                   <Icon name="upload_file" size={32} />
@@ -147,7 +147,7 @@ export function PaymentsBulkPage() {
                 </div>
               </div>
             </div>
-            <div className="px-6 py-4 flex items-center justify-between bg-[#1d1d35]">
+            <div className="px-6 py-4 flex items-center justify-between bg-[var(--color-surface-dark)]">
               <div className="flex items-center gap-3">
                 <Icon
                   name="data_table"
@@ -165,7 +165,7 @@ export function PaymentsBulkPage() {
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#1d1d35] border-y border-[#3b3b54]">
+                  <tr className="bg-[var(--color-surface-dark)] border-y border-[var(--color-border-dark)]">
                     {[
                       "Row",
                       "Recipient Name",
@@ -183,7 +183,7 @@ export function PaymentsBulkPage() {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#282839]">
+                <tbody className="divide-y divide-[var(--color-border-darker)]">
                   {parsedRows.map((r) => (
                     <tr
                       key={r.row}
@@ -242,8 +242,8 @@ export function PaymentsBulkPage() {
 
         <aside className="hidden lg:flex flex-col w-80 shrink-0 gap-6">
           <div className="sticky top-[100px] flex flex-col gap-6">
-            <div className="bg-[#1a1a2e] rounded-xl border border-[#3b3b54] overflow-hidden">
-              <div className="p-5 border-b border-[#3b3b54] bg-[#1d1d35]">
+            <div className="bg-[var(--color-surface-dark)] rounded-xl border border-[var(--color-border-dark)] overflow-hidden">
+              <div className="p-5 border-b border-[var(--color-border-dark)] bg-[var(--color-surface-dark)]">
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white">
                   Batch Summary
                 </h3>
@@ -267,7 +267,7 @@ export function PaymentsBulkPage() {
                     $18.42
                   </span>
                 </div>
-                <div className="border-t border-[#282839] pt-4 mt-2">
+                <div className="border-t border-[var(--color-border-darker)] pt-4 mt-2">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-sm font-medium">Total Amount</span>
                     <span className="text-lg font-black text-[var(--color-primary)]">
@@ -288,7 +288,7 @@ export function PaymentsBulkPage() {
                 </button>
               </div>
             </div>
-            <div className="bg-[#282839]/30 rounded-xl p-5 border border-[#3b3b54]">
+            <div className="bg-[var(--color-border-darker)]/30 rounded-xl p-5 border border-[var(--color-border-dark)]">
               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                 <Icon name="help_outline" size={18} /> Instructions
               </h4>
@@ -304,7 +304,7 @@ export function PaymentsBulkPage() {
       </main>
 
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-[960px] z-50">
-        <div className="bg-[#1a1a2e] rounded-2xl border border-[#3b3b54] shadow-2xl p-6 flex flex-col md:flex-row items-center gap-6">
+        <div className="bg-[var(--color-surface-dark)] rounded-2xl border border-[var(--color-border-dark)] shadow-2xl p-6 flex flex-col md:flex-row items-center gap-6">
           <div className="flex items-center gap-4 shrink-0">
             <div className="size-12 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center">
               <Icon
@@ -335,7 +335,7 @@ export function PaymentsBulkPage() {
               </div>
             </div>
             <div className="flex flex-col items-center flex-1">
-              <div className="h-1.5 w-full bg-[#282839] relative rounded-full mb-2 overflow-hidden">
+              <div className="h-1.5 w-full bg-[var(--color-border-darker)] relative rounded-full mb-2 overflow-hidden">
                 <div className="absolute left-0 top-0 h-full bg-[var(--color-primary)] w-2/3" />
               </div>
               <div className="flex items-center gap-1.5">
@@ -350,7 +350,7 @@ export function PaymentsBulkPage() {
               </div>
             </div>
             <div className="flex flex-col items-center flex-1">
-              <div className="h-1.5 w-full bg-[#282839] rounded-full mb-2" />
+              <div className="h-1.5 w-full bg-[var(--color-border-darker)] rounded-full mb-2" />
               <div className="flex items-center gap-1.5">
                 <Icon
                   name="radio_button_unchecked"
@@ -370,7 +370,7 @@ export function PaymentsBulkPage() {
             >
               Cancel Batch
             </button>
-            <div className="h-6 w-px bg-[#282839]" />
+            <div className="h-6 w-px bg-[var(--color-border-darker)]" />
             <button
               type="button"
               className="bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-bold px-4 py-2 rounded-lg hover:bg-[var(--color-primary)]/20 transition-all"

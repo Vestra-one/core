@@ -39,14 +39,14 @@ export function RouteErrorFallback() {
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--color-primary)] text-white text-sm font-bold hover:opacity-90 transition-opacity"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[var(--radius-button)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-sm font-semibold transition-colors duration-200"
           >
             <Icon name="refresh" size={20} />
             Try again
           </button>
           <Link
             to={ROUTES.home}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[var(--color-border-darker)] text-slate-900 dark:text-white text-sm font-bold hover:bg-[var(--color-border-darker)]/50 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[var(--radius-button)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white text-sm font-semibold hover:bg-[var(--color-border-darker)]/80 transition-colors duration-200"
           >
             <Icon name="home" size={20} />
             Go home

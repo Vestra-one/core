@@ -28,10 +28,10 @@ export function Sidebar() {
             to={to}
             end={to === ROUTES.dashboard}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+              `flex items-center gap-3 px-3 py-2 rounded-[var(--radius-button)] transition-colors duration-200 ${
                 isActive
-                  ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
-                  : "text-slate-600 dark:text-slate-500 hover:bg-[var(--color-border-darker)]"
+                  ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium"
+                  : "text-[var(--color-text-secondary)] hover:bg-[var(--color-border-darker)]/80"
               }`
             }
           >

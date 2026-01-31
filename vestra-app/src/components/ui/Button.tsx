@@ -13,12 +13,12 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/90",
+    "bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white shadow-[var(--shadow-card)] transition-colors duration-200",
   secondary:
-    "bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white hover:bg-[var(--color-border-darker)]",
+    "bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-slate-900 dark:text-white hover:bg-[var(--color-border-darker)]/80 transition-colors duration-200",
   ghost:
-    "bg-transparent text-slate-400 hover:text-slate-900 dark:hover:text-white border border-transparent",
-  danger: "bg-red-500/10 text-red-500 hover:bg-red-500/20",
+    "bg-transparent text-[var(--color-text-secondary)] hover:text-slate-900 dark:hover:text-white border border-transparent transition-colors duration-200",
+  danger: "bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors duration-200",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -40,7 +40,7 @@ export function Button({
     <button
       type="button"
       className={`
-        inline-flex items-center justify-center gap-2 rounded-lg font-bold transition-all
+        inline-flex items-center justify-center gap-2 rounded-[var(--radius-button)] font-semibold
         disabled:opacity-50 disabled:cursor-not-allowed
         ${variantClasses[variant]} ${sizeClasses[size]} ${className}
       `}

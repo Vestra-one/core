@@ -1,5 +1,5 @@
 export const APP_NAME = "Vestra";
-export const PRIMARY_COLOR = "#5b2bee";
+export const PRIMARY_COLOR = "#4f46e5";
 
 export const ROUTES = {
   home: "/",

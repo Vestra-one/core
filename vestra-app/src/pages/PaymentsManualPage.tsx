@@ -40,7 +40,7 @@ export function PaymentsManualPage() {
             <span className="truncate">Upload Invoice</span>
           </Link>
         </div>
-        <div className="mb-8 border-b border-[#3b3b54] gap-8 flex">
+        <div className="mb-8 border-b border-[var(--color-border-dark)] gap-8 flex">
           <span className="flex flex-col items-center justify-center border-b-[3px] border-[var(--color-primary)] text-[var(--color-primary)] pb-3">
             <p className="text-sm font-bold tracking-tight">New Payment</p>
           </span>
@@ -56,8 +56,8 @@ export function PaymentsManualPage() {
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           <div className="flex-1 w-full min-w-0">
-            <div className="bg-[#16162a] rounded-xl border border-[#282839] overflow-hidden shadow-sm">
-              <div className="p-4 border-b border-[#282839] bg-[#1c1c2e]">
+            <div className="bg-[var(--color-surface-dark)] rounded-xl border border-[var(--color-border-darker)] overflow-hidden shadow-sm">
+              <div className="p-4 border-b border-[var(--color-border-darker)] bg-[var(--color-background-darker)]">
                 <h3 className="font-semibold text-sm text-slate-900 dark:text-white">
                   Batch Manual Entry
                 </h3>
@@ -65,7 +65,7 @@ export function PaymentsManualPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#1c1c27]">
+                    <tr className="bg-[var(--color-surface-dark)]">
                       <th className="px-6 py-4 text-slate-500 text-xs font-bold uppercase tracking-wider w-1/2">
                         Recipient Address
                       </th>
@@ -77,7 +77,7 @@ export function PaymentsManualPage() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#282839]">
+                  <tbody className="divide-y divide-[var(--color-border-darker)]">
                     {chains.map((row) => (
                       <tr
                         key={row.address}
@@ -143,7 +143,7 @@ export function PaymentsManualPage() {
                   </tbody>
                 </table>
               </div>
-              <div className="flex justify-between items-center p-4 bg-[#1c1c2e]">
+              <div className="flex justify-between items-center p-4 bg-[var(--color-background-darker)]">
                 <div className="flex gap-3">
                   <button
                     type="button"
@@ -171,7 +171,7 @@ export function PaymentsManualPage() {
           </div>
 
           <aside className="w-full lg:w-80 sticky top-24 shrink-0">
-            <div className="bg-[#16162a] rounded-xl border border-[#282839] p-6 shadow-sm">
+            <div className="bg-[var(--color-surface-dark)] rounded-xl border border-[var(--color-border-darker)] p-6 shadow-sm">
               <h2 className="text-lg font-bold mb-6 text-slate-900 dark:text-white">
                 Payment Summary
               </h2>
@@ -196,7 +196,7 @@ export function PaymentsManualPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex justify-between items-center text-sm pt-4 border-t border-[#282839]">
+                <div className="flex justify-between items-center text-sm pt-4 border-t border-[var(--color-border-darker)]">
                   <span className="text-slate-500">Estimated Fees</span>
                   <span className="font-bold text-green-600 dark:text-green-500">
                     $12.45

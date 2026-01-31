@@ -10,7 +10,7 @@ type LogoProps = {
 export function Logo({ variant = "default", showLink = true }: LogoProps) {
   const content = (
     <>
-      <div className="size-8 rounded-lg bg-[var(--color-primary)] flex items-center justify-center text-white shrink-0">
+      <div className="size-8 rounded-[var(--radius-button)] bg-[var(--color-primary)] flex items-center justify-center text-white shrink-0 shadow-[var(--shadow-card)]">
         {variant === "wallet" ? (
           <Icon name="account_balance_wallet" size={20} />
         ) : (

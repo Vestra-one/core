@@ -41,14 +41,14 @@ export function PaymentsScheduledPage() {
 
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)] text-slate-900 dark:text-white">
-      <div className="h-14 border-b border-[#282839] bg-[#101022] flex items-center px-8 shrink-0">
+      <div className="h-14 border-b border-[var(--color-border-darker)] bg-[var(--color-background-darker)] flex items-center px-8 shrink-0">
         <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white mr-8">
           Payments
         </h2>
         <nav className="flex items-center gap-6">
           <Link
             to={ROUTES.paymentsManual}
-            className="text-sm font-medium text-slate-500 hover:text-[var(--color-primary)] transition-colors"
+            className="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
           >
             Activity
           </Link>
@@ -57,23 +57,23 @@ export function PaymentsScheduledPage() {
           </span>
           <a
             href="#"
-            className="text-sm font-medium text-slate-500 hover:text-[var(--color-primary)] transition-colors"
+            className="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
           >
             Recurring
           </a>
           <a
             href="#"
-            className="text-sm font-medium text-slate-500 hover:text-[var(--color-primary)] transition-colors"
+            className="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
           >
             Approval Queue
           </a>
         </nav>
       </div>
-      <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#101022] min-h-0">
+      <div className="flex-1 overflow-y-auto custom-scrollbar bg-[var(--color-background-darker)] min-h-0">
         <div className="max-w-6xl mx-auto p-8">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-medium text-slate-400">Payments</span>
-            <span className="text-xs text-slate-500">/</span>
+            <span className="text-xs font-medium text-[var(--color-text-secondary)]">Payments</span>
+            <span className="text-xs text-[var(--color-text-muted)]">/</span>
             <span className="text-xs font-medium text-slate-900 dark:text-white">
               Scheduled Payments
             </span>
@@ -83,14 +83,14 @@ export function PaymentsScheduledPage() {
               <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
                 Scheduled Payments
               </h1>
-              <p className="text-slate-500 mt-1">
+              <p className="text-[var(--color-text-muted)] mt-1">
                 Automate your payroll and recurring vendor disbursements.
               </p>
             </div>
             <button
               type="button"
               onClick={() => setModalOpen(true)}
-              className="bg-[var(--color-primary)] text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg hover:opacity-90 transition-all"
+              className="bg-[var(--color-primary)] text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg hover:bg-[var(--color-primary-hover)] transition-all"
             >
               <Icon name="add" size={20} />
               Create Schedule
@@ -98,9 +98,9 @@ export function PaymentsScheduledPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-[#111118] border border-[#3b3b54] rounded-xl p-5">
+            <div className="bg-[var(--color-surface-dark)] border border-[var(--color-border-dark)] rounded-xl p-5">
               <div className="flex justify-between items-start mb-2">
-                <p className="text-sm font-medium text-slate-500">
+                <p className="text-sm font-medium text-[var(--color-text-muted)]">
                   Active Schedules
                 </p>
                 <Icon
@@ -118,9 +118,9 @@ export function PaymentsScheduledPage() {
                 </p>
               </div>
             </div>
-            <div className="bg-[#111118] border border-[#3b3b54] rounded-xl p-5">
+            <div className="bg-[var(--color-surface-dark)] border border-[var(--color-border-dark)] rounded-xl p-5">
               <div className="flex justify-between items-start mb-2">
-                <p className="text-sm font-medium text-slate-500">
+                <p className="text-sm font-medium text-[var(--color-text-muted)]">
                   Total Monthly Outflow
                 </p>
                 <Icon
@@ -136,9 +136,9 @@ export function PaymentsScheduledPage() {
                 <p className="text-xs font-medium text-green-500">+5.1%</p>
               </div>
             </div>
-            <div className="bg-[#111118] border border-[#3b3b54] rounded-xl p-5">
+            <div className="bg-[var(--color-surface-dark)] border border-[var(--color-border-dark)] rounded-xl p-5">
               <div className="flex justify-between items-start mb-2">
-                <p className="text-sm font-medium text-slate-500">
+                <p className="text-sm font-medium text-[var(--color-text-muted)]">
                   Next 7 Days
                 </p>
                 <Icon
@@ -156,11 +156,11 @@ export function PaymentsScheduledPage() {
             </div>
           </div>
 
-          <div className="bg-[#111118] border border-[#3b3b54] rounded-xl overflow-hidden">
+          <div className="bg-[var(--color-surface-dark)] border border-[var(--color-border-dark)] rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-[#282839] bg-slate-900/20">
+                  <tr className="border-b border-[var(--color-border-darker)] bg-[var(--color-background-darker)]">
                     {[
                       "Payment Name",
                       "Frequency",
@@ -171,18 +171,18 @@ export function PaymentsScheduledPage() {
                     ].map((h) => (
                       <th
                         key={h}
-                        className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400"
+                        className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
                       >
                         {h}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#282839]">
+                <tbody className="divide-y divide-[var(--color-border-darker)]">
                   {schedules.map((s) => (
                     <tr
                       key={s.name}
-                      className="group hover:bg-[#1a1a2e] transition-colors"
+                      className="group hover:bg-[var(--color-surface-dark)] transition-colors"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -195,7 +195,7 @@ export function PaymentsScheduledPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-[#282839] text-slate-500">
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-[var(--color-border-darker)] text-[var(--color-text-muted)]">
                           {s.frequency}
                         </span>
                       </td>
@@ -203,7 +203,7 @@ export function PaymentsScheduledPage() {
                         <p className="text-sm font-medium text-slate-900 dark:text-white">
                           {s.nextRun}
                         </p>
-                        <p className="text-[11px] text-slate-400">
+                        <p className="text-[11px] text-[var(--color-text-secondary)]">
                           {s.nextRunSub}
                         </p>
                       </td>
@@ -211,7 +211,7 @@ export function PaymentsScheduledPage() {
                         <p className="text-sm font-bold text-slate-900 dark:text-white">
                           {s.amount}
                         </p>
-                        <p className="text-[11px] text-slate-400">
+                        <p className="text-[11px] text-[var(--color-text-secondary)]">
                           {s.recipients}
                         </p>
                       </td>
@@ -219,7 +219,7 @@ export function PaymentsScheduledPage() {
                         <button
                           type="button"
                           role="switch"
-                          className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${s.active ? "bg-[var(--color-primary)]" : "bg-[#282839]"}`}
+                          className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${s.active ? "bg-[var(--color-primary)]" : "bg-[var(--color-border-darker)]"}`}
                         >
                           <span
                             className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out mt-0.5 ${s.active ? "translate-x-4" : "translate-x-0.5"}`}
@@ -230,14 +230,14 @@ export function PaymentsScheduledPage() {
                         <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             type="button"
-                            className="p-1.5 text-slate-400 hover:text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 rounded transition-all"
+                            className="p-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 rounded transition-all"
                           >
                             <Icon name="edit" size={18} />
                           </button>
                           {s.active ? (
                             <button
                               type="button"
-                              className="p-1.5 text-slate-400 hover:text-orange-500 hover:bg-orange-500/10 rounded transition-all"
+                              className="p-1.5 text-[var(--color-text-secondary)] hover:text-orange-500 hover:bg-orange-500/10 rounded transition-all"
                             >
                               <Icon name="pause_circle" size={18} />
                             </button>
@@ -251,7 +251,7 @@ export function PaymentsScheduledPage() {
                           )}
                           <button
                             type="button"
-                            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded transition-all"
+                            className="p-1.5 text-[var(--color-text-secondary)] hover:text-red-500 hover:bg-red-500/10 rounded transition-all"
                           >
                             <Icon name="delete" size={18} />
                           </button>
@@ -262,21 +262,21 @@ export function PaymentsScheduledPage() {
                 </tbody>
               </table>
             </div>
-            <div className="p-4 border-t border-[#282839] flex items-center justify-between">
-              <p className="text-xs text-slate-500">
+            <div className="p-4 border-t border-[var(--color-border-darker)] flex items-center justify-between">
+              <p className="text-xs text-[var(--color-text-muted)]">
                 Showing 3 of 12 schedules
               </p>
               <div className="flex gap-2">
                 <button
                   type="button"
                   disabled
-                  className="px-3 py-1 text-xs font-semibold rounded border border-[#3b3b54] disabled:opacity-50"
+                  className="px-3 py-1 text-xs font-semibold rounded border border-[var(--color-border-dark)] disabled:opacity-50"
                 >
                   Previous
                 </button>
                 <button
                   type="button"
-                  className="px-3 py-1 text-xs font-semibold rounded border border-[#3b3b54]"
+                  className="px-3 py-1 text-xs font-semibold rounded border border-[var(--color-border-dark)]"
                 >
                   Next
                 </button>
@@ -292,29 +292,29 @@ export function PaymentsScheduledPage() {
           onClick={() => setModalOpen(false)}
         >
           <div
-            className="bg-[#111118] w-full max-w-xl rounded-2xl shadow-2xl border border-[#3b3b54] overflow-hidden flex flex-col"
+            className="bg-[var(--color-surface-dark)] w-full max-w-xl rounded-2xl shadow-2xl border border-[var(--color-border-dark)] overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6 border-b border-[#282839] flex justify-between items-center bg-slate-900/40">
+            <div className="p-6 border-b border-[var(--color-border-darker)] flex justify-between items-center bg-[var(--color-background-darker)]/80">
               <div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                   Create New Schedule
                 </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
                   Configure a new automated disbursement.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                className="text-[var(--color-text-secondary)] hover:text-slate-900 dark:hover:text-white transition-colors"
               >
                 <Icon name="close" size={24} />
               </button>
             </div>
             <div className="p-6 space-y-5 overflow-y-auto max-h-[70vh] custom-scrollbar">
               <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
                   Schedule Name
                 </label>
                 <input
@@ -325,7 +325,7 @@ export function PaymentsScheduledPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
                     Frequency
                   </label>
                   <select className="w-full bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-[var(--color-primary)] outline-none appearance-none text-slate-900 dark:text-white">
@@ -336,13 +336,13 @@ export function PaymentsScheduledPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
                     Start Date
                   </label>
                   <div className="relative">
                     <Icon
                       name="calendar_month"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] pointer-events-none"
                       size={20}
                     />
                     <input
@@ -354,10 +354,10 @@ export function PaymentsScheduledPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
                   Recipients
                 </label>
-                <div className="bg-[#1a1a2e] border border-[#282839] rounded-lg p-2.5 flex flex-wrap gap-2">
+                <div className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] rounded-lg p-2.5 flex flex-wrap gap-2">
                   <div className="flex items-center gap-1.5 bg-[var(--color-primary)]/10 text-[var(--color-primary)] py-1 px-2 rounded-md text-xs font-bold">
                     Sarah Chen{" "}
                     <span className="material-symbols-outlined text-[14px] cursor-pointer">
@@ -373,7 +373,7 @@ export function PaymentsScheduledPage() {
                   <input
                     type="text"
                     placeholder="Add more..."
-                    className="flex-1 min-w-[120px] bg-transparent border-none p-0 text-sm focus:ring-0 outline-none text-slate-900 dark:text-white placeholder:text-slate-500"
+                    className="flex-1 min-w-[120px] bg-transparent border-none p-0 text-sm focus:ring-0 outline-none text-slate-900 dark:text-white placeholder:text-[var(--color-text-muted)]"
                   />
                 </div>
               </div>
@@ -396,10 +396,10 @@ export function PaymentsScheduledPage() {
                   <input
                     type="text"
                     defaultValue="2,400.00"
-                    className="w-full bg-[#111118] border border-[var(--color-primary)]/30 rounded-lg pl-8 pr-4 py-3 text-lg font-bold text-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+                    className="w-full bg-[var(--color-surface-dark)] border border-[var(--color-primary)]/30 rounded-lg pl-8 pr-4 py-3 text-lg font-bold text-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
                   />
                 </div>
-                <p className="mt-3 text-[11px] text-slate-500 flex justify-between">
+                <p className="mt-3 text-[11px] text-[var(--color-text-muted)] flex justify-between">
                   <span>Estimated total per run:</span>
                   <span className="font-bold text-slate-900 dark:text-white">
                     $4,800.00
@@ -407,17 +407,17 @@ export function PaymentsScheduledPage() {
                 </p>
               </div>
             </div>
-            <div className="p-6 bg-slate-900/40 border-t border-[#282839] flex justify-end gap-3">
+            <div className="p-6 bg-[var(--color-background-darker)]/80 border-t border-[var(--color-border-darker)] flex justify-end gap-3">
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="px-5 py-2 rounded-lg text-sm font-bold text-slate-500 hover:bg-[var(--color-border-darker)] transition-all"
+                className="px-5 py-2 rounded-lg text-sm font-bold text-[var(--color-text-muted)] hover:bg-[var(--color-border-darker)] transition-all"
               >
                 Discard
               </button>
               <button
                 type="button"
-                className="bg-[var(--color-primary)] text-white px-8 py-2.5 rounded-lg font-bold text-sm shadow-lg hover:opacity-90 transition-all"
+                className="bg-[var(--color-primary)] text-white px-8 py-2.5 rounded-lg font-bold text-sm shadow-lg hover:bg-[var(--color-primary-hover)] transition-all"
               >
                 Create Schedule
               </button>
