@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { WalletProvider } from "./contexts/WalletContext";
 import App from "./App.tsx";
 
 const queryClient = new QueryClient({
@@ -26,7 +27,9 @@ prepare().then(() => {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
-          <App />
+          <WalletProvider>
+            <App />
+          </WalletProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </StrictMode>,

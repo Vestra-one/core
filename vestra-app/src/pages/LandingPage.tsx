@@ -2,9 +2,17 @@ import { Link } from "react-router-dom";
 import { Icon } from "../components/ui/Icon";
 import { Logo } from "../components/layout/Logo";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
+import { useWallet } from "../contexts/WalletContext";
 import { ROUTES } from "../lib/constants";
 
+function truncateAccountId(accountId: string, head = 6, tail = 4): string {
+  if (accountId.length <= head + tail) return accountId;
+  return `${accountId.slice(0, head)}…${accountId.slice(-tail)}`;
+}
+
 export function LandingPage() {
+  const { connect, isConnected, accountId, loading } = useWallet();
+
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-[var(--color-background-dark)]">
       <header className="sticky top-0 z-50 w-full border-b border-[var(--color-border-dark)] bg-[var(--color-background-dark)]/90 backdrop-blur-md px-6 lg:px-20 transition-colors duration-200">
@@ -34,12 +42,14 @@ export function LandingPage() {
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Link
-              to={ROUTES.dashboard}
-              className="flex h-10 items-center justify-center rounded-[var(--radius-button)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] px-6 text-sm font-semibold text-white shadow-[var(--shadow-card)] transition-colors duration-200"
+            <button
+              type="button"
+              onClick={connect}
+              disabled={loading}
+              className="flex h-10 items-center justify-center rounded-[var(--radius-button)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] px-6 text-sm font-semibold text-white shadow-[var(--shadow-card)] transition-colors duration-200 disabled:opacity-60"
             >
-              Connect Wallet
-            </Link>
+              {loading ? "Loading…" : isConnected && accountId ? truncateAccountId(accountId) : "Connect Wallet"}
+            </button>
           </div>
         </div>
       </header>
@@ -305,12 +315,14 @@ export function LandingPage() {
                 intent-based infrastructure to scale their teams.
               </p>
               <div className="mt-10 flex flex-wrap justify-center gap-4">
-                <Link
-                  to={ROUTES.dashboard}
-                  className="h-12 rounded-[var(--radius-button)] bg-white px-8 text-base font-semibold text-[var(--color-primary)] inline-flex items-center hover:bg-white/95 transition-colors duration-200"
+                <button
+                  type="button"
+                  onClick={connect}
+                  disabled={loading}
+                  className="h-12 rounded-[var(--radius-button)] bg-white px-8 text-base font-semibold text-[var(--color-primary)] inline-flex items-center hover:bg-white/95 transition-colors duration-200 disabled:opacity-60"
                 >
-                  Connect Wallet
-                </Link>
+                  {loading ? "Loading…" : isConnected && accountId ? truncateAccountId(accountId) : "Connect Wallet"}
+                </button>
                 <a
                   href="#"
                   title="Documentation (coming soon)"
