@@ -12,12 +12,12 @@ export function LandingPage() {
           <div className="flex items-center">
             <Logo variant="wallet" showLink={false} />
           </div>
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-8" aria-label="Main">
             <a
               className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
-              href="#product"
+              href="#how-it-works"
             >
-              Product
+              How it works
             </a>
             <a
               className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
@@ -27,15 +27,9 @@ export function LandingPage() {
             </a>
             <a
               className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
-              href="#integrations"
+              href="#get-started"
             >
-              Integrations
-            </a>
-            <a
-              className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
-              href="#pricing"
-            >
-              Pricing
+              Get started
             </a>
           </nav>
           <div className="flex items-center gap-3">
@@ -66,7 +60,7 @@ export function LandingPage() {
                   <span className="size-2 rounded-full bg-[var(--color-primary)]" />
                   Intent-Based Payroll is here
                 </div>
-                <h1 className="text-5xl font-bold leading-tight tracking-tight lg:text-7xl text-slate-900 dark:text-white">
+                <h1 className="text-5xl font-bold leading-tight tracking-tight lg:text-7xl text-[var(--color-text-primary)]">
                   Global Crypto Payroll <br />
                   <span className="text-[var(--color-primary)]">
                     In One Click
@@ -77,6 +71,10 @@ export function LandingPage() {
                   salaries, contractors, and invoices across any chain with zero
                   friction.
                 </p>
+                <p className="max-w-xl text-sm text-[var(--color-text-muted)] leading-relaxed">
+                  Intent-based: you set who gets paid; we handle routing and
+                  settlement across chains. Built for DAOs and global teams.
+                </p>
                 <div className="flex flex-wrap gap-4">
                   <Link
                     to={ROUTES.dashboard}
@@ -84,19 +82,19 @@ export function LandingPage() {
                   >
                     Get Started Free
                   </Link>
-                  <button
-                    type="button"
-                    className="h-12 rounded-[var(--radius-button)] border border-[var(--color-border-dark)] bg-[var(--color-card-dark)] px-8 text-base font-semibold text-slate-900 dark:text-white hover:bg-[var(--color-border-dark)]/30 transition-colors duration-200"
+                  <a
+                    href="mailto:sales@vestra.io"
+                    className="h-12 rounded-[var(--radius-button)] border border-[var(--color-border-dark)] bg-[var(--color-card-dark)] px-8 text-base font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-border-dark)]/30 transition-colors duration-200 inline-flex items-center justify-center"
                   >
                     Talk to Sales
-                  </button>
+                  </a>
                 </div>
                 <div className="flex items-center gap-6 pt-4">
                   <div className="flex -space-x-3">
                     {[1, 2, 3].map((i) => (
                       <div
                         key={i}
-                        className="h-10 w-10 rounded-full border-2 border-[var(--color-background-dark)] bg-slate-300 dark:bg-slate-700"
+                        className="h-10 w-10 rounded-full border-2 border-[var(--color-background-dark)] bg-[var(--color-border-darker)]"
                       />
                     ))}
                   </div>
@@ -181,10 +179,10 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-[var(--color-background-dark)] py-24 border-y border-[var(--color-border-dark)]">
+        <section id="how-it-works" className="bg-[var(--color-background-dark)] py-24 border-y border-[var(--color-border-dark)]">
           <div className="mx-auto max-w-7xl px-6 lg:px-20">
             <div className="mb-16 text-center">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-slate-900 dark:text-white">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-[var(--color-text-primary)]">
                 Streamline Your Operations
               </h2>
               <p className="mt-4 text-[var(--color-text-secondary)]">
@@ -212,16 +210,16 @@ export function LandingPage() {
                 <div key={step.title} className="contents">
                   <div className="flex flex-col items-center">
                     <div
-                      className={`flex h-16 w-16 items-center justify-center rounded-full border ${i === 0 ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)] border-[var(--color-primary)]/30" : "bg-slate-200 dark:bg-slate-800 text-[var(--color-primary)] border-[var(--color-border-dark)]"}`}
+                      className={`flex h-16 w-16 items-center justify-center rounded-full border ${i === 0 ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)] border-[var(--color-primary)]/30" : "bg-[var(--color-border-darker)] text-[var(--color-primary)] border-[var(--color-border-dark)]"}`}
                     >
                       <Icon name={step.icon} size={24} />
                     </div>
                     {i < 2 && (
-                      <div className="w-0.5 grow bg-slate-200 dark:bg-slate-800" />
+                      <div className="w-0.5 grow bg-[var(--color-border-darker)]" />
                     )}
                   </div>
                   <div className={i < 2 ? "pb-16 pt-4" : "pt-4"}>
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                    <h3 className="text-xl font-bold text-[var(--color-text-primary)]">
                       {step.title}
                     </h3>
                     <p className="mt-2 text-[var(--color-text-secondary)] leading-relaxed">
@@ -234,11 +232,11 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="py-24">
+        <section id="features" className="py-24">
           <div className="mx-auto max-w-7xl px-6 lg:px-20">
             <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div className="max-w-2xl">
-                <h2 className="text-4xl font-black leading-tight text-slate-900 dark:text-white">
+                <h2 className="text-4xl font-black leading-tight text-[var(--color-text-primary)]">
                   Engineered for <br /> Modern Teams
                 </h2>
                 <p className="mt-4 text-[var(--color-text-secondary)] text-lg leading-relaxed">
@@ -248,7 +246,7 @@ export function LandingPage() {
               </div>
               <a
                 className="group flex items-center gap-2 text-[var(--color-primary)] font-bold"
-                href="#"
+                href="#features"
               >
                 View all features{" "}
                 <Icon
@@ -283,7 +281,7 @@ export function LandingPage() {
                   <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
                     <Icon name={card.icon} size={24} />
                   </div>
-                  <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">
+                  <h3 className="text-xl font-bold mb-3 text-[var(--color-text-primary)]">
                     {card.title}
                   </h3>
                   <p className="text-[var(--color-text-secondary)] text-sm leading-relaxed">
@@ -295,7 +293,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="py-24 px-6">
+        <section id="get-started" className="py-24 px-6">
           <div className="mx-auto max-w-7xl rounded-2xl bg-[var(--color-primary)] px-6 py-16 text-center lg:px-20 lg:py-24 relative overflow-hidden shadow-[var(--shadow-elevated)]">
             <div className="absolute inset-0 opacity-[0.06] bg-[radial-gradient(circle_at_2px_2px,white_1px,transparent_0)] bg-[length:40px_40px]" />
             <div className="relative z-10">
@@ -313,12 +311,13 @@ export function LandingPage() {
                 >
                   Connect Wallet
                 </Link>
-                <button
-                  type="button"
-                  className="h-12 rounded-[var(--radius-button)] border border-white/25 bg-white/10 px-8 text-base font-semibold text-white hover:bg-white/15 transition-colors duration-200"
+                <a
+                  href="#"
+                  title="Documentation (coming soon)"
+                  className="h-12 rounded-[var(--radius-button)] border border-white/25 bg-white/10 px-8 text-base font-semibold text-white hover:bg-white/15 transition-colors duration-200 inline-flex items-center justify-center"
                 >
                   View Documentation
-                </button>
+                </a>
               </div>
             </div>
           </div>
@@ -338,46 +337,57 @@ export function LandingPage() {
                 <a
                   className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
                   href="#"
+                  aria-label="Website"
                 >
                   <Icon name="public" size={20} />
                 </a>
                 <a
                   className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
                   href="#"
+                  aria-label="Discord"
                 >
                   <Icon name="chat_bubble" size={20} />
                 </a>
               </div>
             </div>
-            {["Product", "Chains", "Resources", "Company"].map((heading) => (
+            {[
+              { heading: "Product", links: [{ label: "Payroll", to: ROUTES.dashboard }, { label: "Treasury", to: ROUTES.treasury }] },
+              { heading: "Chains", links: [{ label: "NEAR", href: "#" }, { label: "Ethereum", href: "#" }] },
+              { heading: "Resources", links: [{ label: "Docs", href: "#", title: "Coming soon" }, { label: "API", href: "#", title: "Coming soon" }] },
+              { heading: "Company", links: [{ label: "About", href: "#" }, { label: "Contact", href: "mailto:hello@vestra.io" }] },
+            ].map(({ heading, links }) => (
               <div key={heading}>
-                <h4 className="mb-6 text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                <h4 className="mb-6 text-sm font-bold uppercase tracking-wider text-[var(--color-text-primary)]">
                   {heading}
                 </h4>
                 <ul className="space-y-4 text-sm text-[var(--color-text-muted)]">
-                  <li>
-                    <a
-                      className="hover:text-[var(--color-primary)] transition-colors"
-                      href="#"
-                    >
-                      Link
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="hover:text-[var(--color-primary)] transition-colors"
-                      href="#"
-                    >
-                      Link
-                    </a>
-                  </li>
+                  {links.map((link) => (
+                    <li key={link.label}>
+                      {"to" in link ? (
+                        <Link
+                          to={link.to}
+                          className="hover:text-[var(--color-primary)] transition-colors"
+                        >
+                          {link.label}
+                        </Link>
+                      ) : (
+                        <a
+                          className="hover:text-[var(--color-primary)] transition-colors"
+                          href={link.href}
+                          {...("title" in link && link.title ? { title: link.title } : {})}
+                        >
+                          {link.label}
+                        </a>
+                      )}
+                    </li>
+                  ))}
                 </ul>
               </div>
             ))}
           </div>
           <div className="mt-16 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-[var(--color-border-dark)] pt-8">
             <p className="text-sm text-[var(--color-text-muted)]">
-              © 2024 Vestra Protocol. All rights reserved.
+              © 2025 Vestra Protocol. All rights reserved.
             </p>
             <span className="text-xs font-bold text-[var(--color-text-muted)] flex items-center gap-1">
               <Icon name="verified_user" size={18} /> SOC2 Type II Compliant
