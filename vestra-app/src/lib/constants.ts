@@ -4,6 +4,7 @@ export const PRIMARY_COLOR = "#4f46e5";
 export const ROUTES = {
   home: "/",
   dashboard: "/dashboard",
+  treasury: "/treasury",
   onboarding: "/onboarding",
   paymentsBulk: "/payments/bulk",
   paymentsManual: "/payments/manual",

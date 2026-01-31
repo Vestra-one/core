@@ -5,7 +5,7 @@ import { ROUTES } from "../../lib/constants";
 
 const navItems = [
   { to: ROUTES.dashboard, icon: "dashboard", label: "Dashboard" },
-  { to: ROUTES.dashboard, icon: "account_balance_wallet", label: "Treasury" },
+  { to: ROUTES.treasury, icon: "account_balance_wallet", label: "Treasury" },
   { to: ROUTES.paymentsBulk, icon: "upload_file", label: "Bulk Upload" },
   { to: ROUTES.contacts, icon: "group", label: "Contacts" },
   { to: ROUTES.analytics, icon: "analytics", label: "Analytics" },

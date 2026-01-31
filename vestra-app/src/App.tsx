@@ -10,6 +10,7 @@ import { PaymentsManualInvoicePage } from "./pages/PaymentsManualInvoicePage";
 import { PaymentsScheduledPage } from "./pages/PaymentsScheduledPage";
 import { ContactsPage } from "./pages/ContactsPage";
 import { AnalyticsPage } from "./pages/AnalyticsPage";
+import { TreasuryPage } from "./pages/TreasuryPage";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,11 @@ const router = createBrowserRouter([
         path: "dashboard",
         element: <DashboardLayout />,
         children: [{ index: true, element: <DashboardPage /> }],
+      },
+      {
+        path: "treasury",
+        element: <DashboardLayout />,
+        children: [{ index: true, element: <TreasuryPage /> }],
       },
       {
         path: "onboarding",
