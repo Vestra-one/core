@@ -307,7 +307,7 @@ export function PaymentsScheduledPage() {
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="text-[var(--color-text-secondary)] hover:text-slate-900 dark:hover:text-white transition-colors"
+                className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
               >
                 <Icon name="close" size={24} />
               </button>
