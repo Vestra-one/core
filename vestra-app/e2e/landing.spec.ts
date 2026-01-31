@@ -6,17 +6,16 @@ test.describe("Landing page", () => {
     await expect(
       page.getByRole("heading", { name: /global crypto payroll/i }),
     ).toBeVisible();
-    await expect(
+    // Connect Wallet may be a button (opens NEAR wallet modal) or a link (tests without provider)
+    const connectWallet = page.getByRole("main").getByRole("button", { name: /connect wallet/i }).or(
       page.getByRole("main").getByRole("link", { name: /connect wallet/i }),
-    ).toBeVisible();
+    );
+    await expect(connectWallet.first()).toBeVisible();
   });
 
-  test("Connect Wallet links to dashboard", async ({ page }) => {
+  test("Get Started Free links to dashboard", async ({ page }) => {
     await page.goto("/");
-    await page
-      .getByRole("main")
-      .getByRole("link", { name: /connect wallet/i })
-      .click();
+    await page.getByRole("link", { name: /get started free/i }).click();
     await expect(page).toHaveURL("/dashboard");
   });
 });

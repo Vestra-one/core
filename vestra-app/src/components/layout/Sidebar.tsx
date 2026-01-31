@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { Icon } from "../ui/Icon";
 import { Logo } from "./Logo";
+import { useNearWalletOptional } from "../../contexts/NearWalletContext";
 import { ROUTES } from "../../lib/constants";
 
 const navItems = [
@@ -12,6 +13,7 @@ const navItems = [
 ];
 
 export function Sidebar() {
+  const wallet = useNearWalletOptional();
   return (
     <aside className="w-64 border-r border-[var(--color-border-darker)] bg-[var(--color-background-darker)] flex flex-col shrink-0 transition-colors duration-200">
       <div className="p-6 flex items-center gap-3">
@@ -45,9 +47,11 @@ export function Sidebar() {
           <div className="size-8 rounded-full bg-slate-400 dark:bg-slate-600 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-xs font-bold truncate text-[var(--color-text-primary)]">
-              Enterprise Treasury
+              {wallet?.accountId ? "Connected" : "Enterprise Treasury"}
             </p>
-            <p className="text-[10px] text-[var(--color-text-muted)] truncate">treasury.near</p>
+            <p className="text-[10px] text-[var(--color-text-muted)] truncate" title={wallet?.accountId ?? undefined}>
+              {wallet?.accountId ?? "treasury.near"}
+            </p>
           </div>
         </div>
       </div>

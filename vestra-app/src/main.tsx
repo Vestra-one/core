@@ -1,8 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "@near-wallet-selector/modal-ui/styles.css";
 import "./index.css";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { NearWalletProvider } from "./contexts/NearWalletContext";
 import App from "./App.tsx";
 
 const queryClient = new QueryClient({
@@ -26,7 +28,9 @@ prepare().then(() => {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
-          <App />
+          <NearWalletProvider>
+            <App />
+          </NearWalletProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </StrictMode>,

@@ -2,9 +2,76 @@ import { Link } from "react-router-dom";
 import { Icon } from "../components/ui/Icon";
 import { Logo } from "../components/layout/Logo";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
+import { WalletInstallLinks } from "../components/ui/WalletInstallLinks";
+import { useNearWalletOptional } from "../contexts/NearWalletContext";
 import { ROUTES } from "../lib/constants";
 
+const headerCtaClass =
+  "flex h-10 items-center justify-center rounded-[var(--radius-button)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] px-6 text-sm font-semibold text-white shadow-[var(--shadow-card)] transition-colors duration-200";
+const bottomCtaClass =
+  "h-12 rounded-[var(--radius-button)] bg-white px-8 text-base font-semibold text-[var(--color-primary)] inline-flex items-center hover:bg-white/95 transition-colors duration-200";
+
+function ConnectWalletCta() {
+  const wallet = useNearWalletOptional();
+  if (!wallet) {
+    return (
+      <Link to={ROUTES.dashboard} className={headerCtaClass}>
+        Connect Wallet
+      </Link>
+    );
+  }
+  if (wallet.accountId) {
+    return (
+      <Link to={ROUTES.dashboard} className={headerCtaClass}>
+        Go to Dashboard
+      </Link>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={wallet.signIn}
+      className={headerCtaClass}
+      disabled={!wallet.isReady}
+    >
+      {wallet.isReady ? "Connect Wallet" : "Loading…"}
+    </button>
+  );
+}
+
+function BottomConnectWalletCta() {
+  const wallet = useNearWalletOptional();
+  if (!wallet) {
+    return (
+      <Link to={ROUTES.dashboard} className={bottomCtaClass}>
+        Connect Wallet
+      </Link>
+    );
+  }
+  if (wallet.accountId) {
+    return (
+      <Link to={ROUTES.dashboard} className={bottomCtaClass}>
+        Go to Dashboard
+      </Link>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={wallet.signIn}
+      className={bottomCtaClass}
+      disabled={!wallet.isReady}
+    >
+      {wallet.isReady ? "Connect Wallet" : "Loading…"}
+    </button>
+  );
+}
+
 export function LandingPage() {
+  const wallet = useNearWalletOptional();
+  const walletVisibleAndNotConnected =
+    Boolean(wallet?.isReady && !wallet?.accountId);
+
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-[var(--color-background-dark)]">
       <header className="sticky top-0 z-50 w-full border-b border-[var(--color-border-dark)] bg-[var(--color-background-dark)]/90 backdrop-blur-md px-6 lg:px-20 transition-colors duration-200">
@@ -32,14 +99,14 @@ export function LandingPage() {
               Get started
             </a>
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap justify-end">
             <ThemeToggle />
-            <Link
-              to={ROUTES.dashboard}
-              className="flex h-10 items-center justify-center rounded-[var(--radius-button)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] px-6 text-sm font-semibold text-white shadow-[var(--shadow-card)] transition-colors duration-200"
-            >
-              Connect Wallet
-            </Link>
+            <div className="flex flex-col items-end gap-0.5">
+              <ConnectWalletCta />
+              {walletVisibleAndNotConnected && (
+                <WalletInstallLinks className="mt-0.5" />
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -89,6 +156,9 @@ export function LandingPage() {
                     Talk to Sales
                   </a>
                 </div>
+                {walletVisibleAndNotConnected && (
+                  <WalletInstallLinks className="pt-2" variant="stacked" />
+                )}
                 <div className="flex items-center gap-6 pt-4">
                   <div className="flex -space-x-3">
                     {[1, 2, 3].map((i) => (
@@ -305,12 +375,7 @@ export function LandingPage() {
                 intent-based infrastructure to scale their teams.
               </p>
               <div className="mt-10 flex flex-wrap justify-center gap-4">
-                <Link
-                  to={ROUTES.dashboard}
-                  className="h-12 rounded-[var(--radius-button)] bg-white px-8 text-base font-semibold text-[var(--color-primary)] inline-flex items-center hover:bg-white/95 transition-colors duration-200"
-                >
-                  Connect Wallet
-                </Link>
+                <BottomConnectWalletCta />
                 <a
                   href="#"
                   title="Documentation (coming soon)"
