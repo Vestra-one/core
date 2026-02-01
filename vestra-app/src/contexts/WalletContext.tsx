@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -12,6 +13,7 @@ import { setupModal } from "@near-wallet-selector/modal-ui";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import type { WalletSelector } from "@near-wallet-selector/core";
 import type { WalletSelectorModal } from "@near-wallet-selector/modal-ui";
+import { createSession, signOut as signOutSession } from "../lib/auth-api";
 import { NEAR_CONTRACT_ID, NEAR_NETWORK } from "../lib/near";
 
 import "@near-wallet-selector/modal-ui/styles.css";
@@ -23,10 +25,14 @@ type WalletContextValue = {
   loading: boolean;
   /** Open the wallet selection modal (connect flow). */
   connect: () => void;
-  /** Sign out from the current wallet. */
+  /** Sign out from the current wallet and invalidate backend session. */
   disconnect: () => Promise<void>;
   /** True when at least one account is connected. */
   isConnected: boolean;
+  /** Current backend session token, if any. Used by API client for Authorization header. */
+  getToken: () => string | null;
+  /** Clear backend session (e.g. on 401). Does not disconnect wallet. */
+  clearSession: () => void;
 };
 
 const WalletContext = createContext<WalletContextValue | null>(null);
@@ -45,6 +51,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [modal, setModal] = useState<WalletSelectorModal | null>(null);
   const [accountId, setAccountId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const sessionTokenRef = useRef<string | null>(null);
+  sessionTokenRef.current = sessionToken;
 
   useEffect(() => {
     let cancelled = false;
@@ -54,6 +63,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         const instance = await setupWalletSelector({
           network: NEAR_NETWORK,
           modules: [setupMyNearWallet()],
+          createAccessKeyFor: NEAR_CONTRACT_ID,
         });
         if (cancelled) return;
 
@@ -92,17 +102,55 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const clearSession = useCallback(() => {
+    setSessionToken(null);
+  }, []);
+
+  useEffect(() => {
+    if (!accountId) {
+      clearSession();
+      return;
+    }
+    if (sessionToken) return;
+    let cancelled = false;
+    createSession(accountId)
+      .then((res) => {
+        if (!cancelled) setSessionToken(res.token);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.error("Session create failed:", err);
+          setSessionToken(null);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [accountId, sessionToken, clearSession]);
+
   const connect = useCallback(() => {
     modal?.show();
   }, [modal]);
 
+  const getToken = useCallback(() => sessionTokenRef.current, []);
+
   const disconnect = useCallback(async () => {
-    if (!selector) return;
-    try {
-      const wallet = await selector.wallet();
-      await wallet.signOut();
-    } catch (err) {
-      console.error("Wallet signOut failed:", err);
+    const token = sessionTokenRef.current;
+    if (token) {
+      try {
+        await signOutSession(token);
+      } catch (err) {
+        console.error("Backend sign-out failed:", err);
+      }
+      setSessionToken(null);
+    }
+    if (selector) {
+      try {
+        const wallet = await selector.wallet();
+        await wallet.signOut();
+      } catch (err) {
+        console.error("Wallet signOut failed:", err);
+      }
     }
   }, [selector]);
 
@@ -113,8 +161,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       connect,
       disconnect,
       isConnected: accountId != null && accountId.length > 0,
+      getToken,
+      clearSession,
     }),
-    [accountId, loading, connect, disconnect]
+    [accountId, loading, connect, disconnect, getToken, clearSession]
   );
 
   return (

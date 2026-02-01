@@ -106,7 +106,7 @@ export function LandingPage() {
                     to={ROUTES.dashboard}
                     className="h-12 rounded-[var(--radius-button)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] px-8 text-base font-semibold text-white shadow-[var(--shadow-card)] inline-flex items-center transition-colors duration-200"
                   >
-                    Get Started Free
+                    Get Started
                   </Link>
                   <a
                     href="mailto:sales@vestra.io"

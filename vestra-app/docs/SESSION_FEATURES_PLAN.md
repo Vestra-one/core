@@ -21,12 +21,24 @@
 
 ### Gaps
 
-1. **No route protection** – Dashboard routes (`/dashboard`, `/treasury`, etc.) are reachable without a connected wallet. "Get Started Free" on landing goes straight to dashboard.
+1. **No route protection** – Dashboard routes (`/dashboard`, `/treasury`, etc.) are reachable without a connected wallet. "Get Started" on landing goes straight to dashboard.
 2. **No backend identity** – API client does not send wallet account or any session; backend cannot attribute requests to a user.
 3. **Sidebar not wallet-aware** – Sidebar shows hardcoded "Enterprise Treasury" / "treasury.near" instead of current `accountId` from `useWallet()`.
 4. **Single wallet module** – Only MyNearWallet; no Ledger, sender wallet, or other modules (may be intentional for MVP).
 5. **No explicit error/retry UX** – Init failure only logs; user sees loading then empty state.
 6. **Connected click behavior** – In header, clicking the account button calls `connect()` (opens modal) rather than e.g. account menu or copy; may be intentional for "switch wallet".
+
+### Why “vestra.testnet contract permission for 0.25 NEAR” appears
+
+**Figure need first; don’t remove the contract ID until the product need is clear.**
+
+- **What triggers it:** `setupModal(selector, { contractId: NEAR_CONTRACT_ID })` in `WalletContext` passes `vestra.testnet` (or `VITE_NEAR_CONTRACT_ID`) to the modal. When the user connects, the wallet runs a “sign in to this contract” flow and asks to create a **function-call access key** for that contract.
+- **What 0.25 NEAR is:** It’s a **gas allowance** for that key (the key can spend up to 0.25 NEAR on gas when the app calls the contract on the user’s behalf). It is not a one-time transfer out of the wallet.
+- **What the app uses today:** Only **wallet identity** (account ID) and **backend session** (token). There are no on-chain calls from the user’s account to `vestra.testnet` in the current flow.
+- **Options (after need is clear):**
+  - **Keep contractId** if the product will add on-chain actions (e.g. payroll, treasury, approvals) that the app contract must perform as the user → the 0.25 NEAR prompt is expected.
+  - **Omit or change contractId** only if the product will stay “connect for identity only” and the team accepts that the wallet may use a different (e.g. keyless) flow when no contract is specified; this needs to be validated per wallet (e.g. MyNearWallet).
+- **Decision:** Decide whether Vestra will call `vestra.testnet` (or another contract) from the user’s account. If yes, keep `contractId`. If no, document that and then consider omitting `contractId` (or using a dedicated “login-only” contract) and test the connect flow.
 
 ---
 
@@ -89,9 +101,10 @@
    - No token yet if backend doesn’t need it.
    - **Done:** `api.ts` sends `X-Account-Id` when `accountId` is set; `createApi(accountId)` and `useApi()` hook for dashboard/authenticated calls.
 
-3. **Phase 3 – Backend session (if needed)**
+3. **Phase 3 – Backend session (if needed)** ✅
    - Backend: session create/invalidate endpoints and token/cookie contract.
    - Frontend: call session endpoint after connect; send token/cookie on requests; call sign-out on disconnect; handle 401.
+   - **Done:** `lib/auth-api.ts` (createSession, signOut); WalletContext creates session when accountId set, invalidates on disconnect; api sends Bearer token via getToken/onUnauthorized; useApi() wires getToken + clearSession; MSW handlers for POST /auth/session and POST /auth/sign-out.
 
 4. **Phase 4 – Polish**
    - Copy account ID, account dropdown, optional idle timeout, multi-tab sync.

@@ -3,13 +3,20 @@ import { useWallet } from "../contexts/WalletContext";
 import { createApi, type Api } from "../lib/api";
 
 /**
- * Returns an API client that sends X-Account-Id with the current wallet's
- * accountId on every request. Use in dashboard/authenticated components so
- * the backend can scope data by account.
+ * Returns an API client that sends X-Account-Id and Authorization: Bearer &lt;token&gt;
+ * when a wallet is connected and a backend session exists. On 401 responses, clears the
+ * session (token is cleared; createSession will be retried for the current account).
  *
- * When not connected, requests are sent without the header (same as unauthenticated api).
+ * Use in dashboard/authenticated components so the backend can scope and authorize requests.
  */
 export function useApi(): Api {
-  const { accountId } = useWallet();
-  return useMemo(() => createApi(accountId), [accountId]);
+  const { accountId, getToken, clearSession } = useWallet();
+  return useMemo(
+    () =>
+      createApi(accountId, {
+        getToken,
+        onUnauthorized: clearSession,
+      }),
+    [accountId, getToken, clearSession],
+  );
 }

@@ -14,6 +14,10 @@ const getBaseUrl = (): string => {
       ? window.location.origin
       : "";
   }
+  // In dev, default to same origin so the app loads without .env; set VITE_API_URL or VITE_USE_MSW for real/mock API
+  if (import.meta.env.DEV && typeof window !== "undefined") {
+    return window.location.origin;
+  }
   throw new Error(
     "VITE_API_URL is not set. Copy .env.example to .env and set VITE_API_URL.",
   );
@@ -23,6 +27,9 @@ export const apiBaseUrl = getBaseUrl();
 
 /** Header sent with requests when a wallet is connected; backend can use it for scoping. */
 export const ACCOUNT_ID_HEADER = "X-Account-Id";
+
+/** Header sent when a backend session token is available. */
+export const AUTHORIZATION_HEADER = "Authorization";
 
 export class ApiError extends Error {
   readonly status: number;
@@ -39,13 +46,17 @@ export type RequestConfig = RequestInit & {
   params?: Record<string, string>;
   /** When set, sent as X-Account-Id so the backend can scope the request. */
   accountId?: string | null;
+  /** When set, token is sent as Authorization: Bearer <token>. */
+  getToken?: () => string | null;
+  /** Called when the server responds 401; e.g. clear session and redirect. */
+  onUnauthorized?: () => void;
 };
 
 async function request<T>(
   path: string,
   config: RequestConfig = {},
 ): Promise<T> {
-  const { params, accountId, ...init } = config;
+  const { params, accountId, getToken, onUnauthorized, ...init } = config;
   const url = new URL(
     path.startsWith("http")
       ? path
@@ -61,6 +72,10 @@ async function request<T>(
   if (accountId) {
     headers[ACCOUNT_ID_HEADER] = accountId;
   }
+  const token = getToken?.();
+  if (token) {
+    headers[AUTHORIZATION_HEADER] = `Bearer ${token}`;
+  }
   const res = await fetch(url.toString(), {
     ...init,
     headers,
@@ -73,6 +88,9 @@ async function request<T>(
     body = text;
   }
   if (!res.ok) {
+    if (res.status === 401) {
+      onUnauthorized?.();
+    }
     throw new ApiError(
       res.statusText || `HTTP ${res.status}`,
       res.status,
@@ -90,16 +108,29 @@ export type Api = {
   delete: <T>(path: string, config?: RequestConfig) => Promise<T>;
 };
 
-function bindAccountId(accountId: string | null): Api {
+export type CreateApiOptions = {
+  getToken?: () => string | null;
+  onUnauthorized?: () => void;
+};
+
+function bindAuth(
+  accountId: string | null,
+  options: CreateApiOptions = {},
+): Api {
   const auth: RequestConfig = accountId ? { accountId } : {};
+  const session: RequestConfig = {
+    getToken: options.getToken,
+    onUnauthorized: options.onUnauthorized,
+  };
+  const base = { ...auth, ...session };
   return {
     get: <T>(path: string, config?: RequestConfig) =>
-      request<T>(path, { ...config, ...auth, method: "GET" }),
+      request<T>(path, { ...config, ...base, method: "GET" }),
 
     post: <T>(path: string, body?: unknown, config?: RequestConfig) =>
       request<T>(path, {
         ...config,
-        ...auth,
+        ...base,
         method: "POST",
         body: body !== undefined ? JSON.stringify(body) : undefined,
       }),
@@ -107,7 +138,7 @@ function bindAccountId(accountId: string | null): Api {
     put: <T>(path: string, body?: unknown, config?: RequestConfig) =>
       request<T>(path, {
         ...config,
-        ...auth,
+        ...base,
         method: "PUT",
         body: body !== undefined ? JSON.stringify(body) : undefined,
       }),
@@ -115,23 +146,26 @@ function bindAccountId(accountId: string | null): Api {
     patch: <T>(path: string, body?: unknown, config?: RequestConfig) =>
       request<T>(path, {
         ...config,
-        ...auth,
+        ...base,
         method: "PATCH",
         body: body !== undefined ? JSON.stringify(body) : undefined,
       }),
 
     delete: <T>(path: string, config?: RequestConfig) =>
-      request<T>(path, { ...config, ...auth, method: "DELETE" }),
+      request<T>(path, { ...config, ...base, method: "DELETE" }),
   };
 }
 
-/** Unauthenticated API client (no X-Account-Id). Use for public endpoints. */
-export const api: Api = bindAccountId(null);
+/** Unauthenticated API client (no X-Account-Id, no token). Use for public endpoints. */
+export const api: Api = bindAuth(null);
 
 /**
- * API client that sends X-Account-Id on every request when accountId is set.
- * Use in dashboard/authenticated flows so the backend can scope by account.
+ * API client that sends X-Account-Id and optionally Bearer token on every request.
+ * When getToken is provided, adds Authorization: Bearer <token>; on 401 calls onUnauthorized.
  */
-export function createApi(accountId: string | null): Api {
-  return bindAccountId(accountId);
+export function createApi(
+  accountId: string | null,
+  options: CreateApiOptions = {},
+): Api {
+  return bindAuth(accountId, options);
 }

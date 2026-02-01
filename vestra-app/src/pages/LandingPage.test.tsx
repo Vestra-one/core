@@ -15,6 +15,8 @@ vi.mock("../contexts/WalletContext", () => ({
     connect: vi.fn(),
     disconnect: vi.fn(),
     isConnected: false,
+    getToken: () => null,
+    clearSession: vi.fn(),
   }),
 }));
 
@@ -40,9 +42,9 @@ describe("LandingPage", () => {
     expect(screen.getByText(/global crypto payroll/i)).toBeInTheDocument();
   });
 
-  it("Get Started Free links to dashboard", () => {
+  it("Get Started links to dashboard", () => {
     renderLanding();
-    const getStarted = screen.getByRole("link", { name: /get started free/i });
+    const getStarted = screen.getByRole("link", { name: /get started/i });
     expect(getStarted).toHaveAttribute("href", "/dashboard");
   });
 });

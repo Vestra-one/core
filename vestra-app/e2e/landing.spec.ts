@@ -24,10 +24,10 @@ test.describe("Landing page", () => {
     ).toBeVisible({ timeout: 10000 });
   });
 
-  test("Get Started Free links to dashboard", async ({ page }) => {
+  test("Get Started links to dashboard", async ({ page }) => {
     await page.goto("/");
     await page
-      .getByRole("link", { name: /get started free/i })
+      .getByRole("link", { name: /get started/i })
       .first()
       .click();
     await expect(page).toHaveURL("/dashboard");
