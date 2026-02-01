@@ -1,10 +1,81 @@
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Icon } from "../components/ui/Icon";
 import { Button } from "../components/ui/Button";
 import { PageContainer } from "../components/layout/PageContainer";
+import { useWallet } from "../contexts/WalletContext";
+import { NEAR_NETWORK } from "../lib/near";
+import {
+  getAccountTransactions,
+  mapTxnToActivity,
+} from "../lib/near-nearblocks";
+import { getAccountBalance } from "../lib/near-rpc";
 import { ROUTES } from "../lib/constants";
 
+type Activity = {
+  id: string;
+  type: string;
+  title: string;
+  recipientCount?: number;
+  recipient?: string;
+  amount: string;
+  usdEquivalent: string;
+  status: string;
+  date: string;
+};
+
+function formatActivityDate(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function statusBadgeClass(status: string): string {
+  const s = status.toLowerCase();
+  if (s === "completed" || s === "success") return "bg-green-500/10 text-green-500";
+  if (s === "processing" || s === "pending") return "bg-yellow-500/10 text-yellow-500";
+  if (s === "failed" || s === "error") return "bg-red-500/10 text-red-500";
+  return "bg-[var(--color-border-darker)] text-[var(--color-text-muted)]";
+}
+
+function truncateAccountId(accountId: string, head = 12, tail = 8): string {
+  if (accountId.length <= head + tail) return accountId;
+  return `${accountId.slice(0, head)}…${accountId.slice(-tail)}`;
+}
+
 export function DashboardPage() {
+  const { accountId } = useWallet();
+  const network = NEAR_NETWORK;
+
+  const {
+    data: balanceData,
+    isLoading: balanceLoading,
+    isError: balanceError,
+  } = useQuery({
+    queryKey: ["near", "balance", accountId ?? "", network],
+    queryFn: () => getAccountBalance(accountId!, network),
+    enabled: !!accountId,
+  });
+
+  const {
+    data: txnsData,
+    isLoading: activitiesLoading,
+    isError: activitiesError,
+  } = useQuery({
+    queryKey: ["near", "txns", accountId ?? "", network],
+    queryFn: () => getAccountTransactions(accountId!, network),
+    enabled: !!accountId,
+  });
+
+  const activities: Activity[] =
+    accountId && txnsData?.txns
+      ? txnsData.txns.map((txn) => mapTxnToActivity(txn, accountId))
+      : [];
+
   return (
     <div className="flex h-full">
       <PageContainer>
@@ -13,13 +84,36 @@ export function DashboardPage() {
           <p className="text-[var(--color-text-muted)] text-sm font-medium">
             Total Treasury Balance
           </p>
-          <div className="flex items-baseline gap-3 flex-wrap">
-            <h1 className="text-5xl font-bold tracking-tight tabular-nums text-[var(--color-text-primary)]">
-              1,240.50 NEAR
-            </h1>
-            <p className="text-lg text-[var(--color-text-secondary)] font-medium tabular-nums">
-              ≈ $8,642.00 USD
+          {accountId && (
+            <p className="text-xs text-[var(--color-text-muted)]" title={accountId}>
+              Account: {truncateAccountId(accountId)}
             </p>
+          )}
+          <div className="flex items-baseline gap-3 flex-wrap">
+            {balanceLoading && (
+              <span className="text-5xl font-bold tracking-tight tabular-nums text-[var(--color-text-muted)]">
+                Loading…
+              </span>
+            )}
+            {balanceError && (
+              <span className="text-lg text-red-500 font-medium">
+                Failed to load balance
+              </span>
+            )}
+            {!balanceLoading && !balanceError && balanceData && (
+              <>
+                <h1 className="text-5xl font-bold tracking-tight tabular-nums text-[var(--color-text-primary)]">
+                  {balanceData.inNear.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 4,
+                  })}{" "}
+                  NEAR
+                </h1>
+                <p className="text-lg text-[var(--color-text-secondary)] font-medium tabular-nums">
+                  — USD
+                </p>
+              </>
+            )}
           </div>
         </div>
         <div className="flex gap-3">
@@ -99,129 +193,83 @@ export function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--color-border-darker)]">
-                <tr className="bg-[var(--color-primary)]/5 border-l-4 border-[var(--color-primary)]">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-lg bg-[var(--color-primary)]/20 flex items-center justify-center text-[var(--color-primary)]">
-                        <Icon name="diversity_3" size={24} />
-                      </div>
-                      <div>
-                        <p className="font-bold text-slate-900 dark:text-white">
-                          Payroll - Oct 2023
-                        </p>
-                        <p className="text-xs text-slate-500">100 Recipients</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center text-sm">
-                    Oct 24, 14:20
-                  </td>
-                  <td className="px-6 py-4 text-right tabular-nums">
-                    <p className="font-semibold text-slate-900 dark:text-white">
-                      450.00 NEAR
-                    </p>
-                    <p className="text-xs text-[var(--color-text-muted)]">≈ $3,150.00</p>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-yellow-500/10 text-yellow-500 uppercase">
-                      Processing
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <Icon
-                      name="expand_less"
-                      className="text-slate-400"
-                      size={24}
-                    />
-                  </td>
-                </tr>
-                <tr className="bg-[var(--color-background-darker)]/30">
-                  <td colSpan={5} className="px-6 py-4">
-                    <div className="pl-12 space-y-3">
-                      {[
-                        {
-                          name: "alice_doe.near",
-                          amount: "4.50 NEAR",
-                          status: "Success",
-                          statusColor: "text-green-500",
-                          icon: "check_circle" as const,
-                        },
-                        {
-                          name: "bob_smith.near",
-                          amount: "4.50 NEAR",
-                          status: "Pending",
-                          statusColor: "text-yellow-500",
-                          icon: "pending" as const,
-                        },
-                        {
-                          name: "carol_white.near",
-                          amount: "4.50 NEAR",
-                          status: "Queued",
-                          statusColor: "text-slate-500",
-                          icon: "schedule" as const,
-                        },
-                      ].map((r) => (
-                        <div
-                          key={r.name}
-                          className="flex items-center justify-between py-2 border-b border-[var(--color-border-darker)]/50 last:border-0"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="size-6 rounded-full bg-slate-700" />
-                            <p className="text-sm font-medium">{r.name}</p>
+                {activitiesLoading && (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-[var(--color-text-muted)] text-sm">
+                      Loading activities…
+                    </td>
+                  </tr>
+                )}
+                {activitiesError && (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-red-500 text-sm">
+                      Failed to load activities
+                    </td>
+                  </tr>
+                )}
+                {!activitiesLoading && !activitiesError && activities.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-[var(--color-text-muted)] text-sm">
+                      No recent activities
+                    </td>
+                  </tr>
+                )}
+                {!activitiesLoading &&
+                  !activitiesError &&
+                  activities.map((a) => (
+                    <tr
+                      key={a.id}
+                      className="hover:bg-[var(--color-border-darker)]/30 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`size-10 rounded-lg flex items-center justify-center ${
+                              a.type === "payroll"
+                                ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
+                                : "bg-slate-800 text-slate-400"
+                            }`}
+                          >
+                            <Icon
+                              name={a.type === "payroll" ? "diversity_3" : "person"}
+                              size={24}
+                            />
                           </div>
-                          <div className="flex items-center gap-8">
-                            <p className="text-sm font-bold">{r.amount}</p>
-                            <span
-                              className={`flex items-center gap-1 text-xs font-semibold ${r.statusColor}`}
-                            >
-                              <Icon name={r.icon} size={18} />
-                              {r.status}
-                            </span>
+                          <div>
+                            <p className="font-bold text-slate-900 dark:text-white">
+                              {a.title}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {a.recipientCount != null
+                                ? `${a.recipientCount} Recipients`
+                                : a.recipient ?? ""}
+                            </p>
                           </div>
                         </div>
-                      ))}
-                      <p className="text-[10px] text-slate-500 italic pt-2">
-                        + 97 more recipients...
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="hover:bg-[var(--color-border-darker)]/30 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400">
-                        <Icon name="person" size={24} />
-                      </div>
-                      <div>
-                        <p className="font-bold text-slate-900 dark:text-white">
-                          Transfer to Contractor
+                      </td>
+                      <td className="px-6 py-4 text-center text-sm text-slate-400">
+                        {formatActivityDate(a.date)}
+                      </td>
+                      <td className="px-6 py-4 text-right tabular-nums">
+                        <p className="font-semibold text-slate-900 dark:text-white">
+                          {a.amount}
                         </p>
-                        <p className="text-xs text-slate-500">dev_ops.near</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center text-sm text-slate-400">
-                    Oct 23, 09:15
-                  </td>
-                  <td className="px-6 py-4 text-right tabular-nums">
-                    <p className="font-semibold text-slate-900 dark:text-white">
-                      25.00 NEAR
-                    </p>
-                    <p className="text-xs text-[var(--color-text-muted)]">≈ $175.00</p>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-500/10 text-green-500 uppercase">
-                      Completed
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <Icon
-                      name="expand_more"
-                      className="text-slate-400"
-                      size={24}
-                    />
-                  </td>
-                </tr>
+                        <p className="text-xs text-[var(--color-text-muted)]">
+                          ≈ ${Number(a.usdEquivalent).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </p>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span
+                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${statusBadgeClass(a.status)}`}
+                        >
+                          {a.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <Icon name="expand_more" className="text-slate-400" size={24} />
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
