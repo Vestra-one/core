@@ -55,6 +55,7 @@ export function mapTxnToActivity(
   currentAccountId: string,
 ): {
   id: string;
+  transactionHash: string;
   type: string;
   title: string;
   recipient?: string;
@@ -88,6 +89,7 @@ export function mapTxnToActivity(
 
   return {
     id: txn.id ?? txn.transaction_hash ?? "",
+    transactionHash: txn.transaction_hash ?? "",
     type: isOutgoing ? "transfer" : "transfer",
     title,
     recipient: other,
@@ -96,4 +98,13 @@ export function mapTxnToActivity(
     status,
     date: dateIso,
   };
+}
+
+/** Explorer URL for a transaction (testnet or mainnet). */
+export function getTransactionExplorerUrl(
+  transactionHash: string,
+  network: "mainnet" | "testnet",
+): string {
+  const base = network === "testnet" ? "https://testnet.nearblocks.io" : "https://nearblocks.io";
+  return `${base}/txns/${transactionHash}`;
 }

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Icon } from "../components/ui/Icon";
@@ -7,6 +8,7 @@ import { useWallet } from "../contexts/WalletContext";
 import { NEAR_NETWORK } from "../lib/near";
 import {
   getAccountTransactions,
+  getTransactionExplorerUrl,
   mapTxnToActivity,
 } from "../lib/near-nearblocks";
 import { getAccountBalance } from "../lib/near-rpc";
@@ -14,6 +16,7 @@ import { ROUTES } from "../lib/constants";
 
 type Activity = {
   id: string;
+  transactionHash: string;
   type: string;
   title: string;
   recipientCount?: number;
@@ -75,6 +78,20 @@ export function DashboardPage() {
     accountId && txnsData?.txns
       ? txnsData.txns.map((txn) => mapTxnToActivity(txn, accountId))
       : [];
+
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  useEffect(() => {
+    if (activities.length > 0 && !selectedActivity) {
+      setSelectedActivity(activities[0]);
+    } else if (activities.length === 0) {
+      setSelectedActivity(null);
+    }
+  }, [activities, selectedActivity]);
+
+  const selectedExplorerUrl =
+    selectedActivity?.transactionHash
+      ? getTransactionExplorerUrl(selectedActivity.transactionHash, network)
+      : null;
 
   return (
     <div className="flex h-full">
@@ -219,7 +236,20 @@ export function DashboardPage() {
                   activities.map((a) => (
                     <tr
                       key={a.id}
-                      className="hover:bg-[var(--color-border-darker)]/30 transition-colors"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setSelectedActivity(a)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setSelectedActivity(a);
+                        }
+                      }}
+                      className={`cursor-pointer hover:bg-[var(--color-border-darker)]/30 transition-colors ${
+                        selectedActivity?.id === a.id
+                          ? "bg-[var(--color-primary)]/5 border-l-4 border-[var(--color-primary)]"
+                          : ""
+                      }`}
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -255,7 +285,9 @@ export function DashboardPage() {
                           {a.amount}
                         </p>
                         <p className="text-xs text-[var(--color-text-muted)]">
-                          ≈ ${Number(a.usdEquivalent).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          {a.usdEquivalent === "—"
+                            ? "— USD"
+                            : `≈ $${Number(a.usdEquivalent).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                         </p>
                       </td>
                       <td className="px-6 py-4 text-center">
@@ -281,122 +313,134 @@ export function DashboardPage() {
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
             Activity Details
           </h2>
-          <button
-            type="button"
-            className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
-            aria-label="Close activity details"
-          >
-            <Icon name="close" size={24} />
-          </button>
         </div>
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8">
-          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 flex flex-col items-center text-center space-y-2">
-            <div className="size-12 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-500">
-              <Icon name="history" size={24} />
-            </div>
-            <div>
-              <p className="text-yellow-500 font-bold uppercase text-[10px] tracking-widest">
-                Processing
-              </p>
-              <h4 className="font-bold text-lg text-slate-900 dark:text-white">
-                Payroll - Oct 2023
-              </h4>
-            </div>
-          </div>
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                Intent ID
-              </p>
-              <div className="flex items-center justify-between p-3 bg-[var(--color-background-darker)] rounded-lg border border-[var(--color-border-darker)]">
-                <code className="text-xs text-[var(--color-primary)] truncate mr-2">
-                  PAY-INTENT-7829-XQ
-                </code>
-                <Icon
-                  name="content_copy"
-                  className="text-slate-500 cursor-pointer hover:text-slate-900 dark:hover:text-white"
-                  size={18}
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                Transaction Hash
-              </p>
-              <div className="flex items-center justify-between p-3 bg-[var(--color-background-darker)] rounded-lg border border-[var(--color-border-darker)]">
-                <code className="text-xs text-slate-300 truncate mr-2">
-                  0x71C765...6D91
-                </code>
-                <Icon
-                  name="open_in_new"
-                  className="text-[var(--color-primary)] cursor-pointer"
-                  size={18}
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                Destination Network
-              </p>
-              <div className="flex items-center gap-3 p-3 bg-[var(--color-background-darker)] rounded-lg border border-[var(--color-border-darker)]">
-                <div className="size-6 bg-white rounded-full flex items-center justify-center shrink-0">
-                  <svg className="size-4" fill="black" viewBox="0 0 24 24">
-                    <path d="M11.944 17.97L4.58 13.62 11.943 24l7.37-10.38-7.372 4.35h.003zM12.056 0L4.69 12.223l7.365 4.354 7.365-4.35L12.056 0z" />
-                  </svg>
-                </div>
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                  Ethereum (Mainnet)
-                </p>
-                <span className="ml-auto text-[10px] text-slate-500 px-2 py-0.5 border border-[var(--color-border-darker)] rounded bg-[var(--color-surface-dark)] shrink-0">
-                  Via Rainbow Bridge
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="space-y-4">
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-              Execution Timeline
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
+          {!selectedActivity ? (
+            <p className="text-sm text-[var(--color-text-muted)] text-center py-8">
+              Select an activity from the table
             </p>
-            <div className="relative pl-6 space-y-6 border-l border-[var(--color-border-darker)] ml-2">
-              {[
-                {
-                  label: "Intent Created",
-                  time: "Oct 24, 2023 • 14:20:05",
-                  done: true,
-                },
-                {
-                  label: "Approval Secured (2/2)",
-                  time: "Oct 24, 2023 • 14:22:12",
-                  done: true,
-                },
-                {
-                  label: "Transmitting to Bridge",
-                  time: "Oct 24, 2023 • 14:25:30",
-                  done: false,
-                },
-              ].map((step) => (
-                <div key={step.label} className="relative">
-                  <div
-                    className={`absolute -left-[31px] top-0 size-4 rounded-full border-4 border-[var(--color-surface-dark)] ${step.done ? "bg-green-500" : "bg-yellow-500"}`}
-                  />
-                  <p className="text-xs font-bold text-slate-900 dark:text-white">
-                    {step.label}
-                  </p>
-                  <p className="text-[10px] text-slate-500">{step.time}</p>
+          ) : (
+            <>
+              <div
+                className={`rounded-xl p-4 flex flex-col items-center text-center space-y-2 border ${
+                  selectedActivity.status === "completed"
+                    ? "bg-green-500/10 border-green-500/20"
+                    : selectedActivity.status === "failed"
+                      ? "bg-red-500/10 border-red-500/20"
+                      : "bg-yellow-500/10 border-yellow-500/20"
+                }`}
+              >
+                <div
+                  className={`size-12 rounded-full flex items-center justify-center ${
+                    selectedActivity.status === "completed"
+                      ? "bg-green-500/20 text-green-500"
+                      : selectedActivity.status === "failed"
+                        ? "bg-red-500/20 text-red-500"
+                        : "bg-yellow-500/20 text-yellow-500"
+                  }`}
+                >
+                  <Icon name="history" size={24} />
                 </div>
-              ))}
-            </div>
+                <div>
+                  <p
+                    className={`font-bold uppercase text-[10px] tracking-widest ${
+                      selectedActivity.status === "completed"
+                        ? "text-green-500"
+                        : selectedActivity.status === "failed"
+                          ? "text-red-500"
+                          : "text-yellow-500"
+                    }`}
+                  >
+                    {selectedActivity.status}
+                  </p>
+                  <h4 className="font-bold text-lg text-slate-900 dark:text-white mt-1">
+                    {selectedActivity.title}
+                  </h4>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                  Date
+                </p>
+                <div className="p-3 bg-[var(--color-background-darker)] rounded-lg border border-[var(--color-border-darker)]">
+                  <p className="text-sm text-slate-900 dark:text-white">
+                    {formatActivityDate(selectedActivity.date)}
+                  </p>
+                </div>
+              </div>
+              {selectedActivity.recipient && (
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    {selectedActivity.title.startsWith("Received")
+                      ? "From"
+                      : "To"}
+                  </p>
+                  <div className="p-3 bg-[var(--color-background-darker)] rounded-lg border border-[var(--color-border-darker)]">
+                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate" title={selectedActivity.recipient}>
+                      {selectedActivity.recipient}
+                    </p>
+                  </div>
+                </div>
+              )}
+              <div className="space-y-2">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                  Amount
+                </p>
+                <div className="p-3 bg-[var(--color-background-darker)] rounded-lg border border-[var(--color-border-darker)]">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                    {selectedActivity.amount}
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                  Transaction Hash
+                </p>
+                <div className="flex items-center justify-between gap-2 p-3 bg-[var(--color-background-darker)] rounded-lg border border-[var(--color-border-darker)]">
+                  <code className="text-xs text-[var(--color-primary)] truncate" title={selectedActivity.transactionHash}>
+                    {selectedActivity.transactionHash
+                      ? `${selectedActivity.transactionHash.slice(0, 8)}…${selectedActivity.transactionHash.slice(-8)}`
+                      : "—"}
+                  </code>
+                  {selectedExplorerUrl && (
+                    <a
+                      href={selectedExplorerUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 text-[var(--color-primary)] hover:underline flex items-center gap-1"
+                      aria-label="View on NearBlocks Explorer"
+                    >
+                      <Icon name="open_in_new" size={18} />
+                    </a>
+                  )}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                  Network
+                </p>
+                <div className="flex items-center gap-3 p-3 bg-[var(--color-background-darker)] rounded-lg border border-[var(--color-border-darker)]">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                    NEAR {network === "testnet" ? "Testnet" : "Mainnet"}
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+        {selectedActivity && selectedExplorerUrl && (
+          <div className="p-6 border-t border-[var(--color-border-darker)] bg-[var(--color-background-darker)]/30">
+            <a
+              href={selectedExplorerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] hover:bg-[var(--color-border-darker)] py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors text-slate-900 dark:text-white"
+            >
+              <Icon name="open_in_new" size={20} />
+              View on Explorer
+            </a>
           </div>
-        </div>
-        <div className="p-6 border-t border-[var(--color-border-darker)] bg-[var(--color-background-darker)]/30">
-          <button
-            type="button"
-            className="w-full bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] hover:bg-[var(--color-border-darker)] py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors text-slate-900 dark:text-white"
-          >
-            <Icon name="download" size={20} />
-            Download Receipt
-          </button>
-        </div>
+        )}
       </aside>
     </div>
   );
