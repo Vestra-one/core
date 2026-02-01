@@ -84,9 +84,10 @@
    - Use `accountId` in Sidebar; remove hardcoded treasury.near for active account.
    - Optional: return URL on connect.
 
-2. **Phase 2 – Backend identity**
+2. **Phase 2 – Backend identity** ✅
    - Add `X-Account-Id` (or agreed header) to API client when `accountId` is available; backend uses it for scoping.
    - No token yet if backend doesn’t need it.
+   - **Done:** `api.ts` sends `X-Account-Id` when `accountId` is set; `createApi(accountId)` and `useApi()` hook for dashboard/authenticated calls.
 
 3. **Phase 3 – Backend session (if needed)**
    - Backend: session create/invalidate endpoints and token/cookie contract.
