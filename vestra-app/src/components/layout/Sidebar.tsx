@@ -1,7 +1,14 @@
 import { NavLink } from "react-router-dom";
 import { Icon } from "../ui/Icon";
 import { Logo } from "./Logo";
+import { useWallet } from "../../contexts/WalletContext";
+import { NEAR_NETWORK } from "../../lib/near";
 import { ROUTES } from "../../lib/constants";
+
+function truncateAccountId(accountId: string, head = 8, tail = 4): string {
+  if (accountId.length <= head + tail) return accountId;
+  return `${accountId.slice(0, head)}…${accountId.slice(-tail)}`;
+}
 
 const navItems = [
   { to: ROUTES.dashboard, icon: "dashboard", label: "Dashboard" },
@@ -12,6 +19,8 @@ const navItems = [
 ];
 
 export function Sidebar() {
+  const { accountId } = useWallet();
+
   return (
     <aside className="w-64 border-r border-[var(--color-border-darker)] bg-[var(--color-background-darker)] flex flex-col shrink-0 transition-colors duration-200">
       <div className="p-6 flex items-center gap-3">
@@ -41,15 +50,22 @@ export function Sidebar() {
           <Icon name="settings" size={22} />
           <span className="text-sm font-medium">Settings</span>
         </div>
-        <div className="flex items-center gap-3 p-2 bg-[var(--color-surface-dark)] rounded-xl border border-[var(--color-border-darker)]">
-          <div className="size-8 rounded-full bg-slate-400 dark:bg-slate-600 shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold truncate text-[var(--color-text-primary)]">
-              Enterprise Treasury
-            </p>
-            <p className="text-[10px] text-[var(--color-text-muted)] truncate">treasury.near</p>
+        {accountId && (
+          <div
+            className="flex items-center gap-3 p-2 bg-[var(--color-surface-dark)] rounded-xl border border-[var(--color-border-darker)]"
+            title={accountId}
+          >
+            <div className="size-8 rounded-full bg-slate-400 dark:bg-slate-600 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold truncate text-[var(--color-text-primary)]">
+                {truncateAccountId(accountId)}
+              </p>
+              <p className="text-[10px] text-[var(--color-text-muted)] truncate capitalize">
+                NEAR • {NEAR_NETWORK}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </aside>
   );

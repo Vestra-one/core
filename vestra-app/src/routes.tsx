@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { RouteErrorFallback } from "./components/RouteErrorFallback";
+import { RequireWallet } from "./components/RequireWallet";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 
 const LandingPage = lazy(() =>
@@ -82,8 +83,14 @@ const router = createBrowserRouter([
       },
       ...dashboardRoutes.map(({ path, Page }) => ({
         path,
-        element: <DashboardLayout />,
-        children: [{ index: true, element: <LazyPage Page={Page} /> }],
+        element: <RequireWallet />,
+        children: [
+          {
+            path: "",
+            element: <DashboardLayout />,
+            children: [{ index: true, element: <LazyPage Page={Page} /> }],
+          },
+        ],
       })),
     ],
   },

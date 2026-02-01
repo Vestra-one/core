@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Icon } from "../components/ui/Icon";
 import { Logo } from "../components/layout/Logo";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
@@ -12,6 +13,21 @@ function truncateAccountId(accountId: string, head = 6, tail = 4): string {
 
 export function LandingPage() {
   const { connect, isConnected, accountId, loading } = useWallet();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  const returnTo =
+    (location.state as { returnTo?: string } | null)?.returnTo ??
+    searchParams.get("returnTo") ??
+    null;
+
+  useEffect(() => {
+    if (!isConnected || loading || !returnTo) return;
+    const path = returnTo.startsWith("/") ? returnTo : `/${returnTo}`;
+    if (path === ROUTES.home) return;
+    navigate(path, { replace: true });
+  }, [isConnected, loading, returnTo, navigate]);
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-[var(--color-background-dark)]">
