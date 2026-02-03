@@ -15,6 +15,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@defuse-protocol/one-click-sdk-typescript": "^0.1.15",
     "@hookform/resolvers": "^5.2.2",
     "@near-wallet-selector/core": "^10.1.4",
     "@near-wallet-selector/modal-ui": "^10.1.4",

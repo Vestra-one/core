@@ -1,27 +1,124 @@
+import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Breadcrumb } from "../components/ui/Breadcrumb";
 import { Button } from "../components/ui/Button";
 import { Icon } from "../components/ui/Icon";
+import { useWallet } from "../contexts/WalletContext";
+import { useSupportedTokens, getDestinationAssetId } from "../hooks/useSupportedTokens";
+import { requestQuote, executeIntentTransfer } from "../lib/intents";
 import { ROUTES } from "../lib/constants";
 
-const chains = [
-  {
-    address: "0x71C21BF1d32708136C185A0CEBAE72E042733A2",
-    chain: "Ethereum",
-    chainColor: "bg-blue-500",
-    amount: "1.5",
-    unit: "ETH",
-  },
-  {
-    address: "0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199",
-    chain: "Polygon",
-    chainColor: "bg-purple-500",
-    amount: "500.0",
-    unit: "MATIC",
-  },
-];
+/** wNEAR decimals for converting human amount to smallest units. */
+const WNEAR_DECIMALS = 24;
+
+function toSmallestUnit(amountHuman: string, decimals: number): string {
+  const n = Number(amountHuman);
+  if (!Number.isFinite(n) || n < 0) return "0";
+  const [whole, frac = ""] = amountHuman.replace(/,/g, "").split(".");
+  const fracPadded = frac.slice(0, decimals).padEnd(decimals, "0");
+  return (whole === "" ? "0" : whole) + fracPadded;
+}
+
+export type ManualPaymentRow = {
+  id: string;
+  recipient: string;
+  chainId: string;
+  amount: string;
+};
+
+const emptyRow = (): ManualPaymentRow => ({
+  id: crypto.randomUUID(),
+  recipient: "",
+  chainId: "",
+  amount: "",
+});
 
 export function PaymentsManualPage() {
+  const { accountId, isConnected, connect, signAndSendTransaction } = useWallet();
+  const { chains, tokens, isLoading: tokensLoading } = useSupportedTokens();
+  const [rows, setRows] = useState<ManualPaymentRow[]>(() => [
+    { ...emptyRow(), recipient: "0x71C21BF1d32708136C185A0CEBAE72E042733A2", chainId: "eth", amount: "0.01" },
+    { ...emptyRow(), recipient: "0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199", chainId: "pol", amount: "0.01" },
+  ]);
+  const [sending, setSending] = useState(false);
+  const [sendResults, setSendResults] = useState<Array<{ rowId: string; ok: boolean; message: string }>>([]);
+
+  const addRow = useCallback(() => {
+    setRows((prev) => [...prev, emptyRow()]);
+  }, []);
+
+  const removeRow = useCallback((id: string) => {
+    setRows((prev) => prev.filter((r) => r.id !== id));
+    setSendResults((prev) => prev.filter((r) => r.rowId !== id));
+  }, []);
+
+  const clearAll = useCallback(() => {
+    setRows([emptyRow()]);
+    setSendResults([]);
+  }, []);
+
+  const updateRow = useCallback((id: string, patch: Partial<ManualPaymentRow>) => {
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+  }, []);
+
+  const validRows = useMemo(
+    () =>
+      rows.filter(
+        (r) =>
+          r.recipient.trim() !== "" &&
+          r.chainId !== "" &&
+          r.amount.trim() !== "" &&
+          Number(r.amount) > 0,
+      ),
+    [rows],
+  );
+
+  const totalRecipients = validRows.length;
+  const totalAmountDisplay = useMemo(() => {
+    const sum = validRows.reduce((acc, r) => acc + Number(r.amount), 0);
+    return sum.toFixed(4);
+  }, [validRows]);
+
+  const handleSendNow = useCallback(async () => {
+    if (!isConnected || !accountId) {
+      connect();
+      return;
+    }
+    if (validRows.length === 0) return;
+    setSending(true);
+    setSendResults([]);
+    const results: Array<{ rowId: string; ok: boolean; message: string }> = [];
+    for (const row of validRows) {
+      const destinationAssetId = getDestinationAssetId(tokens, row.chainId, "USDC") ?? getDestinationAssetId(tokens, row.chainId);
+      if (!destinationAssetId) {
+        results.push({ rowId: row.id, ok: false, message: "Unsupported chain or token" });
+        continue;
+      }
+      const amountSmallestUnit = toSmallestUnit(row.amount, WNEAR_DECIMALS);
+      try {
+        const quoteResponse = await requestQuote(
+          { recipient: row.recipient.trim(), destinationAssetId, amountSmallestUnit },
+          accountId,
+        );
+        const result = await executeIntentTransfer(
+          quoteResponse,
+          accountId,
+          signAndSendTransaction,
+        );
+        results.push({
+          rowId: row.id,
+          ok: result.status === "SUCCESS" || result.status === "PROCESSING" || result.status === "KNOWN_DEPOSIT_TX" || result.status === "PENDING_DEPOSIT",
+          message: result.status === "SUCCESS" ? "Sent" : result.status,
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Transfer failed";
+        results.push({ rowId: row.id, ok: false, message });
+      }
+    }
+    setSendResults(results);
+    setSending(false);
+  }, [isConnected, accountId, connect, validRows, tokens, signAndSendTransaction]);
+
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)] text-[var(--color-text-primary)]">
       <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 lg:px-10 py-8 min-h-0 overflow-auto">
@@ -81,73 +178,81 @@ export function PaymentsManualPage() {
                         Destination Chain
                       </th>
                       <th scope="col" className="px-6 py-4 text-[var(--color-text-muted)] text-xs font-bold uppercase tracking-wider w-1/4 text-right">
-                        Amount
+                        Amount (wNEAR)
                       </th>
+                      <th scope="col" className="px-6 py-4 w-10" aria-label="Remove row" />
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[var(--color-border-darker)]">
-                    {chains.map((row) => (
-                      <tr
-                        key={row.address}
-                        className="hover:bg-white/5 transition-colors"
-                      >
-                        <td className="px-6 py-4">
-                          <input
-                            type="text"
-                            defaultValue={row.address}
-                            className="w-full bg-transparent border-none focus:ring-0 text-sm font-medium text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]"
-                            placeholder="Paste 0x address or ENS..."
-                          />
-                        </td>
-                        <td className="px-6 py-4">
-                          <button
-                            type="button"
-                            className="flex items-center justify-between gap-2 px-3 h-9 rounded-lg bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-[var(--color-text-primary)] text-xs font-semibold w-full"
-                          >
-                            <span className="flex items-center gap-2">
-                              <span
-                                className={`w-2 h-2 rounded-full ${row.chainColor}`}
-                              />
-                              {row.chain}
-                            </span>
-                            <Icon name="expand_more" size={18} />
-                          </button>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
+                    {rows.map((row) => {
+                      const result = sendResults.find((r) => r.rowId === row.id);
+                      return (
+                        <tr
+                          key={row.id}
+                          className="hover:bg-white/5 transition-colors"
+                        >
+                          <td className="px-6 py-4">
                             <input
                               type="text"
-                              defaultValue={row.amount}
-                              className="bg-transparent border-none focus:ring-0 text-right text-sm font-bold w-24 text-[var(--color-text-primary)]"
+                              value={row.recipient}
+                              onChange={(e) => updateRow(row.id, { recipient: e.target.value })}
+                              className="w-full bg-transparent border-none focus:ring-0 text-sm font-medium text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]"
+                              placeholder="0x... or destination address"
                             />
-                            <span className="text-xs font-bold text-[var(--color-text-muted)]">
-                              {row.unit}
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                    <tr className="bg-white/[0.02]">
-                      <td className="px-6 py-4">
-                        <input
-                          type="text"
-                          placeholder="Add another recipient address..."
-                          className="w-full bg-transparent border-none focus:ring-0 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]"
-                        />
-                      </td>
-                      <td className="px-6 py-4">
-                        <button
-                          type="button"
-                          className="flex items-center justify-between gap-2 px-3 h-9 rounded-lg border border-dashed border-[var(--color-border-darker)] text-[var(--color-text-muted)] text-xs font-medium w-full"
-                        >
-                          Select chain
-                          <Icon name="expand_more" size={18} />
-                        </button>
-                      </td>
-                      <td className="px-6 py-4 text-right text-[var(--color-text-secondary)]">
-                        0.00
-                      </td>
-                    </tr>
+                          </td>
+                          <td className="px-6 py-4">
+                            <select
+                              value={row.chainId}
+                              onChange={(e) => updateRow(row.id, { chainId: e.target.value })}
+                              className="w-full px-3 h-9 rounded-lg bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-[var(--color-text-primary)] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                            >
+                              <option value="">Select chain</option>
+                              {chains.map((c) => (
+                                <option key={c.id} value={c.id}>
+                                  {c.label}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <input
+                                type="text"
+                                inputMode="decimal"
+                                value={row.amount}
+                                onChange={(e) => updateRow(row.id, { amount: e.target.value })}
+                                className="bg-transparent border-none focus:ring-0 text-right text-sm font-bold w-24 text-[var(--color-text-primary)]"
+                                placeholder="0"
+                              />
+                              <span className="text-xs font-bold text-[var(--color-text-muted)]">
+                                wNEAR
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            {result && (
+                              <span
+                                className={
+                                  result.ok
+                                    ? "text-green-600 dark:text-green-500 text-xs"
+                                    : "text-red-600 dark:text-red-500 text-xs"
+                                }
+                              >
+                                {result.message}
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeRow(row.id)}
+                              aria-label="Remove row"
+                              className="text-[var(--color-text-muted)] hover:text-red-500 transition-colors ml-1"
+                            >
+                              <Icon name="close" size={18} />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -157,20 +262,15 @@ export function PaymentsManualPage() {
                     variant="secondary"
                     size="sm"
                     leftIcon={<Icon name="add" size={18} />}
+                    onClick={addRow}
                   >
                     Add row
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    leftIcon={<Icon name="content_paste" size={18} />}
-                  >
-                    Paste multiple
                   </Button>
                 </div>
                 <button
                   type="button"
                   aria-label="Clear all rows"
+                  onClick={clearAll}
                   className="text-[var(--color-text-muted)] hover:text-red-500 transition-colors"
                 >
                   <Icon name="delete_sweep" size={24} />
@@ -188,37 +288,33 @@ export function PaymentsManualPage() {
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-[var(--color-text-muted)]">Total recipients</span>
                   <span className="font-bold text-[var(--color-text-primary)]">
-                    2
+                    {totalRecipients}
                   </span>
                 </div>
                 <div className="flex justify-between items-start text-sm">
                   <span className="text-[var(--color-text-muted)]">Total amount</span>
                   <div className="text-right">
                     <p className="font-bold text-[var(--color-text-primary)]">
-                      1.5 ETH
-                    </p>
-                    <p className="font-bold text-[var(--color-text-primary)]">
-                      500.0 MATIC
-                    </p>
-                    <p className="text-[var(--color-text-muted)] text-xs mt-1">
-                      ≈ $4,250.60 USD
+                      {totalAmountDisplay} wNEAR
                     </p>
                   </div>
                 </div>
                 <div className="flex justify-between items-center text-sm pt-4 border-t border-[var(--color-border-darker)]">
-                  <span className="text-[var(--color-text-muted)]">Estimated Fees</span>
-                  <span className="font-bold text-green-600 dark:text-green-500">
-                    $12.45
-                  </span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
                   <span className="text-[var(--color-text-muted)]">Network ETA</span>
                   <span className="font-bold text-[var(--color-text-primary)]">~ 2 mins</span>
                 </div>
               </div>
               <div className="space-y-3">
-                <Button className="w-full h-12">
-                  Send Now
+                <Button
+                  className="w-full h-12"
+                  onClick={handleSendNow}
+                  disabled={sending || validRows.length === 0 || tokensLoading}
+                >
+                  {!isConnected
+                    ? "Connect Wallet"
+                    : sending
+                      ? "Sending…"
+                      : "Send Now"}
                 </Button>
                 <Button
                   variant="secondary"
@@ -235,8 +331,8 @@ export function PaymentsManualPage() {
                   size={20}
                 />
                 <p className="text-[11px] leading-tight text-blue-300">
-                  Your current balance is sufficient for this batch. All
-                  recipients will be notified once broadcasted.
+                  Transfers use NEAR Intents: you send wNEAR from NEAR; recipients
+                  receive tokens on their chosen chain. Connect wallet to send.
                 </p>
               </div>
             </div>
