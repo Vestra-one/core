@@ -52,11 +52,17 @@ export function PaymentsScheduledPage() {
             to={ROUTES.paymentsManual}
             className="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
           >
-            Activity
+            New Payment
           </Link>
           <span className="text-sm font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] py-5 -mb-[22px]">
             Scheduled
           </span>
+          <Link
+            to={ROUTES.paymentsHistory}
+            className="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
+          >
+            Payment History
+          </Link>
           <a
             href="#"
             className="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
