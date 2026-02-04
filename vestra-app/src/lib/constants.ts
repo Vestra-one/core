@@ -6,10 +6,11 @@ export const ROUTES = {
   dashboard: "/dashboard",
   treasury: "/treasury",
   onboarding: "/onboarding",
-  paymentsBulk: "/payments/bulk",
   paymentsManual: "/payments/manual",
-  paymentsManualInvoice: "/payments/manual-invoice",
   paymentsScheduled: "/payments/scheduled",
+  paymentsHistory: "/payments/history",
+  paymentsBulk: "/payments/bulk",
+  paymentsManualInvoice: "/payments/manual-invoice",
   contacts: "/contacts",
   analytics: "/analytics",
 } as const;

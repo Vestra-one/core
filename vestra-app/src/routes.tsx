@@ -32,6 +32,11 @@ const PaymentsScheduledPage = lazy(() =>
     default: m.PaymentsScheduledPage,
   })),
 );
+const PaymentsHistoryPage = lazy(() =>
+  import("./pages/PaymentsHistoryPage").then((m) => ({
+    default: m.PaymentsHistoryPage,
+  })),
+);
 const ContactsPage = lazy(() =>
   import("./pages/ContactsPage").then((m) => ({ default: m.ContactsPage })),
 );
@@ -63,6 +68,7 @@ const dashboardRoutes: { path: string; Page: React.LazyExoticComponent<React.Com
   { path: "payments/manual", Page: PaymentsManualPage },
   { path: "payments/manual-invoice", Page: PaymentsManualInvoicePage },
   { path: "payments/scheduled", Page: PaymentsScheduledPage },
+  { path: "payments/history", Page: PaymentsHistoryPage },
   { path: "contacts", Page: ContactsPage },
   { path: "analytics", Page: AnalyticsPage },
 ];
