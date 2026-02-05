@@ -12,6 +12,17 @@ dist
 dist-ssr
 *.local
 
+# npm / package manager
+.npm-tmp-cache
+.npm
+.pnpm-store
+
+# Test / build artifacts
+test-results
+playwright-report
+coverage
+*.tsbuildinfo
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

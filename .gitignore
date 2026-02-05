@@ -1,2 +1,6 @@
 .DS_Store
 .env
+
+# npm / package manager
+.npm-tmp-cache
+.npm
