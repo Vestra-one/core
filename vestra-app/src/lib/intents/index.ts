@@ -17,8 +17,15 @@ export {
 export {
   requestQuote,
   executeIntentTransfer,
+  executeIntentTransferViaRelayer,
   originAssetIdToNearContractId,
   type IntentTransferParams,
   type IntentTransferResult,
   type SignAndSendTransaction,
 } from "./transfer";
+export {
+  buildTransferDelegateParams,
+  type DelegateActionParams,
+  type SignDelegateAction,
+} from "./metaTx";
+export { relaySignedDelegateAction, type RelayResult } from "./relayer";

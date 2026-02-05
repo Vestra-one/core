@@ -9,7 +9,12 @@ import {
   getOriginTokensOnNear,
   getDefaultOriginAssetId,
 } from "../../hooks/useSupportedTokens";
-import { requestQuote, executeIntentTransfer } from "../../lib/intents";
+import {
+  requestQuote,
+  executeIntentTransfer,
+  executeIntentTransferViaRelayer,
+  buildTransferDelegateParams,
+} from "../../lib/intents";
 import { validateRecipientAddress } from "../../lib/addressValidation";
 import { ROUTES } from "../../lib/constants";
 
@@ -25,7 +30,14 @@ type Step = "form" | "sending" | "success" | "error";
 
 export function SinglePaymentForm() {
   const [searchParams] = useSearchParams();
-  const { accountId, isConnected, connect, signAndSendTransaction } = useWallet();
+  const {
+    accountId,
+    isConnected,
+    connect,
+    signAndSendTransaction,
+    relayerUrl,
+    signDelegateActionForMetaTx,
+  } = useWallet();
   const { chains, tokens, isLoading: tokensLoading, error: tokensError } = useSupportedTokens();
   const [recipient, setRecipient] = useState(() => searchParams.get("recipient") ?? "");
   const [chainId, setChainId] = useState("");
@@ -105,12 +117,37 @@ export function SinglePaymentForm() {
         },
         accountId,
       );
-      const result = await executeIntentTransfer(
-        quoteResponse,
-        accountId,
-        signAndSendTransaction,
-        originAssetId,
-      );
+
+      const useGasless =
+        relayerUrl &&
+        signDelegateActionForMetaTx &&
+        accountId;
+
+      const result = useGasless
+        ? await (async () => {
+            const { receiverId, actions } = buildTransferDelegateParams(
+              quoteResponse,
+              originAssetId,
+            );
+            const serialized = await signDelegateActionForMetaTx({
+              senderId: accountId,
+              receiverId,
+              actions,
+            });
+            return executeIntentTransferViaRelayer(
+              quoteResponse,
+              accountId,
+              serialized,
+              relayerUrl,
+            );
+          })()
+        : await executeIntentTransfer(
+            quoteResponse,
+            accountId,
+            signAndSendTransaction,
+            originAssetId,
+          );
+
       const ok =
         result.status === "SUCCESS" ||
         result.status === "PROCESSING" ||
@@ -132,6 +169,8 @@ export function SinglePaymentForm() {
     recipient,
     amount,
     signAndSendTransaction,
+    relayerUrl,
+    signDelegateActionForMetaTx,
   ]);
 
   const resetForm = useCallback(() => {

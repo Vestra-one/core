@@ -15,6 +15,8 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@near-js/accounts": "^2.5.0",
+    "@near-js/providers": "^2.5.0",
     "@defuse-protocol/one-click-sdk-typescript": "^0.1.15",
     "@hookform/resolvers": "^5.2.2",
     "@near-wallet-selector/core": "^10.1.4",

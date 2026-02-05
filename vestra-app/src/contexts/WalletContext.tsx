@@ -17,8 +17,14 @@ import { actionCreators } from "@near-js/transactions";
 import type { FinalExecutionOutcome } from "@near-js/types";
 import { createSession, signOut as signOutSession } from "../lib/auth-api";
 import { NEAR_CONTRACT_ID, NEAR_NETWORK } from "../lib/near";
+import { createDevMetaTxSigner } from "../lib/intents/metaTxSigner";
+import type { SignDelegateAction } from "../lib/intents/metaTx";
 
 import "@near-wallet-selector/modal-ui/styles.css";
+
+/** Optional relayer URL for NEP-366 gasless (meta) transactions. */
+const RELAYER_URL: string | null =
+  (import.meta.env.VITE_RELAYER_URL as string)?.trim() || null;
 
 /** High-level action for signAndSendTransaction (converted to NEAR actions inside context). */
 export type WalletAction =
@@ -47,6 +53,10 @@ type WalletContextValue = {
   clearSession: () => void;
   /** Sign and send a NEAR transaction (e.g. for intent transfer deposit). Resolves with outcome or throws. */
   signAndSendTransaction: (params: SignAndSendParams) => Promise<FinalExecutionOutcome | void>;
+  /** If set, relayer URL for NEP-366 gasless deposit. */
+  relayerUrl: string | null;
+  /** If set, can sign a DelegateAction for meta tx (gasless). Requires relayerUrl; dev signer when VITE_DEV_META_TX_SIGNER_KEY is set. */
+  signDelegateActionForMetaTx: SignDelegateAction | null;
 };
 
 const WalletContext = createContext<WalletContextValue | null>(null);
@@ -191,6 +201,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [selector],
   );
 
+  const signDelegateActionForMetaTx = useMemo((): SignDelegateAction | null => {
+    if (!RELAYER_URL) return null;
+    return createDevMetaTxSigner();
+  }, []);
+
   const value = useMemo<WalletContextValue>(
     () => ({
       accountId,
@@ -201,8 +216,19 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       getToken,
       clearSession,
       signAndSendTransaction,
+      relayerUrl: RELAYER_URL,
+      signDelegateActionForMetaTx,
     }),
-    [accountId, loading, connect, disconnect, getToken, clearSession, signAndSendTransaction]
+    [
+      accountId,
+      loading,
+      connect,
+      disconnect,
+      getToken,
+      clearSession,
+      signAndSendTransaction,
+      signDelegateActionForMetaTx,
+    ],
   );
 
   return (
