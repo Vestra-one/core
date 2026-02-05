@@ -12,7 +12,6 @@ import { setupWalletSelector } from "@near-wallet-selector/core";
 import { setupModal } from "@near-wallet-selector/modal-ui";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import type { WalletSelector } from "@near-wallet-selector/core";
-import type { WalletSelectorModal } from "@near-wallet-selector/modal-ui";
 import { actionCreators } from "@near-js/transactions";
 import type { FinalExecutionOutcome } from "@near-js/types";
 import { createSession, signOut as signOutSession } from "../lib/auth-api";
@@ -72,7 +71,7 @@ function getActiveAccountId(
 
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [selector, setSelector] = useState<WalletSelector | null>(null);
-  const [modal, setModal] = useState<WalletSelectorModal | null>(null);
+  const [modal, setModal] = useState<Awaited<ReturnType<typeof setupModal>> | null>(null);
   const [accountId, setAccountId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [sessionToken, setSessionToken] = useState<string | null>(null);

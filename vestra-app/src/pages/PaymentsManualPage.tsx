@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Breadcrumb } from "../components/ui/Breadcrumb";
-import { Icon } from "../components/ui/Icon";
 import { SinglePaymentForm } from "../components/payments/SinglePaymentForm";
 import { ROUTES } from "../lib/constants";
 

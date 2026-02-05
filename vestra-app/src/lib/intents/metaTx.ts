@@ -5,7 +5,6 @@
  */
 
 import { actionCreators } from "@near-js/transactions";
-import type { Action } from "@near-js/transactions";
 import {
   FT_TRANSFER_GAS,
   FT_TRANSFER_STORAGE_DEPOSIT,
@@ -15,10 +14,13 @@ import {
 import { originAssetIdToNearContractId } from "./transfer";
 import type { QuoteResponse } from "./oneClick";
 
+/** Action type from actionCreators (avoids namespace type from declare module). */
+type NearAction = ReturnType<typeof actionCreators.functionCall>;
+
 /** Parameters for creating a DelegateAction (receiver + actions). */
 export type DelegateActionParams = {
   receiverId: string;
-  actions: Action[];
+  actions: NearAction[];
 };
 
 /**
@@ -37,7 +39,7 @@ export function buildTransferDelegateParams(
   const amountIn = quote.amountIn;
   const receiverId = originAssetIdToNearContractId(originAssetId);
 
-  const actions: Action[] = [
+  const actions: NearAction[] = [
     actionCreators.functionCall(
       "storage_deposit",
       {
@@ -68,5 +70,5 @@ export function buildTransferDelegateParams(
 export type SignDelegateAction = (params: {
   senderId: string;
   receiverId: string;
-  actions: Action[];
+  actions: NearAction[];
 }) => Promise<Uint8Array>;

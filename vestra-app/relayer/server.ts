@@ -47,10 +47,10 @@ app.post("/relay", async (req: Request, res: Response) => {
       res.status(400).json({ error: "Body must be JSON array of bytes or { signed_delegate_action: base64 }" });
       return;
     }
-    const buffer = Buffer.from(serialized);
+    const bytes = new Uint8Array(Buffer.from(serialized));
     const signedDelegate = deserialize(
       SCHEMA.SignedDelegate as Parameters<typeof deserialize>[0],
-      buffer,
+      bytes,
     ) as SignedDelegate;
     const outcome = await relayerAccount.signAndSendTransaction({
       actions: [actionCreators.signedDelegate(signedDelegate)],

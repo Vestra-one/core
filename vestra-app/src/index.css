@@ -1,16 +1,14 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  /* Trustworthy indigo – used widely in fintech for reliability */
-  --color-primary: #4f46e5;
-  --font-display: "Inter", sans-serif;
-  /* Smooth, consistent radii */
-  --radius-card: 0.75rem;
-  --radius-button: 0.5rem;
-}
-
+/* Trustworthy indigo – used widely in fintech for reliability */
 /* Light theme (default when .dark is not on html) */
 :root {
+  --color-primary: #4f46e5;
+  --font-display: "Inter", sans-serif;
+  --radius-card: 0.75rem;
+  --radius-button: 0.5rem;
   --color-primary-hover: #4338ca;
   --color-background-dark: #ffffff;
   --color-background-darker: #f8fafc;
@@ -32,6 +30,7 @@
 
 /* Dark theme */
 .dark {
+  --color-primary: #6366f1;
   --color-primary-hover: #6366f1;
   --color-background-dark: #0f0e17;
   --color-background-darker: #0a0912;
@@ -53,7 +52,9 @@
     @apply antialiased;
   }
   body {
-    @apply bg-[var(--color-background-darker)] font-[family-name:var(--font-display)] min-h-screen;
+    @apply antialiased min-h-screen;
+    background-color: var(--color-background-darker);
+    font-family: var(--font-display);
     color: var(--color-text-primary);
     transition: background-color 0.2s ease-out, color 0.2s ease-out;
   }

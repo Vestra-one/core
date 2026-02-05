@@ -15,6 +15,7 @@ import {
   executeIntentTransferViaRelayer,
   buildTransferDelegateParams,
 } from "../../lib/intents";
+import type { QuoteResponse } from "../../lib/intents";
 import { validateRecipientAddress } from "../../lib/addressValidation";
 import { ROUTES } from "../../lib/constants";
 
@@ -46,6 +47,11 @@ export function SinglePaymentForm() {
   const [destinationTokenSymbol, setDestinationTokenSymbol] = useState("USDC");
   const [step, setStep] = useState<Step>("form");
   const [errorMessage, setErrorMessage] = useState("");
+  /** When gasless was attempted and failed, store quote so user can retry with wallet (direct). */
+  const [lastFailedQuote, setLastFailedQuote] = useState<{
+    quoteResponse: QuoteResponse;
+    originAssetId: string;
+  } | null>(null);
 
   const nearTokens = useMemo(() => getOriginTokensOnNear(tokens), [tokens]);
   const defaultOriginAssetId = useMemo(() => getDefaultOriginAssetId(tokens), [tokens]);
@@ -62,7 +68,7 @@ export function SinglePaymentForm() {
   );
 
   const chainTokens = useMemo(
-    () => (chainId && chains.find((c) => c.id === chainId)?.tokens) ?? [],
+    () => (chainId ? chains.find((c) => c.id === chainId)?.tokens ?? [] : []),
     [chainId, chains],
   );
 
@@ -107,8 +113,9 @@ export function SinglePaymentForm() {
     setErrorMessage("");
     const amountSmallestUnit = toSmallestUnit(amount, selectedOriginToken.decimals);
     const originAssetId = selectedOriginToken.assetId;
+    let quoteResponse: QuoteResponse | undefined;
     try {
-      const quoteResponse = await requestQuote(
+      quoteResponse = await requestQuote(
         {
           recipient: recipient.trim(),
           destinationAssetId,
@@ -158,6 +165,16 @@ export function SinglePaymentForm() {
     } catch (err) {
       setStep("error");
       setErrorMessage(err instanceof Error ? err.message : "Transfer failed");
+      if (
+        relayerUrl &&
+        signDelegateActionForMetaTx &&
+        accountId &&
+        quoteResponse !== undefined
+      ) {
+        setLastFailedQuote({ quoteResponse, originAssetId });
+      } else {
+        setLastFailedQuote(null);
+      }
     }
   }, [
     isConnected,
@@ -176,6 +193,7 @@ export function SinglePaymentForm() {
   const resetForm = useCallback(() => {
     setStep("form");
     setErrorMessage("");
+    setLastFailedQuote(null);
     setRecipient("");
     setChainId("");
     setOriginTokenAssetId(defaultOriginAssetId ?? "");
@@ -183,11 +201,36 @@ export function SinglePaymentForm() {
     setDestinationTokenSymbol("USDC");
   }, [defaultOriginAssetId]);
 
+  const handleRetryWithWallet = useCallback(async () => {
+    if (!lastFailedQuote || !accountId) return;
+    setStep("sending");
+    setErrorMessage("");
+    setLastFailedQuote(null);
+    try {
+      const result = await executeIntentTransfer(
+        lastFailedQuote.quoteResponse,
+        accountId,
+        signAndSendTransaction,
+        lastFailedQuote.originAssetId,
+      );
+      const ok =
+        result.status === "SUCCESS" ||
+        result.status === "PROCESSING" ||
+        result.status === "KNOWN_DEPOSIT_TX" ||
+        result.status === "PENDING_DEPOSIT";
+      setStep(ok ? "success" : "error");
+      if (!ok) setErrorMessage(result.status);
+    } catch (err) {
+      setStep("error");
+      setErrorMessage(err instanceof Error ? err.message : "Transfer failed");
+    }
+  }, [lastFailedQuote, accountId, signAndSendTransaction]);
+
   if (step === "sending") {
     return (
       <div className="flex flex-col items-center justify-center py-12 px-6">
         <div className="size-14 rounded-full bg-[var(--color-primary)]/20 flex items-center justify-center mb-4">
-          <Icon name="sync" className="text-[var(--color-primary)] animate-spin" size={28} />
+          <Icon name="sync" className="text-[var(--color-primary)] animate-spin" size={32} />
         </div>
         <p className="text-[var(--color-text-primary)] font-semibold">Sending payment…</p>
         <p className="text-[var(--color-text-muted)] text-sm mt-1">Confirm in your wallet if prompted.</p>
@@ -199,7 +242,7 @@ export function SinglePaymentForm() {
     return (
       <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
         <div className="size-16 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
-          <Icon name="check_circle" className="text-green-500" size={36} />
+          <Icon name="check_circle" className="text-green-500" size={32} />
         </div>
         <h3 className="text-lg font-bold text-[var(--color-text-primary)]">Payment sent</h3>
         <p className="text-[var(--color-text-muted)] text-sm mt-1">
@@ -226,12 +269,22 @@ export function SinglePaymentForm() {
     return (
       <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
         <div className="size-16 rounded-full bg-red-500/20 flex items-center justify-center mb-4">
-          <Icon name="error" className="text-red-500" size={36} />
+          <Icon name="error" className="text-red-500" size={32} />
         </div>
         <h3 className="text-lg font-bold text-[var(--color-text-primary)]">Payment failed</h3>
         <p className="text-[var(--color-text-muted)] text-sm mt-1">{errorMessage}</p>
-        <div className="mt-6 flex gap-3">
-          <Button onClick={() => { setStep("form"); setErrorMessage(""); }}>Try again</Button>
+        <div className="mt-6 flex flex-wrap gap-3 justify-center">
+          {lastFailedQuote && (
+            <Button onClick={handleRetryWithWallet}>
+              Pay with wallet instead (you pay gas)
+            </Button>
+          )}
+          <Button
+            variant={lastFailedQuote ? "secondary" : "primary"}
+            onClick={() => { setStep("form"); setErrorMessage(""); setLastFailedQuote(null); }}
+          >
+            Try again
+          </Button>
           <Button variant="secondary" onClick={resetForm}>New payment</Button>
         </div>
       </div>
