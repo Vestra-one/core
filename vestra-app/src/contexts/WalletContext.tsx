@@ -235,6 +235,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/* eslint-disable-next-line react-refresh/only-export-components -- hook is the primary API alongside WalletProvider */
 export function useWallet(): WalletContextValue {
   const ctx = useContext(WalletContext);
   if (!ctx) throw new Error("useWallet must be used within WalletProvider");

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Icon } from "../ui/Icon";
 import { Logo } from "./Logo";
@@ -40,18 +40,7 @@ export function Sidebar() {
   const location = useLocation();
   const isPaymentsArea = location.pathname.startsWith(PAYMENTS_PREFIX);
   const [paymentsExpanded, setPaymentsExpanded] = useState(false);
-  const prevPathRef = useRef(location.pathname);
-
-  useEffect(() => {
-    const prevWasPayments = prevPathRef.current.startsWith(PAYMENTS_PREFIX);
-    const nowPayments = isPaymentsArea;
-    if (!prevWasPayments && nowPayments) {
-      setPaymentsExpanded(true);
-    }
-    prevPathRef.current = location.pathname;
-  }, [location.pathname, isPaymentsArea]);
-
-  const paymentsOpen = paymentsExpanded;
+  const paymentsOpen = isPaymentsArea || paymentsExpanded;
 
   return (
     <aside className="w-64 border-r border-[var(--color-border-darker)] bg-[var(--color-background-darker)] flex flex-col shrink-0 transition-colors duration-200">

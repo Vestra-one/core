@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Icon } from "../components/ui/Icon";
@@ -74,23 +74,32 @@ export function DashboardPage() {
     enabled: !!accountId,
   });
 
-  const activities: Activity[] =
-    accountId && txnsData?.txns
-      ? txnsData.txns.map((txn) => mapTxnToActivity(txn, accountId))
-      : [];
+  const activities: Activity[] = useMemo(
+    () =>
+      accountId && txnsData?.txns
+        ? txnsData.txns.map((txn) => mapTxnToActivity(txn, accountId))
+        : [],
+    [accountId, txnsData],
+  );
 
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-  useEffect(() => {
-    if (activities.length > 0 && !selectedActivity) {
-      setSelectedActivity(activities[0]);
-    } else if (activities.length === 0) {
-      setSelectedActivity(null);
+  const effectiveSelectedActivity = useMemo(() => {
+    if (activities.length === 0) return null;
+    if (
+      selectedActivity &&
+      activities.some((a) => a.id === selectedActivity.id)
+    ) {
+      return selectedActivity;
     }
+    return activities[0];
   }, [activities, selectedActivity]);
 
   const selectedExplorerUrl =
-    selectedActivity?.transactionHash
-      ? getTransactionExplorerUrl(selectedActivity.transactionHash, network)
+    effectiveSelectedActivity?.transactionHash
+      ? getTransactionExplorerUrl(
+          effectiveSelectedActivity.transactionHash,
+          network,
+        )
       : null;
 
   return (
@@ -246,7 +255,7 @@ export function DashboardPage() {
                         }
                       }}
                       className={`cursor-pointer hover:bg-[var(--color-border-darker)]/30 transition-colors ${
-                        selectedActivity?.id === a.id
+                        effectiveSelectedActivity?.id === a.id
                           ? "bg-[var(--color-primary)]/5 border-l-4 border-[var(--color-primary)]"
                           : ""
                       }`}
@@ -315,7 +324,7 @@ export function DashboardPage() {
           </h2>
         </div>
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
-          {!selectedActivity ? (
+          {!effectiveSelectedActivity ? (
             <p className="text-sm text-[var(--color-text-muted)] text-center py-8">
               Select an activity from the table
             </p>
@@ -323,18 +332,18 @@ export function DashboardPage() {
             <>
               <div
                 className={`rounded-xl p-4 flex flex-col items-center text-center space-y-2 border ${
-                  selectedActivity.status === "completed"
+                  effectiveSelectedActivity.status === "completed"
                     ? "bg-green-500/10 border-green-500/20"
-                    : selectedActivity.status === "failed"
+                    : effectiveSelectedActivity.status === "failed"
                       ? "bg-red-500/10 border-red-500/20"
                       : "bg-yellow-500/10 border-yellow-500/20"
                 }`}
               >
                 <div
                   className={`size-12 rounded-full flex items-center justify-center ${
-                    selectedActivity.status === "completed"
+                    effectiveSelectedActivity.status === "completed"
                       ? "bg-green-500/20 text-green-500"
-                      : selectedActivity.status === "failed"
+                      : effectiveSelectedActivity.status === "failed"
                         ? "bg-red-500/20 text-red-500"
                         : "bg-yellow-500/20 text-yellow-500"
                   }`}
@@ -344,17 +353,17 @@ export function DashboardPage() {
                 <div>
                   <p
                     className={`font-bold uppercase text-[10px] tracking-widest ${
-                      selectedActivity.status === "completed"
+                      effectiveSelectedActivity.status === "completed"
                         ? "text-green-500"
-                        : selectedActivity.status === "failed"
+                        : effectiveSelectedActivity.status === "failed"
                           ? "text-red-500"
                           : "text-yellow-500"
                     }`}
                   >
-                    {selectedActivity.status}
+                    {effectiveSelectedActivity.status}
                   </p>
                   <h4 className="font-bold text-lg text-slate-900 dark:text-white mt-1">
-                    {selectedActivity.title}
+                    {effectiveSelectedActivity.title}
                   </h4>
                 </div>
               </div>
@@ -364,20 +373,20 @@ export function DashboardPage() {
                 </p>
                 <div className="p-3 bg-[var(--color-background-darker)] rounded-lg border border-[var(--color-border-darker)]">
                   <p className="text-sm text-slate-900 dark:text-white">
-                    {formatActivityDate(selectedActivity.date)}
+                    {formatActivityDate(effectiveSelectedActivity.date)}
                   </p>
                 </div>
               </div>
-              {selectedActivity.recipient && (
+              {effectiveSelectedActivity.recipient && (
                 <div className="space-y-2">
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                    {selectedActivity.title.startsWith("Received")
+                    {effectiveSelectedActivity.title.startsWith("Received")
                       ? "From"
                       : "To"}
                   </p>
                   <div className="p-3 bg-[var(--color-background-darker)] rounded-lg border border-[var(--color-border-darker)]">
-                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate" title={selectedActivity.recipient}>
-                      {selectedActivity.recipient}
+                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate" title={effectiveSelectedActivity.recipient}>
+                      {effectiveSelectedActivity.recipient}
                     </p>
                   </div>
                 </div>
@@ -388,7 +397,7 @@ export function DashboardPage() {
                 </p>
                 <div className="p-3 bg-[var(--color-background-darker)] rounded-lg border border-[var(--color-border-darker)]">
                   <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                    {selectedActivity.amount}
+                    {effectiveSelectedActivity.amount}
                   </p>
                 </div>
               </div>
@@ -397,9 +406,9 @@ export function DashboardPage() {
                   Transaction Hash
                 </p>
                 <div className="flex items-center justify-between gap-2 p-3 bg-[var(--color-background-darker)] rounded-lg border border-[var(--color-border-darker)]">
-                  <code className="text-xs text-[var(--color-primary)] truncate" title={selectedActivity.transactionHash}>
-                    {selectedActivity.transactionHash
-                      ? `${selectedActivity.transactionHash.slice(0, 8)}…${selectedActivity.transactionHash.slice(-8)}`
+                  <code className="text-xs text-[var(--color-primary)] truncate" title={effectiveSelectedActivity.transactionHash}>
+                    {effectiveSelectedActivity.transactionHash
+                      ? `${effectiveSelectedActivity.transactionHash.slice(0, 8)}…${effectiveSelectedActivity.transactionHash.slice(-8)}`
                       : "—"}
                   </code>
                   {selectedExplorerUrl && (
@@ -428,7 +437,7 @@ export function DashboardPage() {
             </>
           )}
         </div>
-        {selectedActivity && selectedExplorerUrl && (
+        {effectiveSelectedActivity && selectedExplorerUrl && (
           <div className="p-6 border-t border-[var(--color-border-darker)] bg-[var(--color-background-darker)]/30">
             <a
               href={selectedExplorerUrl}

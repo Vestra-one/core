@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "../ui/Button";
 import { Icon } from "../ui/Icon";
@@ -55,16 +55,11 @@ export function SinglePaymentForm() {
 
   const nearTokens = useMemo(() => getOriginTokensOnNear(tokens), [tokens]);
   const defaultOriginAssetId = useMemo(() => getDefaultOriginAssetId(tokens), [tokens]);
-
-  useEffect(() => {
-    if (defaultOriginAssetId && !originTokenAssetId) {
-      setOriginTokenAssetId(defaultOriginAssetId);
-    }
-  }, [defaultOriginAssetId, originTokenAssetId]);
+  const effectiveOriginAssetId = originTokenAssetId || defaultOriginAssetId || "";
 
   const selectedOriginToken = useMemo(
-    () => nearTokens.find((t) => t.assetId === originTokenAssetId) ?? nearTokens[0] ?? null,
-    [nearTokens, originTokenAssetId],
+    () => nearTokens.find((t) => t.assetId === effectiveOriginAssetId) ?? nearTokens[0] ?? null,
+    [nearTokens, effectiveOriginAssetId],
   );
 
   const chainTokens = useMemo(
@@ -72,20 +67,18 @@ export function SinglePaymentForm() {
     [chainId, chains],
   );
 
-  useEffect(() => {
-    if (chainId && chainTokens.length > 0) {
-      const hasCurrent = chainTokens.some(
-        (t) => t.symbol.toUpperCase() === destinationTokenSymbol.toUpperCase(),
-      );
-      if (!hasCurrent) {
-        setDestinationTokenSymbol(chainTokens[0].symbol);
-      }
-    }
-  }, [chainId, chainTokens, destinationTokenSymbol]);
+  const effectiveDestinationSymbol =
+    chainId && chainTokens.length > 0
+      ? (chainTokens.some(
+          (t) => t.symbol.toUpperCase() === destinationTokenSymbol.toUpperCase(),
+        )
+          ? destinationTokenSymbol
+          : chainTokens[0].symbol)
+      : destinationTokenSymbol;
 
   const destinationAssetId =
     chainId
-      ? getDestinationAssetId(tokens, chainId, destinationTokenSymbol) ??
+      ? getDestinationAssetId(tokens, chainId, effectiveDestinationSymbol) ??
         getDestinationAssetId(tokens, chainId)
       : null;
 
@@ -378,7 +371,7 @@ export function SinglePaymentForm() {
             Pay with (on NEAR)
           </label>
           <select
-            value={originTokenAssetId}
+            value={effectiveOriginAssetId}
             onChange={(e) => setOriginTokenAssetId(e.target.value)}
             className="w-full px-4 py-3 rounded-[var(--radius-button)] bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
           >
@@ -413,7 +406,7 @@ export function SinglePaymentForm() {
             Receive as (token)
           </label>
           <select
-            value={destinationTokenSymbol}
+            value={effectiveDestinationSymbol}
             onChange={(e) => setDestinationTokenSymbol(e.target.value)}
             className="w-full px-4 py-3 rounded-[var(--radius-button)] bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
           >
