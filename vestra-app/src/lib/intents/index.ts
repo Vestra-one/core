@@ -17,6 +17,7 @@ export {
 export {
   requestQuote,
   executeIntentTransfer,
+  originAssetIdToNearContractId,
   type IntentTransferParams,
   type IntentTransferResult,
   type SignAndSendTransaction,

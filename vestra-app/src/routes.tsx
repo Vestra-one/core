@@ -60,19 +60,6 @@ function LazyPage({ Page }: { Page: React.LazyExoticComponent<React.ComponentTyp
   );
 }
 
-const dashboardRoutes: { path: string; Page: React.LazyExoticComponent<React.ComponentType> }[] = [
-  { path: "dashboard", Page: DashboardPage },
-  { path: "treasury", Page: TreasuryPage },
-  { path: "onboarding", Page: OnboardingPage },
-  { path: "payments/bulk", Page: PaymentsBulkPage },
-  { path: "payments/manual", Page: PaymentsManualPage },
-  { path: "payments/manual-invoice", Page: PaymentsManualInvoicePage },
-  { path: "payments/scheduled", Page: PaymentsScheduledPage },
-  { path: "payments/history", Page: PaymentsHistoryPage },
-  { path: "contacts", Page: ContactsPage },
-  { path: "analytics", Page: AnalyticsPage },
-];
-
 const router = createBrowserRouter([
   {
     path: "/",
@@ -87,17 +74,48 @@ const router = createBrowserRouter([
           </Suspense>
         ),
       },
-      ...dashboardRoutes.map(({ path, Page }) => ({
-        path,
+      {
         element: <RequireWallet />,
         children: [
           {
-            path: "",
+            path: "dashboard",
             element: <DashboardLayout />,
-            children: [{ index: true, element: <LazyPage Page={Page} /> }],
+            children: [{ index: true, element: <LazyPage Page={DashboardPage} /> }],
+          },
+          {
+            path: "payments",
+            element: <DashboardLayout />,
+            children: [
+              { index: true, element: <LazyPage Page={PaymentsManualPage} /> },
+              { path: "manual", element: <LazyPage Page={PaymentsManualPage} /> },
+              { path: "scheduled", element: <LazyPage Page={PaymentsScheduledPage} /> },
+              { path: "bulk", element: <LazyPage Page={PaymentsBulkPage} /> },
+              { path: "manual-invoice", element: <LazyPage Page={PaymentsManualInvoicePage} /> },
+              { path: "history", element: <LazyPage Page={PaymentsHistoryPage} /> },
+            ],
+          },
+          {
+            path: "treasury",
+            element: <DashboardLayout />,
+            children: [{ index: true, element: <LazyPage Page={TreasuryPage} /> }],
+          },
+          {
+            path: "onboarding",
+            element: <DashboardLayout />,
+            children: [{ index: true, element: <LazyPage Page={OnboardingPage} /> }],
+          },
+          {
+            path: "contacts",
+            element: <DashboardLayout />,
+            children: [{ index: true, element: <LazyPage Page={ContactsPage} /> }],
+          },
+          {
+            path: "analytics",
+            element: <DashboardLayout />,
+            children: [{ index: true, element: <LazyPage Page={AnalyticsPage} /> }],
           },
         ],
-      })),
+      },
     ],
   },
 ]);

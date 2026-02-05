@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Icon } from "../ui/Icon";
 import { Logo } from "./Logo";
@@ -13,6 +13,7 @@ function truncateAccountId(accountId: string, head = 8, tail = 4): string {
 
 const PAYMENTS_PREFIX = "/payments";
 
+/** Sidebar order: Dashboard → Payments (dropdown) → Treasury → Contacts → Analytics */
 const paymentSubItems = [
   { to: ROUTES.paymentsManual, icon: "send", label: "New Payment" },
   { to: ROUTES.paymentsScheduled, icon: "calendar_month", label: "Scheduled Payments" },
@@ -21,8 +22,7 @@ const paymentSubItems = [
   { to: ROUTES.paymentsManualInvoice, icon: "description", label: "Upload Invoice" },
 ] as const;
 
-const topLevelItems = [
-  { to: ROUTES.dashboard, icon: "dashboard", label: "Dashboard" },
+const navItemsAfterPayments = [
   { to: ROUTES.treasury, icon: "account_balance_wallet", label: "Treasury" },
   { to: ROUTES.contacts, icon: "group", label: "Contacts" },
   { to: ROUTES.analytics, icon: "analytics", label: "Analytics" },
@@ -39,12 +39,19 @@ export function Sidebar() {
   const { accountId } = useWallet();
   const location = useLocation();
   const isPaymentsArea = location.pathname.startsWith(PAYMENTS_PREFIX);
-  const [paymentsExpanded, setPaymentsExpanded] = useState(isPaymentsArea);
+  const [paymentsExpanded, setPaymentsExpanded] = useState(false);
+  const prevPathRef = useRef(location.pathname);
 
-  const paymentsOpen = useMemo(
-    () => paymentsExpanded || isPaymentsArea,
-    [paymentsExpanded, isPaymentsArea],
-  );
+  useEffect(() => {
+    const prevWasPayments = prevPathRef.current.startsWith(PAYMENTS_PREFIX);
+    const nowPayments = isPaymentsArea;
+    if (!prevWasPayments && nowPayments) {
+      setPaymentsExpanded(true);
+    }
+    prevPathRef.current = location.pathname;
+  }, [location.pathname, isPaymentsArea]);
+
+  const paymentsOpen = paymentsExpanded;
 
   return (
     <aside className="w-64 border-r border-[var(--color-border-darker)] bg-[var(--color-background-darker)] flex flex-col shrink-0 transition-colors duration-200">
@@ -52,17 +59,14 @@ export function Sidebar() {
         <Logo showLink />
       </div>
       <nav className="flex-1 px-4 space-y-1 overflow-y-auto min-h-0">
-        {topLevelItems.map(({ to, icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === ROUTES.dashboard}
-            className={({ isActive }) => navLinkClass(isActive)}
-          >
-            <Icon name={icon} size={22} />
-            <span className="text-sm font-medium">{label}</span>
-          </NavLink>
-        ))}
+        <NavLink
+          to={ROUTES.dashboard}
+          end
+          className={({ isActive }) => navLinkClass(isActive)}
+        >
+          <Icon name="dashboard" size={22} />
+          <span className="text-sm font-medium">Dashboard</span>
+        </NavLink>
 
         <div className="pt-1">
           <button
@@ -84,27 +88,44 @@ export function Sidebar() {
           </button>
           <div
             id="sidebar-payments-menu"
-            className="mt-0.5 ml-4 pl-3 border-l border-[var(--color-border-darker)] space-y-0.5"
-            hidden={!paymentsOpen}
+            className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+              paymentsOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+            }`}
+            aria-hidden={!paymentsOpen}
           >
-            {paymentSubItems.map(({ to, icon, label }) => (
-              <NavLink
-                key={to}
-                to={to}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2 rounded-[var(--radius-button)] transition-colors duration-200 text-sm ${
-                    isActive
-                      ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium"
-                      : "text-[var(--color-text-secondary)] hover:bg-[var(--color-border-darker)]/80 hover:text-[var(--color-text-primary)]"
-                  }`
-                }
-              >
-                <Icon name={icon} size={18} />
-                <span>{label}</span>
-              </NavLink>
-            ))}
+            <div className="overflow-hidden">
+              <div className="mt-0.5 ml-4 pl-3 border-l border-[var(--color-border-darker)] space-y-0.5">
+                {paymentSubItems.map(({ to, icon, label }) => (
+                  <NavLink
+                    key={to}
+                    to={to}
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 px-3 py-2 rounded-[var(--radius-button)] transition-colors duration-200 text-sm ${
+                        isActive
+                          ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium"
+                          : "text-[var(--color-text-secondary)] hover:bg-[var(--color-border-darker)]/80 hover:text-[var(--color-text-primary)]"
+                      }`
+                    }
+                  >
+                    <Icon name={icon} size={18} />
+                    <span>{label}</span>
+                  </NavLink>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
+
+        {navItemsAfterPayments.map(({ to, icon, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) => navLinkClass(isActive)}
+          >
+            <Icon name={icon} size={22} />
+            <span className="text-sm font-medium">{label}</span>
+          </NavLink>
+        ))}
       </nav>
       <div className="p-4 border-t border-[var(--color-border-darker)] shrink-0">
         <div className="flex items-center gap-3 px-3 py-2 rounded-[var(--radius-button)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border-darker)]/80 transition-colors cursor-pointer mb-2">

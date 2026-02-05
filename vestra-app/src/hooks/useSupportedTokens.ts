@@ -66,6 +66,11 @@ export function useSupportedTokens(): {
     queryKey: TOKENS_QUERY_KEY,
     queryFn: () => OneClickService.getTokens(),
     staleTime: 5 * 60 * 1000,
+    retry: (failureCount, err) => {
+      const status = (err as { status?: number })?.status;
+      if (status === 401) return false;
+      return failureCount < 2;
+    },
   });
   const chains = groupTokensByChain(tokens);
   return { chains, tokens, isLoading, error: error as Error | null };
@@ -86,4 +91,21 @@ export function getDestinationAssetId(
     return match?.assetId ?? chainTokens[0]?.assetId ?? null;
   }
   return chainTokens[0]?.assetId ?? null;
+}
+
+const NEAR_CHAIN_ID = "near";
+
+/** Tokens on NEAR that can be used as "pay with" (origin) for intent transfers. */
+export function getOriginTokensOnNear(tokens: TokenResponse[]): TokenResponse[] {
+  return tokens
+    .filter((t) => (t.blockchain ?? NEAR_CHAIN_ID) === NEAR_CHAIN_ID)
+    .sort((a, b) => a.symbol.localeCompare(b.symbol));
+}
+
+/** Default origin asset ID: USDC on NEAR if available, otherwise first NEAR token. */
+export function getDefaultOriginAssetId(tokens: TokenResponse[]): string | null {
+  const near = getOriginTokensOnNear(tokens);
+  if (near.length === 0) return null;
+  const usdc = near.find((t) => t.symbol.toUpperCase() === "USDC");
+  return (usdc ?? near[0]).assetId;
 }

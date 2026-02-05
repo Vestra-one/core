@@ -1,6 +1,9 @@
 /**
  * NEAR Intents 1Click API client.
  * Configures the SDK and re-exports types and service for intent-based cross-chain transfers.
+ *
+ * Mainnet: Use the same API (https://1click.chaindefuser.com). Set VITE_ONE_CLICK_JWT for
+ * getQuote, submitDepositTx, and getExecutionStatus (required for production).
  */
 
 import {
@@ -14,7 +17,8 @@ import {
   type SubmitDepositTxResponse,
 } from "@defuse-protocol/one-click-sdk-typescript";
 
-const ONE_CLICK_BASE = "https://1click.chaindefuser.com";
+const ONE_CLICK_BASE =
+  (import.meta.env.VITE_ONE_CLICK_BASE as string) || "https://1click.chaindefuser.com";
 const JWT = import.meta.env.VITE_ONE_CLICK_JWT as string | undefined;
 
 OpenAPI.BASE = ONE_CLICK_BASE;

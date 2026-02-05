@@ -8,8 +8,15 @@ import {
   SLIPPAGE_BASIS_POINTS,
   FT_TRANSFER_GAS,
   FT_TRANSFER_STORAGE_DEPOSIT,
-  WRAP_NEAR_CONTRACT_ID,
+  STORAGE_DEPOSIT_REGISTRATION,
+  STORAGE_DEPOSIT_GAS,
 } from "./constants";
+
+/** NEP-141 asset ID (e.g. nep141:wrap.near) → NEAR contract ID for ft_transfer (e.g. wrap.near). */
+export function originAssetIdToNearContractId(assetId: string): string {
+  if (assetId.startsWith("nep141:")) return assetId.slice(7);
+  return assetId;
+}
 
 /** Callback to sign and send a NEAR transaction (from useWallet().signAndSendTransaction). */
 export type SignAndSendTransaction = (params: {
@@ -26,8 +33,10 @@ export type IntentTransferParams = {
   recipient: string;
   /** 1Click destination asset ID (e.g. nep141:arb-0x...omft.near). */
   destinationAssetId: string;
-  /** Amount in smallest units (e.g. for wNEAR, 24 decimals). */
+  /** Amount in smallest units of the origin token (e.g. USDC = 6 decimals). */
   amountSmallestUnit: string;
+  /** 1Click origin asset ID (e.g. nep141:usdc.tether-token.near). If omitted, uses default (wNEAR). */
+  originAssetId?: string;
 };
 
 /** Result of executing an intent transfer. */
@@ -40,17 +49,19 @@ export type IntentTransferResult = {
 
 /**
  * Request a live quote (dry: false) to get a deposit address for the given transfer.
+ * Uses originAssetId (e.g. USDC on NEAR) when provided; otherwise default origin (wNEAR).
  */
 export async function requestQuote(
   params: IntentTransferParams,
   refundToAccountId: string,
 ): Promise<QuoteResponse> {
   const deadline = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour
+  const originAsset = params.originAssetId ?? DEFAULT_ORIGIN_ASSET;
   const request: QuoteRequest = {
     dry: false,
     swapType: QuoteRequest.swapType.EXACT_INPUT,
     slippageTolerance: SLIPPAGE_BASIS_POINTS,
-    originAsset: DEFAULT_ORIGIN_ASSET,
+    originAsset,
     depositType: QuoteRequest.depositType.ORIGIN_CHAIN,
     destinationAsset: params.destinationAssetId,
     amount: params.amountSmallestUnit,
@@ -65,12 +76,14 @@ export async function requestQuote(
 }
 
 /**
- * Send wNEAR to the quote's deposit address via the connected wallet, then submit the tx to 1Click.
+ * Send the origin token (e.g. USDC on NEAR) to the quote's deposit address via the connected wallet, then submit the tx to 1Click.
+ * originAssetId must match the quote's origin (e.g. nep141:usdc.tether-token.near).
  */
 export async function executeIntentTransfer(
   quoteResponse: QuoteResponse,
   accountId: string,
   signAndSendTransaction: SignAndSendTransaction,
+  originAssetId: string,
 ): Promise<IntentTransferResult> {
   const quote = quoteResponse.quote;
   const depositAddress = quote.depositAddress;
@@ -78,21 +91,34 @@ export async function executeIntentTransfer(
     throw new Error("Quote has no deposit address (did you use dry: true?)");
   }
   const amountIn = quote.amountIn;
+  const receiverId = originAssetIdToNearContractId(originAssetId);
+
+  const actions: Array<{ type: "FunctionCall"; methodName: string; args: object; gas: string; deposit: string }> = [
+    {
+      type: "FunctionCall",
+      methodName: "storage_deposit",
+      args: {
+        account_id: depositAddress,
+        registration_only: true,
+      },
+      gas: STORAGE_DEPOSIT_GAS,
+      deposit: STORAGE_DEPOSIT_REGISTRATION,
+    },
+    {
+      type: "FunctionCall",
+      methodName: "ft_transfer",
+      args: {
+        receiver_id: depositAddress,
+        amount: amountIn,
+      },
+      gas: FT_TRANSFER_GAS,
+      deposit: FT_TRANSFER_STORAGE_DEPOSIT,
+    },
+  ];
 
   const outcome = await signAndSendTransaction({
-    receiverId: WRAP_NEAR_CONTRACT_ID,
-    actions: [
-      {
-        type: "FunctionCall",
-        methodName: "ft_transfer",
-        args: {
-          receiver_id: depositAddress,
-          amount: amountIn,
-        },
-        gas: FT_TRANSFER_GAS,
-        deposit: FT_TRANSFER_STORAGE_DEPOSIT,
-      },
-    ],
+    receiverId,
+    actions,
   });
 
   const outcomeObj = outcome as {
