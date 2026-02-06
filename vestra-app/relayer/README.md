@@ -1,6 +1,8 @@
-# Vestra NEP-366 Relayer
+# Vestra NEP-366 Relayer (optional standalone)
 
-Small HTTP relayer for NEP-366 meta transactions. Accepts a serialized `SignedDelegateAction`, wraps it in a transaction signed by the relayer account, and submits to NEAR. The relayer pays gas; the user’s actions run as if the user had sent the tx.
+Standalone HTTP relayer for NEP-366 meta transactions. **The Vestra app uses [pagoda-relayer-rs](https://github.com/near/pagoda-relayer-rs) in production** and does not connect to this server. This Node server is optional (e.g. for other clients or custom tooling that expect a raw byte-array `/relay` API).
+
+Accepts a serialized `SignedDelegateAction` (as JSON array of bytes), wraps it in a transaction signed by the relayer account, and submits to NEAR. The relayer pays gas.
 
 ## Setup
 
@@ -23,20 +25,9 @@ Small HTTP relayer for NEP-366 meta transactions. Accepts a serialized `SignedDe
 ## API
 
 - **POST /relay**  
-  Body: JSON array of bytes (borsh-serialized `SignedDelegateAction`), e.g. `[1,2,3,...]`.  
+  Body: JSON array of bytes (borsh-serialized `SignedDelegateAction`), e.g. `[1,2,3,...]`, or `{ signed_delegate_action: "<base64>" }`.  
   Response: `{ txHash, data }` (NEAR outcome).
 
-## App integration
+## Production (Vestra app)
 
-In the Vestra app `.env` set:
-
-- `VITE_RELAYER_URL=http://localhost:3031` (or your deployed relayer URL).
-
-For **dev/testing** only, you can use a key-based signer so the app can create and sign the delegate action without a wallet that supports “sign only”:
-
-- `VITE_DEV_META_TX_SIGNER_KEY=ed25519:...`
-- `VITE_DEV_META_TX_SIGNER_ACCOUNT=your-account.testnet`
-
-Then connect with that same account in the wallet; the app will use the relayer (gasless) for the deposit step when both relayer URL and dev signer are set.
-
-In production, use a relayer with contract/sender whitelisting (e.g. [pagoda-relayer-rs](https://github.com/near/pagoda-relayer-rs)) and a signer that supports sign-only (e.g. FastAuth or a wallet that adds support).
+The app sends to **Pagoda relayer** only: body `{ borsh_signed_delegate_action: number[] }`. Set `VITE_RELAYER_URL` to your Pagoda relayer base URL and provide `signDelegateActionForMetaTx` via `WalletProvider` (e.g. from FastAuth or a wallet that supports sign-only).

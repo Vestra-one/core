@@ -5,8 +5,6 @@ interface ImportMetaEnv {
   /** Set to "true" to enable MSW in development */
   readonly VITE_USE_MSW?: string;
   readonly VITE_RELAYER_URL?: string;
-  readonly VITE_DEV_META_TX_SIGNER_KEY?: string;
-  readonly VITE_DEV_META_TX_SIGNER_ACCOUNT?: string;
 }
 
 interface ImportMeta {

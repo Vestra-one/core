@@ -1,6 +1,7 @@
 /**
  * NEP-366 meta transaction relayer client.
- * Sends a serialized SignedDelegateAction to a relayer; the relayer wraps it in a tx and submits (relayer pays gas).
+ * Sends a serialized SignedDelegateAction to Pagoda relayer (pagoda-relayer-rs); the relayer
+ * wraps it in a transaction and submits (relayer pays gas).
  */
 
 export type RelayResult = {
@@ -10,32 +11,18 @@ export type RelayResult = {
 };
 
 /**
- * POST serialized SignedDelegateAction to relayer and return tx hash from outcome.
- * Relayer endpoint must accept body: JSON array of bytes (Uint8Array as number[]), or base64 string depending on relayer.
- * Pagoda relayer /send_meta_tx accepts JSON { delegate_action, signature }; our own relayer accepts borsh bytes as number[].
+ * POST serialized SignedDelegateAction to Pagoda relayer /relay.
+ * Body: { borsh_signed_delegate_action: number[] }.
  */
 export async function relaySignedDelegateAction(
   serializedSignedDelegate: Uint8Array,
   relayerUrl: string,
-  options?: { contentType?: "json-array" | "base64" }
 ): Promise<RelayResult> {
   const base = relayerUrl.replace(/\/$/, "");
   const endpoint = `${base}/relay`;
-  const contentType = options?.contentType ?? "json-array";
-
-  function toBase64(bytes: Uint8Array): string {
-    let binary = "";
-    const chunk = 8192;
-    for (let i = 0; i < bytes.length; i += chunk) {
-      binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
-    }
-    return btoa(binary);
-  }
-
-  const body =
-    contentType === "base64"
-      ? JSON.stringify({ signed_delegate_action: toBase64(serializedSignedDelegate) })
-      : JSON.stringify(Array.from(serializedSignedDelegate));
+  const body = JSON.stringify({
+    borsh_signed_delegate_action: Array.from(serializedSignedDelegate),
+  });
 
   const res = await fetch(endpoint, {
     method: "POST",

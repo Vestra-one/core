@@ -154,8 +154,9 @@ export async function executeIntentTransfer(
 }
 
 /**
- * Execute the deposit step via NEP-366 meta transaction: send serialized SignedDelegateAction to relayer,
- * then submit tx hash to 1Click and return status. Relayer pays gas; user must have signed the delegate off-chain.
+ * Execute the deposit step via NEP-366 meta transaction: send serialized SignedDelegateAction to
+ * Pagoda relayer, then submit tx hash to 1Click and return status. Relayer pays gas; user must
+ * have signed the delegate off-chain (e.g. via FastAuth or wallet that supports sign-only).
  */
 export async function executeIntentTransferViaRelayer(
   quoteResponse: QuoteResponse,

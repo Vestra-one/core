@@ -16,12 +16,11 @@ import { actionCreators } from "@near-js/transactions";
 import type { FinalExecutionOutcome } from "@near-js/types";
 import { createSession, signOut as signOutSession } from "../lib/auth-api";
 import { NEAR_CONTRACT_ID, NEAR_NETWORK } from "../lib/near";
-import { createDevMetaTxSigner } from "../lib/intents/metaTxSigner";
 import type { SignDelegateAction } from "../lib/intents/metaTx";
 
 import "@near-wallet-selector/modal-ui/styles.css";
 
-/** Optional relayer URL for NEP-366 gasless (meta) transactions. */
+/** Relayer URL for NEP-366 gasless (meta) transactions (Pagoda relayer). */
 const RELAYER_URL: string | null =
   (import.meta.env.VITE_RELAYER_URL as string)?.trim() || null;
 
@@ -52,9 +51,9 @@ type WalletContextValue = {
   clearSession: () => void;
   /** Sign and send a NEAR transaction (e.g. for intent transfer deposit). Resolves with outcome or throws. */
   signAndSendTransaction: (params: SignAndSendParams) => Promise<FinalExecutionOutcome | void>;
-  /** If set, relayer URL for NEP-366 gasless deposit. */
+  /** If set, relayer URL for NEP-366 gasless deposit (Pagoda relayer). */
   relayerUrl: string | null;
-  /** If set, can sign a DelegateAction for meta tx (gasless). Requires relayerUrl; dev signer when VITE_DEV_META_TX_SIGNER_KEY is set. */
+  /** When set, signs DelegateAction for meta tx (gasless). Provide via WalletProvider when using FastAuth or a wallet that supports sign-only. */
   signDelegateActionForMetaTx: SignDelegateAction | null;
 };
 
@@ -69,7 +68,13 @@ function getActiveAccountId(
   return active?.accountId ?? state.accounts[0]?.accountId ?? null;
 }
 
-export function WalletProvider({ children }: { children: ReactNode }) {
+export type WalletProviderProps = {
+  children: ReactNode;
+  /** Optional. When using gasless (NEP-366), provide a signer (e.g. from FastAuth or wallet that supports sign-only). */
+  signDelegateActionForMetaTx?: SignDelegateAction | null;
+};
+
+export function WalletProvider({ children, signDelegateActionForMetaTx = null }: WalletProviderProps) {
   const [selector, setSelector] = useState<WalletSelector | null>(null);
   const [modal, setModal] = useState<Awaited<ReturnType<typeof setupModal>> | null>(null);
   const [accountId, setAccountId] = useState<string | null>(null);
@@ -200,11 +205,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [selector],
   );
 
-  const signDelegateActionForMetaTx = useMemo((): SignDelegateAction | null => {
-    if (!RELAYER_URL) return null;
-    return createDevMetaTxSigner();
-  }, []);
-
   const value = useMemo<WalletContextValue>(
     () => ({
       accountId,
@@ -216,7 +216,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       clearSession,
       signAndSendTransaction,
       relayerUrl: RELAYER_URL,
-      signDelegateActionForMetaTx,
+      signDelegateActionForMetaTx: signDelegateActionForMetaTx ?? null,
     }),
     [
       accountId,

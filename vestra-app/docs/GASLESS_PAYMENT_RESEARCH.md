@@ -73,12 +73,11 @@ This doc compares ways to make the **payment send step** (sending tokens to the 
 
 NEP-366 meta transactions are implemented as follows:
 
-- **Relayer client** (`src/lib/intents/relayer.ts`): POST serialized `SignedDelegateAction` to `VITE_RELAYER_URL/relay`.
+- **Relayer client** (`src/lib/intents/relayer.ts`): POST serialized `SignedDelegateAction` to Pagoda relayer `VITE_RELAYER_URL/relay` (body: `{ borsh_signed_delegate_action: number[] }`).
 - **Meta tx params** (`src/lib/intents/metaTx.ts`): `buildTransferDelegateParams(quote, originAssetId)` builds the same `storage_deposit` + `ft_transfer` actions for signing.
 - **Transfer via relayer** (`src/lib/intents/transfer.ts`): `executeIntentTransferViaRelayer(quote, accountId, serializedSignedDelegate, relayerUrl)` sends to relayer, then submits tx hash to 1Click.
-- **Signer** (`src/lib/intents/metaTxSigner.ts`): Dev-only `createDevMetaTxSigner()` when `VITE_DEV_META_TX_SIGNER_KEY` and `VITE_DEV_META_TX_SIGNER_ACCOUNT` are set; returns a `SignDelegateAction` that signs with that key.
-- **Wallet context**: Exposes `relayerUrl` and `signDelegateActionForMetaTx`. When both are set, Single Payment and Batch Manual Entry use the gasless path.
-- **Relayer server** (`relayer/`): Small Node server (POST /relay) that deserializes the signed delegate and submits via a funded relayer account. See `relayer/README.md`.
+- **Wallet context**: Exposes `relayerUrl` and `signDelegateActionForMetaTx`. The signer is provided via `WalletProvider` prop `signDelegateActionForMetaTx` (e.g. from FastAuth or a wallet that supports sign-only). When both relayer URL and signer are set, Single Payment and Batch Manual Entry use the gasless path.
+- **Production relayer**: Use [pagoda-relayer-rs](https://github.com/near/pagoda-relayer-rs). Optional standalone Node relayer in `relayer/` has a different API and is not used by the app.
 
 No other protocol or hosted service was found for gasless NEAR transfers; NEP-366 with your own relayer is the standard approach.
 
