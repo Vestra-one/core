@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "../ui/Button";
 import { Icon } from "../ui/Icon";
@@ -21,14 +21,7 @@ import { ROUTES } from "../../lib/constants";
 import { reportPaymentStatus } from "../../lib/paymentEvents";
 import { getTransactionExplorerUrl } from "../../lib/near-nearblocks";
 import { NEAR_NETWORK } from "../../lib/near";
-
-function toSmallestUnit(amountHuman: string, decimals: number): string {
-  const n = Number(amountHuman);
-  if (!Number.isFinite(n) || n < 0) return "0";
-  const [whole, frac = ""] = amountHuman.replace(/,/g, "").split(".");
-  const fracPadded = frac.slice(0, decimals).padEnd(decimals, "0");
-  return (whole === "" ? "0" : whole) + fracPadded;
-}
+import { toSmallestUnit } from "../../lib/amountUtils";
 
 /** Human-readable label and semantic style for 1Click execution status. */
 function formatStatus(status: string): { label: string; className: string } {
@@ -45,10 +38,110 @@ function formatStatus(status: string): { label: string; className: string } {
   }
 }
 
+/** Reusable tracking card: status badge, tx link, deposit address, copy buttons with feedback. */
+function PaymentTrackingCard({
+  result,
+  explorerUrl,
+}: {
+  result: IntentTransferResult;
+  explorerUrl: string | null;
+}) {
+  const [copiedField, setCopiedField] = useState<"tx" | "deposit" | null>(null);
+
+  useEffect(() => {
+    if (copiedField === null) return;
+    const t = setTimeout(() => setCopiedField(null), 2000);
+    return () => clearTimeout(t);
+  }, [copiedField]);
+
+  const copyTx = useCallback(() => {
+    navigator.clipboard.writeText(result.txHash);
+    setCopiedField("tx");
+  }, [result.txHash]);
+
+  const copyDeposit = useCallback(() => {
+    navigator.clipboard.writeText(result.depositAddress);
+    setCopiedField("deposit");
+  }, [result.depositAddress]);
+
+  const statusInfo = formatStatus(result.status);
+  const txDisplay = `${result.txHash.slice(0, 8)}…${result.txHash.slice(-8)}`;
+  const depositDisplay = `${result.depositAddress.slice(0, 12)}…`;
+
+  return (
+    <div className="mt-6 w-full rounded-xl border border-[var(--color-border-darker)] bg-[var(--color-surface-dark)] p-4 text-left">
+      <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-3">Tracking</p>
+      <div className="flex items-center gap-2 mb-3">
+        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusInfo.className}`}>
+          {statusInfo.label}
+        </span>
+      </div>
+      <div className="space-y-2 text-sm">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[var(--color-text-muted)] shrink-0">Transaction</span>
+          <span className="flex items-center gap-1.5 min-w-0">
+            {explorerUrl ? (
+              <a
+                href={explorerUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[var(--color-primary)] truncate hover:underline"
+                title={result.txHash}
+              >
+                {txDisplay}
+              </a>
+            ) : (
+              <span className="font-mono text-[var(--color-text-secondary)] truncate" title={result.txHash}>
+                {txDisplay}
+              </span>
+            )}
+            <button
+              type="button"
+              aria-label="Copy transaction hash"
+              className="shrink-0 p-1 rounded hover:bg-white/10 text-[var(--color-text-muted)] inline-flex items-center gap-1"
+              onClick={copyTx}
+            >
+              <Icon name="content_copy" size={18} />
+              {copiedField === "tx" && <span className="text-xs text-green-500">Copied!</span>}
+            </button>
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[var(--color-text-muted)] shrink-0">Deposit address</span>
+          <span className="flex items-center gap-1.5 min-w-0 font-mono text-[var(--color-text-secondary)] truncate" title={result.depositAddress}>
+            {depositDisplay}
+            <button
+              type="button"
+              aria-label="Copy deposit address"
+              className="shrink-0 p-1 rounded hover:bg-white/10 text-[var(--color-text-muted)] inline-flex items-center gap-1"
+              onClick={copyDeposit}
+            >
+              <Icon name="content_copy" size={18} />
+              {copiedField === "deposit" && <span className="text-xs text-green-500">Copied!</span>}
+            </button>
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type Step = "form" | "sending" | "success" | "error";
+
+/** Stored after a transfer completes; used for tracking UI and reportPaymentStatus. */
+export type LastTransferResult = {
+  result: IntentTransferResult;
+  recipient: string;
+  amount: string;
+  destinationAssetId: string;
+  originSymbol: string;
+  chainId: string;
+  depositMemo: string;
+};
 
 export function SinglePaymentForm() {
   const [searchParams] = useSearchParams();
+  const resultHeadingRef = useRef<HTMLHeadingElement>(null);
   const {
     accountId,
     isConnected,
@@ -71,15 +164,13 @@ export function SinglePaymentForm() {
     originAssetId: string;
   } | null>(null);
   /** Last transfer result for tracking UI and payment-status reporting (mail/SMS/webhooks). */
-  const [lastTransferResult, setLastTransferResult] = useState<{
-    result: IntentTransferResult;
-    recipient: string;
-    amount: string;
-    destinationAssetId: string;
-    originSymbol: string;
-    chainId: string;
-    depositMemo: string;
-  } | null>(null);
+  const [lastTransferResult, setLastTransferResult] = useState<LastTransferResult | null>(null);
+
+  useEffect(() => {
+    if (step === "success" || step === "error") {
+      resultHeadingRef.current?.focus({ preventScroll: true });
+    }
+  }, [step]);
 
   const nearTokens = useMemo(() => getOriginTokensOnNear(tokens), [tokens]);
   const defaultOriginAssetId = useMemo(() => getDefaultOriginAssetId(tokens), [tokens]);
@@ -308,7 +399,6 @@ export function SinglePaymentForm() {
   }
 
   if (step === "success") {
-    const statusInfo = lastTransferResult ? formatStatus(lastTransferResult.result.status) : null;
     const explorerUrl = lastTransferResult
       ? getTransactionExplorerUrl(lastTransferResult.result.txHash, NEAR_NETWORK)
       : null;
@@ -317,59 +407,12 @@ export function SinglePaymentForm() {
         <div className="size-16 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
           <Icon name="check_circle" className="text-green-500" size={32} />
         </div>
-        <h3 className="text-lg font-bold text-[var(--color-text-primary)]">Payment sent</h3>
+        <h3 ref={resultHeadingRef} tabIndex={-1} className="text-lg font-bold text-[var(--color-text-primary)] outline-none">Payment sent</h3>
         <p className="text-[var(--color-text-muted)] text-sm mt-1">
           Your transfer is on its way to the destination chain. Track it below.
         </p>
         {lastTransferResult && (
-          <div className="mt-6 w-full rounded-xl border border-[var(--color-border-darker)] bg-[var(--color-surface-dark)] p-4 text-left">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-3">Tracking</p>
-            {statusInfo && (
-              <div className="flex items-center gap-2 mb-3">
-                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusInfo.className}`}>
-                  {statusInfo.label}
-                </span>
-              </div>
-            )}
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[var(--color-text-muted)] shrink-0">Transaction</span>
-                <span className="flex items-center gap-1.5 min-w-0">
-                  <a
-                    href={explorerUrl ?? "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-mono text-[var(--color-primary)] truncate hover:underline"
-                    title={lastTransferResult.result.txHash}
-                  >
-                    {lastTransferResult.result.txHash.slice(0, 8)}…{lastTransferResult.result.txHash.slice(-8)}
-                  </a>
-                  <button
-                    type="button"
-                    aria-label="Copy transaction hash"
-                    className="shrink-0 p-1 rounded hover:bg-white/10 text-[var(--color-text-muted)]"
-                    onClick={() => navigator.clipboard.writeText(lastTransferResult.result.txHash)}
-                  >
-                    <Icon name="content_copy" size={18} />
-                  </button>
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[var(--color-text-muted)] shrink-0">Deposit address</span>
-                <span className="flex items-center gap-1.5 min-w-0 font-mono text-[var(--color-text-secondary)] truncate" title={lastTransferResult.result.depositAddress}>
-                  {lastTransferResult.result.depositAddress.slice(0, 12)}…
-                  <button
-                    type="button"
-                    aria-label="Copy deposit address"
-                    className="shrink-0 p-1 rounded hover:bg-white/10 text-[var(--color-text-muted)]"
-                    onClick={() => navigator.clipboard.writeText(lastTransferResult.result.depositAddress)}
-                  >
-                    <Icon name="content_copy" size={18} />
-                  </button>
-                </span>
-              </div>
-            </div>
-          </div>
+          <PaymentTrackingCard result={lastTransferResult.result} explorerUrl={explorerUrl} />
         )}
         <div className="mt-8 flex flex-col sm:flex-row gap-3 w-full max-w-xs">
           <Link
@@ -389,7 +432,6 @@ export function SinglePaymentForm() {
   }
 
   if (step === "error") {
-    const statusInfo = lastTransferResult ? formatStatus(lastTransferResult.result.status) : null;
     const explorerUrl = lastTransferResult
       ? getTransactionExplorerUrl(lastTransferResult.result.txHash, NEAR_NETWORK)
       : null;
@@ -398,57 +440,10 @@ export function SinglePaymentForm() {
         <div className="size-16 rounded-full bg-red-500/20 flex items-center justify-center mb-4">
           <Icon name="error" className="text-red-500" size={32} />
         </div>
-        <h3 className="text-lg font-bold text-[var(--color-text-primary)]">Payment failed</h3>
+        <h3 ref={resultHeadingRef} tabIndex={-1} className="text-lg font-bold text-[var(--color-text-primary)] outline-none">Payment failed</h3>
         <p className="text-[var(--color-text-muted)] text-sm mt-1">{errorMessage}</p>
         {lastTransferResult && (
-          <div className="mt-6 w-full rounded-xl border border-[var(--color-border-darker)] bg-[var(--color-surface-dark)] p-4 text-left">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-3">Tracking</p>
-            {statusInfo && (
-              <div className="flex items-center gap-2 mb-3">
-                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusInfo.className}`}>
-                  {statusInfo.label}
-                </span>
-              </div>
-            )}
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[var(--color-text-muted)] shrink-0">Transaction</span>
-                <span className="flex items-center gap-1.5 min-w-0">
-                  <a
-                    href={explorerUrl ?? "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-mono text-[var(--color-primary)] truncate hover:underline"
-                    title={lastTransferResult.result.txHash}
-                  >
-                    {lastTransferResult.result.txHash.slice(0, 8)}…{lastTransferResult.result.txHash.slice(-8)}
-                  </a>
-                  <button
-                    type="button"
-                    aria-label="Copy transaction hash"
-                    className="shrink-0 p-1 rounded hover:bg-white/10 text-[var(--color-text-muted)]"
-                    onClick={() => navigator.clipboard.writeText(lastTransferResult.result.txHash)}
-                  >
-                    <Icon name="content_copy" size={18} />
-                  </button>
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[var(--color-text-muted)] shrink-0">Deposit address</span>
-                <span className="flex items-center gap-1.5 min-w-0 font-mono text-[var(--color-text-secondary)] truncate" title={lastTransferResult.result.depositAddress}>
-                  {lastTransferResult.result.depositAddress.slice(0, 12)}…
-                  <button
-                    type="button"
-                    aria-label="Copy deposit address"
-                    className="shrink-0 p-1 rounded hover:bg-white/10 text-[var(--color-text-muted)]"
-                    onClick={() => navigator.clipboard.writeText(lastTransferResult.result.depositAddress)}
-                  >
-                    <Icon name="content_copy" size={18} />
-                  </button>
-                </span>
-              </div>
-            </div>
-          </div>
+          <PaymentTrackingCard result={lastTransferResult.result} explorerUrl={explorerUrl} />
         )}
         <div className="mt-6 flex flex-wrap gap-3 justify-center">
           {lastFailedQuote && (

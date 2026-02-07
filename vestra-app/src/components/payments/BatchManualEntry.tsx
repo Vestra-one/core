@@ -10,16 +10,9 @@ import {
   buildTransferDelegateParams,
   DEFAULT_ORIGIN_ASSET,
 } from "../../lib/intents";
+import { toSmallestUnit } from "../../lib/amountUtils";
 
 const WNEAR_DECIMALS = 24;
-
-function toSmallestUnit(amountHuman: string, decimals: number): string {
-  const n = Number(amountHuman);
-  if (!Number.isFinite(n) || n < 0) return "0";
-  const [whole, frac = ""] = amountHuman.replace(/,/g, "").split(".");
-  const fracPadded = frac.slice(0, decimals).padEnd(decimals, "0");
-  return (whole === "" ? "0" : whole) + fracPadded;
-}
 
 export type ManualPaymentRow = {
   id: string;

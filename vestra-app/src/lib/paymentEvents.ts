@@ -6,10 +6,23 @@
  * When VITE_API_URL is set, POSTs to POST /api/payments/events (or the base URL
  * you configure). If no backend is configured, the call is a no-op.
  *
+ * Reads VITE_API_URL directly so this module always loads (api.ts may throw in
+ * some build/envs when VITE_API_URL is unset).
+ *
  * @see docs/PAYMENT_NOTIFICATIONS.md for backend contract and mail/SMS/webhook integration.
  */
 
-import { apiBaseUrl } from "./api";
+const PAYMENT_EVENTS_PATH = "/api/payments/events";
+
+function getPaymentEventsBaseUrl(): string {
+  const url = import.meta.env.VITE_API_URL;
+  if (typeof url === "string" && url !== "") return url.replace(/\/$/, "");
+  if (import.meta.env.VITE_USE_MSW === "true" && import.meta.env.DEV && typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  if (import.meta.env.DEV && typeof window !== "undefined") return window.location.origin;
+  return "";
+}
 
 /** Execution status from 1Click getExecutionStatus. */
 export type PaymentExecutionStatus =
@@ -44,21 +57,19 @@ export type PaymentStatusPayload = {
   chainId?: string;
 };
 
-const PAYMENT_EVENTS_PATH = "/api/payments/events";
-
 /**
  * Reports a payment status event to the backend. The backend should:
  * - Persist the event for history and idempotency (e.g. by txHash + depositMemo).
  * - Send email/SMS to the sender (and optionally recipient) if configured.
  * - Call configured webhooks (e.g. Slack, internal CRM) with the payload.
  *
- * Fire-and-forget: does not block the UI. If apiBaseUrl is unset or the request
- * fails, errors are logged in dev only.
+ * Fire-and-forget: does not block the UI. If no base URL is configured or the
+ * request fails, errors are logged in dev only.
  */
 export async function reportPaymentStatus(
   payload: PaymentStatusPayload,
 ): Promise<void> {
-  const base = apiBaseUrl?.replace(/\/$/, "") ?? "";
+  const base = getPaymentEventsBaseUrl();
   if (!base) return;
 
   const url = `${base}${PAYMENT_EVENTS_PATH}`;
