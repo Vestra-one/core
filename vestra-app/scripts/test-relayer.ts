@@ -27,7 +27,7 @@ async function main() {
   let keyContent: string;
   try {
     keyContent = readFileSync(keyPath, "utf-8");
-  } catch (e) {
+  } catch {
     console.error("Key file not found at", keyPath);
     console.error("Set RELAYER_TEST_KEY_PATH or run from vestra-app with relayer-deploy at ../relayer-deploy");
     process.exit(1);

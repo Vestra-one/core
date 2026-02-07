@@ -229,6 +229,7 @@ export function SinglePaymentForm() {
     selectedOriginToken,
     recipient,
     amount,
+    chainId,
     signAndSendTransaction,
     relayerUrl,
     signDelegateActionForMetaTx,
@@ -292,7 +293,7 @@ export function SinglePaymentForm() {
       setStep("error");
       setErrorMessage(err instanceof Error ? err.message : "Transfer failed");
     }
-  }, [lastFailedQuote, accountId, signAndSendTransaction, recipient, amount, chainId, destinationTokenSymbol, tokens]);
+  }, [lastFailedQuote, accountId, signAndSendTransaction, recipient, amount, chainId, destinationTokenSymbol, tokens, selectedOriginToken]);
 
   if (step === "sending") {
     return (
