@@ -12,7 +12,7 @@ export type RelayResult = {
 
 /**
  * POST serialized SignedDelegateAction to Pagoda relayer /relay.
- * Body: { borsh_signed_delegate_action: number[] }.
+ * Body: JSON array of bytes (number[]), i.e. borsh-serialized SignedDelegateAction.
  */
 export async function relaySignedDelegateAction(
   serializedSignedDelegate: Uint8Array,
@@ -20,9 +20,7 @@ export async function relaySignedDelegateAction(
 ): Promise<RelayResult> {
   const base = relayerUrl.replace(/\/$/, "");
   const endpoint = `${base}/relay`;
-  const body = JSON.stringify({
-    borsh_signed_delegate_action: Array.from(serializedSignedDelegate),
-  });
+  const body = JSON.stringify(Array.from(serializedSignedDelegate));
 
   const res = await fetch(endpoint, {
     method: "POST",
@@ -39,21 +37,47 @@ export async function relaySignedDelegateAction(
   }
 
   if (!res.ok) {
-    const err = data as { message?: string; error?: string };
-    throw new Error(err?.message ?? err?.error ?? `Relayer error: ${res.status} ${text.slice(0, 200)}`);
+    const err = data as {
+      message?: string;
+      error?: string;
+      status?: unknown;
+      "Transaction Outcome"?: unknown;
+      "Receipts Outcome"?: Array<{ outcome?: { status?: unknown; Failure?: unknown } }>;
+      [k: string]: unknown;
+    };
+    const top = err?.message ?? err?.error ?? "";
+    // Relayer returns on-chain failure in status / Receipts Outcome; surface first failure reason
+    let detail = top;
+    const receipts = err?.["Receipts Outcome"];
+    if (Array.isArray(receipts)) {
+      for (const r of receipts) {
+        const o = r?.outcome;
+        const fail = (o as { status?: { Failure?: unknown } })?.status?.Failure ?? (o as { Failure?: unknown })?.Failure;
+        if (fail != null) {
+          detail = `${top} | on-chain: ${JSON.stringify(fail).slice(0, 300)}`;
+          break;
+        }
+      }
+    }
+    if (!detail && err?.status != null) detail = `${top} | status: ${JSON.stringify(err.status).slice(0, 200)}`;
+    throw new Error(`Relayer error (${res.status}): ${detail || text?.slice(0, 300) || res.statusText}`);
   }
 
-  // Expect { txHash?: string, transaction_outcome?: { id?: string }, receipts_outcome?: [...], data?: { transaction_outcome?: ... } }
+  // Relayer returns { message, status, "Transaction Outcome": { id }, "Receipts Outcome": [...] } (pagoda-relayer-rs)
   const obj = data as Record<string, unknown>;
   const outcome = obj.data ?? obj;
-  const outcomeObj = outcome as {
-    transaction_outcome?: { id?: string };
-    receipts_outcome?: Array<{ outcome?: { block_hash?: string } }>;
-  };
+  const txOutcome =
+    (outcome as Record<string, unknown>)?.["Transaction Outcome"] ??
+    (outcome as Record<string, unknown>)?.transaction_outcome;
+  const txOutcomeId = (txOutcome as { id?: string })?.id;
+  const receipts = (outcome as Record<string, unknown>)?.["Receipts Outcome"] ?? (outcome as Record<string, unknown>)?.receipts_outcome;
+  const firstReceiptHash = Array.isArray(receipts)
+    ? (receipts[0] as { outcome?: { block_hash?: string } })?.outcome?.block_hash
+    : undefined;
   const txHash =
     (obj.txHash as string) ??
-    outcomeObj?.transaction_outcome?.id ??
-    outcomeObj?.receipts_outcome?.[0]?.outcome?.block_hash ??
+    txOutcomeId ??
+    firstReceiptHash ??
     "";
 
   if (!txHash) {

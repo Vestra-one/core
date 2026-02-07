@@ -66,6 +66,9 @@ export function buildTransferDelegateParams(
 /**
  * Signer for meta transactions: given delegate params, returns serialized SignedDelegateAction.
  * The signer is responsible for fetching nonce/blockHash and signing (e.g. via Account.signedDelegate).
+ * Important: each call must use a fresh nonce (current access key nonce + 1). Do not reuse
+ * Account.getAccessKey result across calls—@near-js/accounts caches it, so clear
+ * account.accessKeyByPublicKeyCache before each sign or use provider.viewAccessKey(..., { finality: "final" }) directly.
  */
 export type SignDelegateAction = (params: {
   senderId: string;
