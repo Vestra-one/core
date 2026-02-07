@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "../ui/Button";
 import { Icon } from "../ui/Icon";
@@ -9,7 +9,13 @@ import {
   getOriginTokensOnNear,
   getDefaultOriginAssetId,
 } from "../../hooks/useSupportedTokens";
-import { requestQuote, executeIntentTransfer } from "../../lib/intents";
+import {
+  requestQuote,
+  executeIntentTransfer,
+  executeIntentTransferViaRelayer,
+  buildTransferDelegateParams,
+} from "../../lib/intents";
+import type { QuoteResponse } from "../../lib/intents";
 import { validateRecipientAddress } from "../../lib/addressValidation";
 import { ROUTES } from "../../lib/constants";
 
@@ -25,7 +31,14 @@ type Step = "form" | "sending" | "success" | "error";
 
 export function SinglePaymentForm() {
   const [searchParams] = useSearchParams();
-  const { accountId, isConnected, connect, signAndSendTransaction } = useWallet();
+  const {
+    accountId,
+    isConnected,
+    connect,
+    signAndSendTransaction,
+    relayerUrl,
+    signDelegateActionForMetaTx,
+  } = useWallet();
   const { chains, tokens, isLoading: tokensLoading, error: tokensError } = useSupportedTokens();
   const [recipient, setRecipient] = useState(() => searchParams.get("recipient") ?? "");
   const [chainId, setChainId] = useState("");
@@ -34,40 +47,38 @@ export function SinglePaymentForm() {
   const [destinationTokenSymbol, setDestinationTokenSymbol] = useState("USDC");
   const [step, setStep] = useState<Step>("form");
   const [errorMessage, setErrorMessage] = useState("");
+  /** When gasless was attempted and failed, store quote so user can retry with wallet (direct). */
+  const [lastFailedQuote, setLastFailedQuote] = useState<{
+    quoteResponse: QuoteResponse;
+    originAssetId: string;
+  } | null>(null);
 
   const nearTokens = useMemo(() => getOriginTokensOnNear(tokens), [tokens]);
   const defaultOriginAssetId = useMemo(() => getDefaultOriginAssetId(tokens), [tokens]);
-
-  useEffect(() => {
-    if (defaultOriginAssetId && !originTokenAssetId) {
-      setOriginTokenAssetId(defaultOriginAssetId);
-    }
-  }, [defaultOriginAssetId, originTokenAssetId]);
+  const effectiveOriginAssetId = originTokenAssetId || defaultOriginAssetId || "";
 
   const selectedOriginToken = useMemo(
-    () => nearTokens.find((t) => t.assetId === originTokenAssetId) ?? nearTokens[0] ?? null,
-    [nearTokens, originTokenAssetId],
+    () => nearTokens.find((t) => t.assetId === effectiveOriginAssetId) ?? nearTokens[0] ?? null,
+    [nearTokens, effectiveOriginAssetId],
   );
 
   const chainTokens = useMemo(
-    () => (chainId && chains.find((c) => c.id === chainId)?.tokens) ?? [],
+    () => (chainId ? chains.find((c) => c.id === chainId)?.tokens ?? [] : []),
     [chainId, chains],
   );
 
-  useEffect(() => {
-    if (chainId && chainTokens.length > 0) {
-      const hasCurrent = chainTokens.some(
-        (t) => t.symbol.toUpperCase() === destinationTokenSymbol.toUpperCase(),
-      );
-      if (!hasCurrent) {
-        setDestinationTokenSymbol(chainTokens[0].symbol);
-      }
-    }
-  }, [chainId, chainTokens, destinationTokenSymbol]);
+  const effectiveDestinationSymbol =
+    chainId && chainTokens.length > 0
+      ? (chainTokens.some(
+          (t) => t.symbol.toUpperCase() === destinationTokenSymbol.toUpperCase(),
+        )
+          ? destinationTokenSymbol
+          : chainTokens[0].symbol)
+      : destinationTokenSymbol;
 
   const destinationAssetId =
     chainId
-      ? getDestinationAssetId(tokens, chainId, destinationTokenSymbol) ??
+      ? getDestinationAssetId(tokens, chainId, effectiveDestinationSymbol) ??
         getDestinationAssetId(tokens, chainId)
       : null;
 
@@ -95,8 +106,9 @@ export function SinglePaymentForm() {
     setErrorMessage("");
     const amountSmallestUnit = toSmallestUnit(amount, selectedOriginToken.decimals);
     const originAssetId = selectedOriginToken.assetId;
+    let quoteResponse: QuoteResponse | undefined;
     try {
-      const quoteResponse = await requestQuote(
+      quoteResponse = await requestQuote(
         {
           recipient: recipient.trim(),
           destinationAssetId,
@@ -105,11 +117,94 @@ export function SinglePaymentForm() {
         },
         accountId,
       );
+
+      const useGasless =
+        relayerUrl &&
+        signDelegateActionForMetaTx &&
+        accountId;
+
+      const result = useGasless
+        ? await (async () => {
+            const { receiverId, actions } = buildTransferDelegateParams(
+              quoteResponse,
+              originAssetId,
+            );
+            const serialized = await signDelegateActionForMetaTx({
+              senderId: accountId,
+              receiverId,
+              actions,
+            });
+            return executeIntentTransferViaRelayer(
+              quoteResponse,
+              accountId,
+              serialized,
+              relayerUrl,
+            );
+          })()
+        : await executeIntentTransfer(
+            quoteResponse,
+            accountId,
+            signAndSendTransaction,
+            originAssetId,
+          );
+
+      const ok =
+        result.status === "SUCCESS" ||
+        result.status === "PROCESSING" ||
+        result.status === "KNOWN_DEPOSIT_TX" ||
+        result.status === "PENDING_DEPOSIT";
+      setStep(ok ? "success" : "error");
+      if (!ok) setErrorMessage(result.status);
+    } catch (err) {
+      setStep("error");
+      setErrorMessage(err instanceof Error ? err.message : "Transfer failed");
+      if (
+        relayerUrl &&
+        signDelegateActionForMetaTx &&
+        accountId &&
+        quoteResponse !== undefined
+      ) {
+        setLastFailedQuote({ quoteResponse, originAssetId });
+      } else {
+        setLastFailedQuote(null);
+      }
+    }
+  }, [
+    isConnected,
+    accountId,
+    connect,
+    isValid,
+    destinationAssetId,
+    selectedOriginToken,
+    recipient,
+    amount,
+    signAndSendTransaction,
+    relayerUrl,
+    signDelegateActionForMetaTx,
+  ]);
+
+  const resetForm = useCallback(() => {
+    setStep("form");
+    setErrorMessage("");
+    setLastFailedQuote(null);
+    setRecipient("");
+    setChainId("");
+    setOriginTokenAssetId(defaultOriginAssetId ?? "");
+    setAmount("");
+    setDestinationTokenSymbol("USDC");
+  }, [defaultOriginAssetId]);
+
+  const handleRetryWithWallet = useCallback(async () => {
+    if (!lastFailedQuote || !accountId) return;
+    setStep("sending");
+    setErrorMessage("");
+    setLastFailedQuote(null);
+    try {
       const result = await executeIntentTransfer(
-        quoteResponse,
+        lastFailedQuote.quoteResponse,
         accountId,
         signAndSendTransaction,
-        originAssetId,
+        lastFailedQuote.originAssetId,
       );
       const ok =
         result.status === "SUCCESS" ||
@@ -122,33 +217,13 @@ export function SinglePaymentForm() {
       setStep("error");
       setErrorMessage(err instanceof Error ? err.message : "Transfer failed");
     }
-  }, [
-    isConnected,
-    accountId,
-    connect,
-    isValid,
-    destinationAssetId,
-    selectedOriginToken,
-    recipient,
-    amount,
-    signAndSendTransaction,
-  ]);
-
-  const resetForm = useCallback(() => {
-    setStep("form");
-    setErrorMessage("");
-    setRecipient("");
-    setChainId("");
-    setOriginTokenAssetId(defaultOriginAssetId ?? "");
-    setAmount("");
-    setDestinationTokenSymbol("USDC");
-  }, [defaultOriginAssetId]);
+  }, [lastFailedQuote, accountId, signAndSendTransaction]);
 
   if (step === "sending") {
     return (
       <div className="flex flex-col items-center justify-center py-12 px-6">
         <div className="size-14 rounded-full bg-[var(--color-primary)]/20 flex items-center justify-center mb-4">
-          <Icon name="sync" className="text-[var(--color-primary)] animate-spin" size={28} />
+          <Icon name="sync" className="text-[var(--color-primary)] animate-spin" size={32} />
         </div>
         <p className="text-[var(--color-text-primary)] font-semibold">Sending payment…</p>
         <p className="text-[var(--color-text-muted)] text-sm mt-1">Confirm in your wallet if prompted.</p>
@@ -160,7 +235,7 @@ export function SinglePaymentForm() {
     return (
       <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
         <div className="size-16 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
-          <Icon name="check_circle" className="text-green-500" size={36} />
+          <Icon name="check_circle" className="text-green-500" size={32} />
         </div>
         <h3 className="text-lg font-bold text-[var(--color-text-primary)]">Payment sent</h3>
         <p className="text-[var(--color-text-muted)] text-sm mt-1">
@@ -187,12 +262,22 @@ export function SinglePaymentForm() {
     return (
       <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
         <div className="size-16 rounded-full bg-red-500/20 flex items-center justify-center mb-4">
-          <Icon name="error" className="text-red-500" size={36} />
+          <Icon name="error" className="text-red-500" size={32} />
         </div>
         <h3 className="text-lg font-bold text-[var(--color-text-primary)]">Payment failed</h3>
         <p className="text-[var(--color-text-muted)] text-sm mt-1">{errorMessage}</p>
-        <div className="mt-6 flex gap-3">
-          <Button onClick={() => { setStep("form"); setErrorMessage(""); }}>Try again</Button>
+        <div className="mt-6 flex flex-wrap gap-3 justify-center">
+          {lastFailedQuote && (
+            <Button onClick={handleRetryWithWallet}>
+              Pay with wallet instead (you pay gas)
+            </Button>
+          )}
+          <Button
+            variant={lastFailedQuote ? "secondary" : "primary"}
+            onClick={() => { setStep("form"); setErrorMessage(""); setLastFailedQuote(null); }}
+          >
+            Try again
+          </Button>
           <Button variant="secondary" onClick={resetForm}>New payment</Button>
         </div>
       </div>
@@ -286,7 +371,7 @@ export function SinglePaymentForm() {
             Pay with (on NEAR)
           </label>
           <select
-            value={originTokenAssetId}
+            value={effectiveOriginAssetId}
             onChange={(e) => setOriginTokenAssetId(e.target.value)}
             className="w-full px-4 py-3 rounded-[var(--radius-button)] bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
           >
@@ -321,7 +406,7 @@ export function SinglePaymentForm() {
             Receive as (token)
           </label>
           <select
-            value={destinationTokenSymbol}
+            value={effectiveDestinationSymbol}
             onChange={(e) => setDestinationTokenSymbol(e.target.value)}
             className="w-full px-4 py-3 rounded-[var(--radius-button)] bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
           >

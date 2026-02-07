@@ -3,7 +3,13 @@ import { Button } from "../ui/Button";
 import { Icon } from "../ui/Icon";
 import { useWallet } from "../../contexts/WalletContext";
 import { useSupportedTokens, getDestinationAssetId } from "../../hooks/useSupportedTokens";
-import { requestQuote, executeIntentTransfer } from "../../lib/intents";
+import {
+  requestQuote,
+  executeIntentTransfer,
+  executeIntentTransferViaRelayer,
+  buildTransferDelegateParams,
+  DEFAULT_ORIGIN_ASSET,
+} from "../../lib/intents";
 
 const WNEAR_DECIMALS = 24;
 
@@ -30,7 +36,14 @@ const emptyRow = (): ManualPaymentRow => ({
 });
 
 export function BatchManualEntry() {
-  const { accountId, isConnected, connect, signAndSendTransaction } = useWallet();
+  const {
+    accountId,
+    isConnected,
+    connect,
+    signAndSendTransaction,
+    relayerUrl,
+    signDelegateActionForMetaTx,
+  } = useWallet();
   const { chains, tokens, isLoading: tokensLoading } = useSupportedTokens();
   const [rows, setRows] = useState<ManualPaymentRow[]>(() => [emptyRow()]);
   const [sending, setSending] = useState(false);
@@ -93,11 +106,32 @@ export function BatchManualEntry() {
           { recipient: row.recipient.trim(), destinationAssetId, amountSmallestUnit },
           accountId,
         );
-        const result = await executeIntentTransfer(
-          quoteResponse,
-          accountId,
-          signAndSendTransaction,
-        );
+        const originAssetId = DEFAULT_ORIGIN_ASSET;
+        const useGasless = relayerUrl && signDelegateActionForMetaTx && accountId;
+        const result = useGasless
+          ? await (async () => {
+              const { receiverId, actions } = buildTransferDelegateParams(
+                quoteResponse,
+                originAssetId,
+              );
+              const serialized = await signDelegateActionForMetaTx({
+                senderId: accountId,
+                receiverId,
+                actions,
+              });
+              return executeIntentTransferViaRelayer(
+                quoteResponse,
+                accountId,
+                serialized,
+                relayerUrl,
+              );
+            })()
+          : await executeIntentTransfer(
+              quoteResponse,
+              accountId,
+              signAndSendTransaction,
+              originAssetId,
+            );
         results.push({
           rowId: row.id,
           ok: result.status === "SUCCESS" || result.status === "PROCESSING" || result.status === "KNOWN_DEPOSIT_TX" || result.status === "PENDING_DEPOSIT",
@@ -110,7 +144,16 @@ export function BatchManualEntry() {
     }
     setSendResults(results);
     setSending(false);
-  }, [isConnected, accountId, connect, validRows, tokens, signAndSendTransaction]);
+  }, [
+    isConnected,
+    accountId,
+    connect,
+    validRows,
+    tokens,
+    signAndSendTransaction,
+    relayerUrl,
+    signDelegateActionForMetaTx,
+  ]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start">

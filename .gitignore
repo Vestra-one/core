@@ -1,2 +1,12 @@
 .DS_Store
 .env
+
+# Relayer deploy: never commit key files or tfvars (may contain project ID)
+relayer-deploy/account_keys/*.json
+relayer-deploy/terraform.tfvars
+
+# npm / package manager
+.npm-tmp-cache
+.npm
+
+pagoda-relayer-rs/

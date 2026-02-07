@@ -11,6 +11,7 @@ import {
   STORAGE_DEPOSIT_REGISTRATION,
   STORAGE_DEPOSIT_GAS,
 } from "./constants";
+import { relaySignedDelegateAction } from "./relayer";
 
 /** NEP-141 asset ID (e.g. nep141:wrap.near) → NEAR contract ID for ft_transfer (e.g. wrap.near). */
 export function originAssetIdToNearContractId(assetId: string): string {
@@ -132,6 +133,44 @@ export async function executeIntentTransfer(
   if (!txHash) {
     throw new Error("Could not get transaction hash from outcome");
   }
+
+  await OneClickService.submitDepositTx({
+    txHash,
+    depositAddress,
+    nearSenderAccount: accountId,
+  });
+
+  const statusResponse = await OneClickService.getExecutionStatus(
+    depositAddress,
+    quote.depositMemo,
+  );
+
+  return {
+    depositAddress,
+    txHash,
+    status: statusResponse.status,
+    statusResponse,
+  };
+}
+
+/**
+ * Execute the deposit step via NEP-366 meta transaction: send serialized SignedDelegateAction to
+ * Pagoda relayer, then submit tx hash to 1Click and return status. Relayer pays gas; user must
+ * have signed the delegate off-chain (e.g. via FastAuth or wallet that supports sign-only).
+ */
+export async function executeIntentTransferViaRelayer(
+  quoteResponse: QuoteResponse,
+  accountId: string,
+  serializedSignedDelegate: Uint8Array,
+  relayerUrl: string,
+): Promise<IntentTransferResult> {
+  const quote = quoteResponse.quote;
+  const depositAddress = quote.depositAddress;
+  if (!depositAddress) {
+    throw new Error("Quote has no deposit address (did you use dry: true?)");
+  }
+
+  const { txHash } = await relaySignedDelegateAction(serializedSignedDelegate, relayerUrl);
 
   await OneClickService.submitDepositTx({
     txHash,

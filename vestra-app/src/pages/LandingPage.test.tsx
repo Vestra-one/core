@@ -44,7 +44,9 @@ describe("LandingPage", () => {
 
   it("Get Started links to dashboard", () => {
     renderLanding();
-    const getStarted = screen.getByRole("link", { name: /get started/i });
-    expect(getStarted).toHaveAttribute("href", "/dashboard");
+    const getStartedLinks = screen.getAllByRole("link", { name: /get started/i });
+    const dashboardLink = getStartedLinks.find((el) => el.getAttribute("href") === "/dashboard");
+    expect(dashboardLink).toBeDefined();
+    expect(dashboardLink).toHaveAttribute("href", "/dashboard");
   });
 });

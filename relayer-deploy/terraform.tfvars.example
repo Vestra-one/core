@@ -1,0 +1,12 @@
+# Copy to terraform.tfvars and set YOUR_GCP_PROJECT_ID.
+# Do not commit terraform.tfvars if it contains sensitive paths.
+
+project_id   = "YOUR_GCP_PROJECT_ID"
+region       = "us-central1"
+network      = "testnet"
+relayer_name = "vestra"
+
+docker_image = "us-central1-docker.pkg.dev/YOUR_GCP_PROJECT_ID/relayer/os-relayer:latest"
+
+config_file_path       = "./config.toml"
+account_key_file_paths = ["./account_keys/relayer-key-0.json"]

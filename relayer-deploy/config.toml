@@ -1,0 +1,21 @@
+# NEAR testnet relayer for Vestra (heavyshirt3799.testnet)
+# Matches pagoda-relayer-rs README Basic Setup + examples/configs/no_filters.toml
+ip_address = [0, 0, 0, 0]
+port = 3030
+relayer_account_id = "heavyshirt3799.testnet"
+
+# Container path (Terraform mounts key here). Relayer expects keys_filename (singular).
+# Key file must be JSON array of { account_id, public_key, secret_key } (README: use secret_key not private_key).
+keys_filename = "/relayer-app/account_keys/0/key-0.json"
+
+# No whitelist: allow all contracts and all senders (no_filters.toml style)
+use_whitelisted_contracts = false
+use_whitelisted_senders = false
+
+use_redis = false
+use_fastauth_features = false
+use_shared_storage = false
+
+network = "testnet"
+rpc_url = "https://rpc.testnet.near.org"
+rpc_api_key = ""
