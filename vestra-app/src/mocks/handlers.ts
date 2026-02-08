@@ -1,5 +1,13 @@
 import { http, HttpResponse } from "msw";
 
+// In-memory store for MSW: keyed by X-Account-Id (session left as-is)
+const contactsByAccount = new Map<string, Array<{ id: string; name: string; address: string; network: string; lastPaid?: string; amount?: string }>>();
+const preferencesByAccount = new Map<string, Record<string, unknown>>();
+
+function nextId() {
+  return crypto.randomUUID();
+}
+
 export const handlers = [
   http.post("/auth/session", async ({ request }) => {
     const body = (await request.json()) as { accountId?: string };
@@ -54,5 +62,62 @@ export const handlers = [
         },
       ],
     });
+  }),
+
+  http.get("/accounts/me/contacts", ({ request }) => {
+    const accountId = request.headers.get("X-Account-Id") ?? "";
+    const contacts = contactsByAccount.get(accountId) ?? [];
+    return HttpResponse.json({ contacts });
+  }),
+  http.post("/accounts/me/contacts", async ({ request }) => {
+    const accountId = request.headers.get("X-Account-Id") ?? "";
+    const body = (await request.json()) as { name?: string; address: string; network?: string; lastPaid?: string; amount?: string };
+    const list = contactsByAccount.get(accountId) ?? [];
+    const contact = {
+      id: nextId(),
+      name: (body.name?.trim() || `Contact ${(body.address ?? "").slice(0, 8)}…`) as string,
+      address: (body.address ?? "").trim(),
+      network: (body.network ?? "—").trim(),
+      lastPaid: body.lastPaid ?? "—",
+      amount: body.amount ?? "—",
+    };
+    list.push(contact);
+    contactsByAccount.set(accountId, list);
+    return HttpResponse.json(contact, { status: 201 });
+  }),
+  http.patch("/accounts/me/contacts/:id", async ({ request, params }) => {
+    const accountId = request.headers.get("X-Account-Id") ?? "";
+    const id = params.id as string;
+    const body = (await request.json()) as Record<string, unknown>;
+    const list = contactsByAccount.get(accountId) ?? [];
+    const index = list.findIndex((c) => c.id === id);
+    if (index === -1) return HttpResponse.json({ error: "Contact not found" }, { status: 404 });
+    const prev = list[index];
+    const updated = { ...prev, ...body, id: prev.id };
+    list[index] = updated;
+    return HttpResponse.json(updated);
+  }),
+  http.delete("/accounts/me/contacts/:id", ({ request, params }) => {
+    const accountId = request.headers.get("X-Account-Id") ?? "";
+    const id = params.id as string;
+    const list = contactsByAccount.get(accountId) ?? [];
+    const index = list.findIndex((c) => c.id === id);
+    if (index === -1) return HttpResponse.json({ error: "Contact not found" }, { status: 404 });
+    list.splice(index, 1);
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  http.get("/accounts/me/preferences", ({ request }) => {
+    const accountId = request.headers.get("X-Account-Id") ?? "";
+    const prefs = preferencesByAccount.get(accountId) ?? {};
+    return HttpResponse.json(prefs);
+  }),
+  http.patch("/accounts/me/preferences", async ({ request }) => {
+    const accountId = request.headers.get("X-Account-Id") ?? "";
+    const body = (await request.json()) as Record<string, unknown>;
+    const current = preferencesByAccount.get(accountId) ?? {};
+    const next = { ...current, ...body };
+    preferencesByAccount.set(accountId, next);
+    return HttpResponse.json(next);
   }),
 ];

@@ -1,7 +1,56 @@
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "../components/ui/Button";
 import { Icon } from "../components/ui/Icon";
+import { useApi } from "../hooks/useApi";
+import { getPreferences, updatePreferences, type AccountPreferences } from "../lib/preferences-api";
+
+const COUNTRY_CODES = ["+1", "+44", "+49", "+33"];
 
 export function OnboardingPage() {
+  const api = useApi();
+  const [prefs, setPrefs] = useState<AccountPreferences>({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getPreferences(api);
+      setPrefs(data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load preferences");
+    } finally {
+      setLoading(false);
+    }
+  }, [api]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const save = async (updates?: Partial<AccountPreferences>) => {
+    setSaving(true);
+    setError(null);
+    try {
+      const next = await updatePreferences(api, updates ?? prefs);
+      setPrefs(next);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to save preferences");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center min-h-[40vh] text-[var(--color-text-muted)] text-sm">
+        Loading…
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-[var(--color-background-darker)] text-[var(--color-text-primary)]">
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 min-h-0 overflow-auto">
@@ -19,6 +68,12 @@ export function OnboardingPage() {
               <div className="h-full rounded-full bg-[var(--color-primary)] w-3/4" />
             </div>
           </div>
+
+          {error && (
+            <div className="rounded-[var(--radius-button)] bg-red-500/10 border border-red-500/20 px-4 py-2 text-sm text-red-600 dark:text-red-400">
+              {error}
+            </div>
+          )}
 
           <div className="bg-[var(--color-surface-dark)] rounded-xl shadow-xl border border-[var(--color-border-dark)] overflow-hidden">
             <div className="p-8 border-b border-[var(--color-border-dark)] text-center">
@@ -45,7 +100,10 @@ export function OnboardingPage() {
                     <input
                       id="email-toggle"
                       type="checkbox"
-                      defaultChecked
+                      checked={prefs.emailEnabled ?? true}
+                      onChange={(e) =>
+                        setPrefs((p) => ({ ...p, emailEnabled: e.target.checked }))
+                      }
                       className="sr-only peer"
                     />
                     <div className="w-11 h-6 bg-[var(--color-border-darker)] rounded-full peer peer-checked:bg-[var(--color-primary)] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5" />
@@ -54,6 +112,10 @@ export function OnboardingPage() {
                 <input
                   type="email"
                   placeholder="billing@company.com"
+                  value={prefs.email ?? ""}
+                  onChange={(e) =>
+                    setPrefs((p) => ({ ...p, email: e.target.value }))
+                  }
                   className="w-full bg-[var(--color-surface-dark)] border border-[var(--color-border-dark)] rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
                 />
               </div>
@@ -74,21 +136,36 @@ export function OnboardingPage() {
                     <input
                       id="sms-toggle"
                       type="checkbox"
+                      checked={prefs.smsEnabled ?? false}
+                      onChange={(e) =>
+                        setPrefs((p) => ({ ...p, smsEnabled: e.target.checked }))
+                      }
                       className="sr-only peer"
                     />
                     <div className="w-11 h-6 bg-[var(--color-border-darker)] rounded-full peer peer-checked:bg-[var(--color-primary)] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5" />
                   </label>
                 </div>
                 <div className="flex gap-2">
-                  <select className="w-24 bg-[var(--color-surface-dark)] border border-[var(--color-border-dark)] rounded-lg px-2 py-3 text-sm focus:ring-2 focus:ring-[var(--color-primary)] outline-none">
-                    <option>+1</option>
-                    <option>+44</option>
-                    <option>+49</option>
-                    <option>+33</option>
+                  <select
+                    className="w-24 bg-[var(--color-surface-dark)] border border-[var(--color-border-dark)] rounded-lg px-2 py-3 text-sm focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+                    value={prefs.smsCountryCode ?? "+1"}
+                    onChange={(e) =>
+                      setPrefs((p) => ({ ...p, smsCountryCode: e.target.value }))
+                    }
+                  >
+                    {COUNTRY_CODES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
                   </select>
                   <input
                     type="tel"
                     placeholder="555-0123"
+                    value={prefs.smsNumber ?? ""}
+                    onChange={(e) =>
+                      setPrefs((p) => ({ ...p, smsNumber: e.target.value }))
+                    }
                     className="flex-1 bg-[var(--color-surface-dark)] border border-[var(--color-border-dark)] rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
                   />
                 </div>
@@ -111,6 +188,10 @@ export function OnboardingPage() {
                   <input
                     type="url"
                     placeholder="https://api.yourdomain.com/webhooks/payflow"
+                    value={prefs.webhookUrl ?? ""}
+                    onChange={(e) =>
+                      setPrefs((p) => ({ ...p, webhookUrl: e.target.value }))
+                    }
                     className="w-full bg-[var(--color-surface-dark)] border border-[var(--color-border-dark)] rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
                   />
                   <p className="text-xs text-[var(--color-text-muted)] px-1">
@@ -124,10 +205,17 @@ export function OnboardingPage() {
               <Button
                 className="w-full py-4 rounded-xl"
                 rightIcon={<Icon name="arrow_forward" size={24} />}
+                disabled={saving}
+                onClick={() => save()}
               >
-                Confirm Setup
+                {saving ? "Saving…" : "Confirm Setup"}
               </Button>
-              <Button variant="ghost" className="w-full text-sm">
+              <Button
+                variant="ghost"
+                className="w-full text-sm"
+                disabled={saving}
+                onClick={() => save()}
+              >
                 Save & continue later
               </Button>
             </div>
