@@ -49,12 +49,12 @@ export function LandingPage() {
             >
               Features
             </a>
-            <a
+            <Link
+              to={ROUTES.dashboard}
               className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200"
-              href="#get-started"
             >
               Get started
-            </a>
+            </Link>
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />
@@ -108,25 +108,6 @@ export function LandingPage() {
                   >
                     Get Started
                   </Link>
-                  <a
-                    href="mailto:sales@vestra.io"
-                    className="h-12 rounded-[var(--radius-button)] border border-[var(--color-border-dark)] bg-[var(--color-card-dark)] px-8 text-base font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-border-dark)]/30 transition-colors duration-200 inline-flex items-center justify-center"
-                  >
-                    Talk to Sales
-                  </a>
-                </div>
-                <div className="flex items-center gap-6 pt-4">
-                  <div className="flex -space-x-3">
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="h-10 w-10 rounded-full border-2 border-[var(--color-background-dark)] bg-[var(--color-border-darker)]"
-                      />
-                    ))}
-                  </div>
-                  <p className="text-sm text-[var(--color-text-secondary)] font-medium tracking-wide">
-                    Trusted by 200+ Web3 Teams
-                  </p>
                 </div>
               </div>
 

@@ -22,10 +22,15 @@ export function ContactsPage() {
   const [newContactName, setNewContactName] = useState("");
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [manualName, setManualName] = useState("");
+  const [manualAddress, setManualAddress] = useState("");
+  const [manualNetwork, setManualNetwork] = useState("NEAR");
 
   const addAddress = searchParams.get("add");
   const addChain = searchParams.get("chain");
   const networkLabel = addChain ? (CHAIN_LABELS[addChain] ?? addChain) : "—";
+  const networkOptions = Object.entries(CHAIN_LABELS).map(([id, label]) => ({ id, label }));
 
   const loadContacts = useCallback(async () => {
     setLoading(true);
@@ -83,6 +88,31 @@ export function ContactsPage() {
     }
   };
 
+  const handleAddContact = async () => {
+    const address = manualAddress.trim();
+    if (!address || saving) return;
+    setSaving(true);
+    try {
+      const name = manualName.trim() || `Contact ${address.slice(0, 8)}…`;
+      const created = await createContact(api, {
+        name,
+        address,
+        network: manualNetwork,
+        lastPaid: "—",
+        amount: "—",
+      });
+      setContacts((prev) => [...prev, created]);
+      setShowAddForm(false);
+      setManualName("");
+      setManualAddress("");
+      setManualNetwork("NEAR");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to add contact");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <PageContainer
       breadcrumb={[
@@ -100,10 +130,73 @@ export function ContactsPage() {
             Manage payees and your address book for quick payments.
           </p>
         </div>
-        <Button variant="primary" leftIcon={<Icon name="add" size={20} />}>
+        <Button
+          variant="primary"
+          leftIcon={<Icon name="add" size={20} />}
+          onClick={() => setShowAddForm((v) => !v)}
+        >
           Add Contact
         </Button>
       </div>
+
+      {showAddForm && (
+        <div className="bg-[var(--color-surface-dark)] border border-[var(--color-border-darker)] rounded-xl p-5 flex flex-wrap gap-4 items-end">
+          <p className="text-sm font-medium text-[var(--color-text-primary)] w-full">
+            New contact
+          </p>
+          <div>
+            <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1">
+              Name
+            </label>
+            <input
+              type="text"
+              value={manualName}
+              onChange={(e) => setManualName(e.target.value)}
+              placeholder="e.g. Vendor or recipient"
+              className="px-3 py-2 rounded-[var(--radius-button)] bg-[var(--color-background-darker)] border border-[var(--color-border-darker)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] w-48"
+            />
+          </div>
+          <div className="flex-1 min-w-[200px]">
+            <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1">
+              Address / wallet
+            </label>
+            <input
+              type="text"
+              value={manualAddress}
+              onChange={(e) => setManualAddress(e.target.value)}
+              placeholder="e.g. alice.near or 0x..."
+              className="w-full px-3 py-2 rounded-[var(--radius-button)] bg-[var(--color-background-darker)] border border-[var(--color-border-darker)] text-sm font-mono text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1">
+              Network
+            </label>
+            <select
+              value={manualNetwork}
+              onChange={(e) => setManualNetwork(e.target.value)}
+              className="px-3 py-2 rounded-[var(--radius-button)] bg-[var(--color-background-darker)] border border-[var(--color-border-darker)] text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+            >
+              {networkOptions.map(({ id, label }) => (
+                <option key={id} value={label}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <Button
+            variant="primary"
+            leftIcon={<Icon name="person_add" size={18} />}
+            onClick={handleAddContact}
+            disabled={saving || !manualAddress.trim()}
+          >
+            {saving ? "Saving…" : "Add"}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => setShowAddForm(false)} disabled={saving}>
+            Cancel
+          </Button>
+        </div>
+      )}
 
       {error && (
         <div className="rounded-[var(--radius-button)] bg-red-500/10 border border-red-500/20 px-4 py-2 text-sm text-red-600 dark:text-red-400">
