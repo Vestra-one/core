@@ -42,6 +42,7 @@ From `vestra-app/`:
 | `npm run lint` | ESLint. |
 | `npm run test` | Unit tests (Vitest). |
 | `npm run test:e2e` | E2E (Playwright). Run `npx playwright install` once. |
+| `npm run generate-sample-invoice` | Generate `public/sample-invoice.pdf` for invoice upload testing. |
 
 ---
 
@@ -64,4 +65,5 @@ From `vestra-app/`:
 | [PAYMENT_NOTIFICATIONS.md](PAYMENT_NOTIFICATIONS.md) | Payment event payload, backend contract, email/SMS/webhooks. |
 | [TESTING_GASLESS.md](TESTING_GASLESS.md) | Gasless (meta tx) testing. |
 | [BULK_TRANSFER_100S_RESEARCH.md](BULK_TRANSFER_100S_RESEARCH.md) | Bulk transfer research and scaling. |
+| [INVOICE_UPLOAD.md](INVOICE_UPLOAD.md) | Upload Invoice feature, PDF format, sample file. |
 | [FRONTEND_CODE_REVIEW.md](FRONTEND_CODE_REVIEW.md) | Frontend review and patterns. |

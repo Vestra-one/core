@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
 import { Button } from "../ui/Button";
 import { Icon } from "../ui/Icon";
+import { UploadInvoiceButton } from "./UploadInvoiceButton";
+import type { ParsedInvoiceLine } from "../../lib/invoice-api";
 import { useWallet } from "../../contexts/WalletContext";
 import { useSupportedTokens, getDestinationAssetId } from "../../hooks/useSupportedTokens";
 import {
@@ -41,6 +43,7 @@ export function BatchManualEntry() {
   const [rows, setRows] = useState<ManualPaymentRow[]>(() => [emptyRow()]);
   const [sending, setSending] = useState(false);
   const [sendResults, setSendResults] = useState<Array<{ rowId: string; ok: boolean; message: string }>>([]);
+  const [invoiceError, setInvoiceError] = useState("");
 
   const addRow = useCallback(() => {
     setRows((prev) => [...prev, emptyRow()]);
@@ -59,6 +62,28 @@ export function BatchManualEntry() {
   const updateRow = useCallback((id: string, patch: Partial<ManualPaymentRow>) => {
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
   }, []);
+
+  const fillFromInvoice = useCallback(
+    (lines: ParsedInvoiceLine[]) => {
+      setRows((prev) => {
+        const filled = prev.filter((r) => r.recipient.trim() !== "" || r.amount.trim() !== "");
+        const newRows = lines.map((line) => {
+          const chainId = line.chain
+            ? chains.find((c) => c.label.toLowerCase() === line.chain!.toLowerCase())?.id ?? ""
+            : "";
+          return {
+            ...emptyRow(),
+            recipient: line.address,
+            amount: line.amount,
+            chainId,
+          };
+        });
+        return [...filled, ...newRows, emptyRow()];
+      });
+      setInvoiceError("");
+    },
+    [chains],
+  );
 
   const validRows = useMemo(
     () =>
@@ -152,11 +177,32 @@ export function BatchManualEntry() {
     <div className="flex flex-col lg:flex-row gap-8 items-start">
       <div className="flex-1 w-full min-w-0">
         <div className="bg-[var(--color-surface-dark)] rounded-xl border border-[var(--color-border-darker)] overflow-hidden shadow-sm">
-          <div className="p-4 border-b border-[var(--color-border-darker)] bg-[var(--color-background-darker)]">
+          <div className="p-4 border-b border-[var(--color-border-darker)] bg-[var(--color-background-darker)] flex flex-wrap items-center justify-between gap-3">
             <h3 className="font-semibold text-sm text-[var(--color-text-primary)]">
               Batch Manual Entry
             </h3>
+            <span className="flex items-center gap-2">
+              <UploadInvoiceButton
+                onParsed={fillFromInvoice}
+                onError={setInvoiceError}
+                variant="secondary"
+                size="sm"
+              />
+              <a
+                href="/sample-invoice.pdf"
+                download="sample-invoice.pdf"
+                className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
+              >
+                Sample PDF
+              </a>
+            </span>
           </div>
+          {invoiceError && (
+            <div className="px-4 py-2 bg-red-500/10 border-b border-red-500/20 text-red-600 dark:text-red-400 text-sm flex items-center gap-2">
+              <Icon name="error" size={18} />
+              {invoiceError}
+            </div>
+          )}
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>

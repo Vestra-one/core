@@ -19,6 +19,8 @@ import type { QuoteResponse, IntentTransferResult } from "../../lib/intents";
 import { validateRecipientAddress } from "../../lib/addressValidation";
 import { ROUTES } from "../../lib/constants";
 import { reportPaymentStatus } from "../../lib/paymentEvents";
+import { UploadInvoiceButton } from "./UploadInvoiceButton";
+import type { ParsedInvoiceLine } from "../../lib/invoice-api";
 import { getTransactionExplorerUrl } from "../../lib/near-nearblocks";
 import { NEAR_NETWORK } from "../../lib/near";
 import { toSmallestUnit } from "../../lib/amountUtils";
@@ -158,6 +160,7 @@ export function SinglePaymentForm() {
   const [destinationTokenSymbol, setDestinationTokenSymbol] = useState("USDC");
   const [step, setStep] = useState<Step>("form");
   const [errorMessage, setErrorMessage] = useState("");
+  const [invoiceError, setInvoiceError] = useState("");
   /** When gasless was attempted and failed, store quote so user can retry with wallet (direct). */
   const [lastFailedQuote, setLastFailedQuote] = useState<{
     quoteResponse: QuoteResponse;
@@ -326,9 +329,28 @@ export function SinglePaymentForm() {
     signDelegateActionForMetaTx,
   ]);
 
+  const fillFromInvoice = useCallback(
+    (lines: ParsedInvoiceLine[]) => {
+      const first = lines[0];
+      if (!first) return;
+      setRecipient(first.address);
+      setAmount(first.amount);
+      if (first.currency) setDestinationTokenSymbol(first.currency.toUpperCase());
+      if (first.chain) {
+        const match = chains.find(
+          (c) => c.label.toLowerCase() === first.chain!.toLowerCase(),
+        );
+        if (match) setChainId(match.id);
+      }
+      setInvoiceError("");
+    },
+    [chains],
+  );
+
   const resetForm = useCallback(() => {
     setStep("form");
     setErrorMessage("");
+    setInvoiceError("");
     setLastFailedQuote(null);
     setLastTransferResult(null);
     setRecipient("");
@@ -471,6 +493,12 @@ export function SinglePaymentForm() {
         handleSendNow();
       }}
     >
+      {invoiceError && (
+        <div className="rounded-lg border border-red-500/50 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-300 flex items-center gap-2">
+          <Icon name="error" size={20} />
+          {invoiceError}
+        </div>
+      )}
       {tokensError && (
         <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
           <p className="font-medium">Could not load supported chains and tokens.</p>
@@ -489,9 +517,26 @@ export function SinglePaymentForm() {
         </div>
       )}
       <div>
-        <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1.5">
-          Recipient address
-        </label>
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)]">
+            Recipient address
+          </label>
+          <span className="flex items-center gap-2">
+            <UploadInvoiceButton
+              onParsed={fillFromInvoice}
+              onError={setInvoiceError}
+              variant="ghost"
+              size="sm"
+            />
+            <a
+              href="/sample-invoice.pdf"
+              download="sample-invoice.pdf"
+              className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
+            >
+              Sample PDF
+            </a>
+          </span>
+        </div>
         <div className="relative">
           <input
             type="text"
