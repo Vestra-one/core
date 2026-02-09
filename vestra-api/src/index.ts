@@ -9,6 +9,7 @@ import { requireAuth } from "./middleware.js";
 import authRouter from "./routes/auth.js";
 import contactsRouter from "./routes/contacts.js";
 import preferencesRouter from "./routes/preferences.js";
+import invoiceRouter from "./routes/invoice.js";
 
 const PORT = Number(process.env.PORT) || 3032;
 
@@ -22,6 +23,7 @@ app.use("/auth", authRouter);
 // Account-scoped routes: require valid session token; accountId from token only
 app.use("/accounts/me/contacts", requireAuth, contactsRouter);
 app.use("/accounts/me/preferences", requireAuth, preferencesRouter);
+app.use("/invoice", requireAuth, invoiceRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ ok: true });

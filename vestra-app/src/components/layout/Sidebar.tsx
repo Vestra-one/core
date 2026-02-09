@@ -19,7 +19,6 @@ const paymentSubItems = [
   { to: ROUTES.paymentsScheduled, icon: "calendar_month", label: "Scheduled Payments" },
   { to: ROUTES.paymentsHistory, icon: "history", label: "Payment History" },
   { to: ROUTES.paymentsBulk, icon: "upload_file", label: "Bulk Upload" },
-  { to: ROUTES.paymentsManualInvoice, icon: "description", label: "Upload Invoice" },
 ] as const;
 
 const navItemsAfterPayments = [

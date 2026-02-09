@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet, Navigate } from "react-router-dom";
 import { RouteErrorFallback } from "./components/RouteErrorFallback";
 import { RequireWallet } from "./components/RequireWallet";
 import { DashboardLayout } from "./layouts/DashboardLayout";
@@ -21,11 +21,6 @@ const PaymentsBulkPage = lazy(() =>
 );
 const PaymentsManualPage = lazy(() =>
   import("./pages/PaymentsManualPage").then((m) => ({ default: m.PaymentsManualPage })),
-);
-const PaymentsManualInvoicePage = lazy(() =>
-  import("./pages/PaymentsManualInvoicePage").then((m) => ({
-    default: m.PaymentsManualInvoicePage,
-  })),
 );
 const PaymentsScheduledPage = lazy(() =>
   import("./pages/PaymentsScheduledPage").then((m) => ({
@@ -90,7 +85,7 @@ const router = createBrowserRouter([
               { path: "manual", element: <LazyPage Page={PaymentsManualPage} /> },
               { path: "scheduled", element: <LazyPage Page={PaymentsScheduledPage} /> },
               { path: "bulk", element: <LazyPage Page={PaymentsBulkPage} /> },
-              { path: "manual-invoice", element: <LazyPage Page={PaymentsManualInvoicePage} /> },
+              { path: "manual-invoice", element: <Navigate to="/payments/manual" replace /> },
               { path: "history", element: <LazyPage Page={PaymentsHistoryPage} /> },
             ],
           },
