@@ -1,0 +1,7 @@
+# Ensure correct MIME types for JS/CSS (fixes "application/octet-stream" error)
+/assets/*
+  X-Content-Type-Options: nosniff
+  Cache-Control: public, max-age=31536000, immutable
+
+# Netlify serves .js and .css with correct types by default; these rules
+# help when CDN or edge caches mis-serve. For explicit types, use netlify.toml [[headers]].

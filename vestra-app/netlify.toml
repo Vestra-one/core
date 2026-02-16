@@ -1,0 +1,36 @@
+# Netlify config for vestra-app (Vite SPA)
+# If your Netlify site root is the repo root, set base = "vestra-app" in Netlify UI and use build command below.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback: serve index.html for routes that don't match a file.
+# force = false (default) so /assets/*.js and other static files are served, not redirected.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
+
+# Fix MIME type: ensure JS/CSS are served with correct Content-Type (avoids "application/octet-stream" error)
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Content-Type = "application/javascript"
+    X-Content-Type-Options = "nosniff"
+[[headers]]
+  for = "/*.mjs"
+  [headers.values]
+    Content-Type = "application/javascript"
+    X-Content-Type-Options = "nosniff"
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Content-Type = "text/css"
+    X-Content-Type-Options = "nosniff"
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Content-Type = "image/svg+xml"
+    X-Content-Type-Options = "nosniff"
