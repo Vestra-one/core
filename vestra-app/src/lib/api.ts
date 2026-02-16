@@ -18,9 +18,8 @@ const getBaseUrl = (): string => {
   if (import.meta.env.DEV && typeof window !== "undefined") {
     return window.location.origin;
   }
-  throw new Error(
-    "VITE_API_URL is not set. Copy .env.example to .env and set VITE_API_URL.",
-  );
+  // In production without VITE_API_URL, return empty so the app still loads; API calls will no-op or 404
+  return "";
 };
 
 export const apiBaseUrl = getBaseUrl();
@@ -57,11 +56,16 @@ async function request<T>(
   config: RequestConfig = {},
 ): Promise<T> {
   const { params, accountId, getToken, onUnauthorized, ...init } = config;
-  const url = new URL(
-    path.startsWith("http")
-      ? path
-      : `${apiBaseUrl}${path.startsWith("/") ? path : `/${path}`}`,
-  );
+  const pathPart = path.startsWith("/") ? path : `/${path}`;
+  const base =
+    apiBaseUrl !== ""
+      ? apiBaseUrl
+      : typeof window !== "undefined"
+        ? window.location.origin
+        : "http://localhost";
+  const url = path.startsWith("http")
+    ? new URL(path)
+    : new URL(pathPart, base);
   if (params) {
     Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
   }
